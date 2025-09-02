@@ -85,7 +85,7 @@ jobs:
         run: |
           git config --local user.name actions-user
           git config --local user.email "actions@github.com"
-          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/EnergyAssetOptimization/EAO.git --branch gh-pages --single-branch gh-pages
+          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/RIVACON/EAO.git --branch gh-pages --single-branch gh-pages
           cp -r doc/build/* gh-pages/
           cd gh-pages
           touch .nojekyll
