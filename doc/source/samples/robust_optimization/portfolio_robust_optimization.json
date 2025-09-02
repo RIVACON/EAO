@@ -1,0 +1,60 @@
+{
+    "__class__": "Portfolio",
+    "assets": [
+        {
+            "__class__": "Asset",
+            "asset_type": "SimpleContract",
+            "end": null,
+            "extra_costs": 0.0,
+            "max_cap": 10.0,
+            "min_cap": -10.0,
+            "name": "market",
+            "nodes": [
+                {
+                    "__class__": "Node",
+                    "commodity": null,
+                    "name": "location",
+                    "unit": {
+                        "__class__": "Unit",
+                        "factor": 1.0,
+                        "flow": "MW",
+                        "volume": "MWh"
+                    }
+                }
+            ],
+            "price": "price",
+            "start": null,
+            "wacc": 0
+        },
+        {
+            "__class__": "Asset",
+            "asset_type": "Storage",
+            "block_size": null,
+            "cap_in": 10,
+            "cap_out": 10,
+            "cost_in":0.1,
+            "size": 240,
+            "start": null,
+            "end": null,
+            "start_level": 5,
+            "end_level": 5,
+            "inflow": 0.0,
+            "name": "storage",
+            "nodes": [
+                {
+                    "__class__": "Node",
+                    "commodity": null,
+                    "name": "location",
+                    "unit": {
+                        "__class__": "Unit",
+                        "factor": 1.0,
+                        "flow": "MW",
+                        "volume": "MWh"
+                    }
+                }
+            ],
+            "price": null,
+            "wacc": 0.0
+        }
+    ]
+}

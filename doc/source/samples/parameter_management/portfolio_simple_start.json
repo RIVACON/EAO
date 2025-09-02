@@ -1,0 +1,149 @@
+{
+    "__class__": "Portfolio",
+    "assets": [
+        {
+            "__class__": "Asset",
+            "asset_type": "SimpleContract",
+            "end": null,
+            "extra_costs": 0.0,
+            "max_cap": 50.0,
+            "min_cap": 0.0,
+            "name": "sourcing",
+            "nodes": [
+                {
+                    "__class__": "Node",
+                    "commodity": null,
+                    "name": "location a",
+                    "unit": {
+                        "__class__": "Unit",
+                        "factor": 1.0,
+                        "flow": "MW",
+                        "volume": "MWh"
+                    }
+                }
+            ],
+            "price": "price sourcing",
+            "start": null,
+            "wacc": 0
+        },
+        {
+            "__class__": "Asset",
+            "asset_type": "SimpleContract",
+            "end": null,
+            "extra_costs": 0.0,
+            "max_cap": -5.0,
+            "min_cap": -10.0,
+            "name": "sales a",
+            "nodes": [
+                {
+                    "__class__": "Node",
+                    "commodity": null,
+                    "name": "location a",
+                    "unit": {
+                        "__class__": "Unit",
+                        "factor": 1.0,
+                        "flow": "MW",
+                        "volume": "MWh"
+                    }
+                }
+            ],
+            "price": "price sales a",
+            "start": null,
+            "wacc": 0
+        },
+        {
+            "__class__": "Asset",
+            "asset_type": "SimpleContract",
+            "end": null,
+            "extra_costs": 1.0,
+            "max_cap":  0.0,
+            "min_cap": -2.0,
+            "name": "sales b",
+            "nodes": [
+                {
+                    "__class__": "Node",
+                    "commodity": null,
+                    "name": "location b",
+                    "unit": {
+                        "__class__": "Unit",
+                        "factor": 1.0,
+                        "flow": "MW",
+                        "volume": "MWh"
+                    }
+                }
+            ],
+            "price": "price sales b",
+            "start": null,
+            "wacc": 0
+        },
+        {
+            "__class__": "Asset",
+            "asset_type": "Transport",
+            "costs_const": 1.0,
+            "costs_time_series": null,
+            "efficiency": 1.0,
+            "start": null,
+            "end": null,
+            "max_cap": 5.0,
+            "min_cap": 0.0,
+            "name": "grid",
+            "nodes": [
+                {
+                    "__class__": "Node",
+                    "commodity": null,
+                    "name": "location a",
+                    "unit": {
+                        "__class__": "Unit",
+                        "factor": 1.0,
+                        "flow": "MW",
+                        "volume": "MWh"
+                    }
+                },
+                {
+                    "__class__": "Node",
+                    "commodity": null,
+                    "name": "location b",
+                    "unit": {
+                        "__class__": "Unit",
+                        "factor": 1.0,
+                        "flow": "MW",
+                        "volume": "MWh"
+                    }
+                }
+            ],
+            "wacc": 0
+        },
+        {
+            "__class__": "Asset",
+            "asset_type": "Storage",
+            "block_size": null,
+            "start_level": 5,
+            "cap_in": 30,
+            "cap_out": 30,
+            "cost_in": 0.2,
+            "cost_out": 0.2,
+            "eff_in": 1.0,
+            "size": 48,
+            "start": null,
+            "end": null,
+            "end_level": 5,
+            "inflow": 0.0,
+            "name": "storage",
+            "nodes": [
+                {
+                    "__class__": "Node",
+                    "commodity": null,
+                    "name": "location b",
+                    "unit": {
+                        "__class__": "Unit",
+                        "factor": 1.0,
+                        "flow": "MW",
+                        "volume": "MWh"
+                    }
+                }
+            ],
+            "price": null,
+            "wacc": 0.0
+        }
+    ]
+}

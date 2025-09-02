@@ -1,0 +1,2 @@
+Load profiles denmark from energidataservice.dk
+Invest costs from IEA-NEAProjectedCostsofGeneratingElectricity2020-Datafile
