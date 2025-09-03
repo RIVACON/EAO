@@ -12,6 +12,17 @@ Simple start: Optimizing power consumption with battery & PV
 Green PPA and structured downstream contract
 --------------------------------------------
 
+Illustration: Small power and heat network (in German)
+------------------
+
+.. toctree:: 
+
+   samples/power_and_heat/power_and_heat_sample
+
+
+Green PPA and structured downstream contract
+--------------------------------------------
+
 .. toctree:: 
 
    samples/green_ppa/sample_green_ppa

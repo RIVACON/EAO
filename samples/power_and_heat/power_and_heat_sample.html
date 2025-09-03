@@ -1,0 +1,715 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Einfaches Beispiel “Strom und Wärme” &mdash; EAO  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Sample for optimizing a portfolio that supplies a load minimum share of green energy" href="../green_ppa/sample_green_ppa.html" />
+    <link rel="prev" title="EAO - easy and straight forward optimization of energy setups" href="../grid%20and%20battery/battery_own_consumption.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EAO
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../eao.html">EAO package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../samples.html">Samples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#simple-start-optimizing-power-consumption-with-battery-pv">Simple start: Optimizing power consumption with battery &amp; PV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#green-ppa-and-structured-downstream-contract">Green PPA and structured downstream contract</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../samples.html#illustration-small-power-and-heat-network-in-german">Illustration: Small power and heat network (in German)</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Einfaches Beispiel “Strom und Wärme”</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Ein-paar-Vorbereitungen-in-Python">Ein paar Vorbereitungen in Python</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Definition-der-%22Knoten%22,-also-der-grundsätzlichen-Struktur">Definition der “Knoten”, also der grundsätzlichen Struktur</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Definition-der-einzelnen-Anlagen-und-Verträge">Definition der einzelnen Anlagen und Verträge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Portfolio-zusammensetzen">Portfolio zusammensetzen</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Graphische-Darstellung">Graphische Darstellung</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Randbemerkung">Randbemerkung</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Daten-laden">Daten laden</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Optimierung-durchführen">Optimierung durchführen</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Randnotiz-%22Performance-und-Größenbeschränkung%22:">Randnotiz “Performance und Größenbeschränkung”:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Resultate-analysieren">Resultate analysieren</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Darstellung-in-Graphiken----zur-Diskussion">Darstellung in Graphiken – zur Diskussion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#id1">Green PPA and structured downstream contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#marginal-costs-in-portfolio-optimization">Marginal costs in portfolio optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#multi-commodity-optimization">Multi commodity optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#combined-heat-and-power">Combined Heat and Power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#battery-optimization-against-an-order-book">Battery optimization against an order book</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#stochastic-linear-programs">Stochastic Linear Programs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#robust-optimization">Robust optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#split-optimization">Split optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#parameter-handling">Parameter handling</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EAO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../samples.html">Samples</a></li>
+      <li class="breadcrumb-item active">Einfaches Beispiel “Strom und Wärme”</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/samples/power_and_heat/power_and_heat_sample.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Einfaches-Beispiel-%22Strom-und-Wärme%22">
+<h1>Einfaches Beispiel “Strom und Wärme”<a class="headerlink" href="#Einfaches-Beispiel-%22Strom-und-Wärme%22" title="Link to this heading"></a></h1>
+<p>Eine einfache Illustration, in der wir verschiedene Anlagen verbinden:</p>
+<ul class="simple">
+<li><p>KWK Anlage</p></li>
+<li><p>P2H (z.B. Wärmepumpe, Geothermie)</p></li>
+<li><p>Wärmespeicher</p></li>
+</ul>
+<p>… plus (festem) Wärmebedarf und Strompreise</p>
+<p>Das Wärmenetz besteht aus “Nord”, “Süd” plus Verbindung</p>
+<section id="Ein-paar-Vorbereitungen-in-Python">
+<h2>Ein paar Vorbereitungen in Python<a class="headerlink" href="#Ein-paar-Vorbereitungen-in-Python" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import eaopack as eao
+#####################################################
+import pandas as pd
+import datetime as dt
+import plotly.express as px
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Definition-der-%22Knoten%22,-also-der-grundsätzlichen-Struktur">
+<h2>Definition der “Knoten”, also der grundsätzlichen Struktur<a class="headerlink" href="#Definition-der-%22Knoten%22,-also-der-grundsätzlichen-Struktur" title="Link to this heading"></a></h2>
+<p>Knoten bilden den virtuellen Punkt, in dem Wärme- und Stromanlagen angeschlossen sind. Die Knoten können durch “Transporte” verbunden werden</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Definition der phys. Einheiten
+unit_power      = eao.assets.Unit(volume = &#39;MWh(el)&#39;, flow = &#39;MW(el)&#39;)
+unit_heat       = eao.assets.Unit(volume = &#39;MWh(th)&#39;, flow = &#39;MW(th)&#39;)
+# Definition der Knoten
+node_power      = eao.assets.Node(name = &#39;strom&#39;      , unit = unit_power)
+node_heat_nord  = eao.assets.Node(name = &#39;waerme_nord&#39;, unit = unit_heat)
+node_heat_sued  = eao.assets.Node(name = &#39;waerme_sued&#39;, unit = unit_heat)
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Definition-der-einzelnen-Anlagen-und-Verträge">
+<h2>Definition der einzelnen Anlagen und Verträge<a class="headerlink" href="#Definition-der-einzelnen-Anlagen-und-Verträge" title="Link to this heading"></a></h2>
+<p>Notiz: Wir vermeiden eine grundsätzliche Unterscheidung zwischen phys. Anlagen und Verträgen. Z.B.</p>
+<ul class="simple">
+<li><p>der Wärmebedarf kann auch als zu erfüllender Absatzvertrag gesehen werden</p></li>
+<li><p>es könnten auch Strom-Terminverträge eingebunden werden (so physisch erfüllt)</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span># (1) Wärmespeicher
+storage = eao.assets.Storage(name       = &#39;speicher&#39;,
+                            nodes       = node_heat_nord,
+                            cap_out     = .5,
+                            cap_in      = .5,
+                            size        = 3.,
+                            start_level = 0.25,
+                            end_level   = 0.25,
+                            eff_in      = 0.9,
+                            block_size  = &#39;d&#39;)     # Speicher soll täglich neu optimiert werden (nicht &quot;leer hinterlassen&quot;)
+
+# (2) Power to Heat Anlage (die Wärmepumpe). Hier vereinfacht abgebildet
+#     Wir können zu einem gegebenen Wirkungsgrad &quot;Strom in Wärme tauschen&quot;
+power2heat   = eao.assets.MultiCommodityContract(name = &#39;P2H&#39;,                           # Wärmepumpe (z.B. Geothermie)
+                                                 min_cap = 0,
+                                                 max_cap = 2,
+                                                 nodes = [node_power, node_heat_nord],   # Lokalisierung: Knoten Nord für Wärme  -  plus Stromknoten
+                                                 factors_commodities=[-1, 2])            # Wirkundsgrad: 1 MWh Strom zu 2 MWh Wärme
+
+# (3) Kraft-Wärme-Kopplung (KWK). Hier als GuD abgebildet
+#     Achtung - hier sind einige Parameter als Standardwerte gesetzt, die je nach Anwendungsfall angepasst werden sollten
+KWK    = eao.assets.CHPAsset(name = &quot;KWK&quot;,
+                                   min_cap     = 0,
+                                   max_cap     = 5,                             # max. Leistung Strom
+                                   nodes       = [node_power, node_heat_sued],  # Erzeugung von Strom und Wärme in die entsprechenden Netze, bei Bedarf auch Gas
+                                   start_costs = 0,                             # im Beispiel keine Startkosten
+                                   extra_costs = 25,                            # Brennstoffkosten in €/MWh, natürlich auch als Zeitreihe möglich
+                                   conversion_factor_power_heat=0.5,            # Verhältnis Produktion Wärme zu Strom 2:1, d.h. 1MW Stromverlust bei 2MW Wärmeproduktion
+                                   max_share_heat = .5)                         # max. Anteil der Wärme an Gesamtproduktion (in MWh)
+                                   ### ..viele weitere Parameter möglich, siehe Dokumentation. Z.B. Rampen, Mindestlaufzeiten, etc.
+
+# (4) Wärmebedarf
+#     Der Wärmebedarf muss immer gedeckt werden. Hier als &quot;Contract&quot; abgebildet; Maximum = Minimum bedeutet &quot;keine Flexibilität&quot;
+bedarf_nord  = eao.assets.Contract(name = &quot;bedarf_nord&quot;,
+                                   min_cap  = &quot;waerme_bedarf_nord&quot;, # Referenziert auf Bezeichnung in Datenquelle
+                                   max_cap  = &quot;waerme_bedarf_nord&quot;,
+                                   nodes    = node_heat_nord)
+bedarf_sued  = eao.assets.Contract(name     = &quot;bedarf_sued&quot;,
+                                   min_cap  = &quot;waerme_bedarf_sued&quot;,
+                                   max_cap  = &quot;waerme_bedarf_sued&quot;,
+                                   nodes = node_heat_sued)
+# (5) Wärmeübertragungsnetz. Hier als &quot;Transport&quot; Asset abgebildet
+#     Generell wird der Fluss immer in eine Richtung definiert. Daher im Beispiel 2 einzelne Richtungen Süd-&gt;Nord und Nord-&gt;Süd
+netz_nord_sued  = eao.assets.Transport(name = &#39;netz_ns&#39;,
+                                       max_cap = 2,                 # max. Wärmeübertragungskapazität
+                                       nodes = [node_heat_nord, node_heat_sued])
+netz_sued_nord  = eao.assets.Transport(name = &#39;netz_sn&#39;,
+                                       max_cap = 1.5,
+                                       nodes = [node_heat_sued, node_heat_nord])
+
+# (3) Strommarkt
+#     Wir können praktisch unbegrenzt Strom kaufen und verkaufen - zum vorgegebenen Preis
+market       = eao.assets.SimpleContract(name = &#39;strommarkt&#39;, price=&#39;strompreis&#39;, min_cap= -1000, max_cap=1000, nodes = node_power)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Portfolio-zusammensetzen">
+<h2>Portfolio zusammensetzen<a class="headerlink" href="#Portfolio-zusammensetzen" title="Link to this heading"></a></h2>
+<p>Die Anlagen und Verträge bilden die Details ab. Mit der Information zu den Knoten können sie einfach im Portfolio zusammengefasst werden</p>
+<ul class="simple">
+<li><p>Szenarioanalyse mit und ohne Anlagen</p></li>
+<li><p>auch viele Einzel-Portfolien möglich, falls nur Teile modelliert werden</p></li>
+<li><p>Teil-Portfolien können bei Bedarf als eine Anlage im Gesamtmodell zusammengefasst werden</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portf        = eao.portfolio.Portfolio([storage,
+                                        power2heat,
+                                        KWK,
+                                        market,
+                                        bedarf_nord,
+                                        bedarf_sued,
+                                        netz_nord_sued,
+                                        netz_sued_nord])
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Graphische-Darstellung">
+<h2>Graphische Darstellung<a class="headerlink" href="#Graphische-Darstellung" title="Link to this heading"></a></h2>
+<p>Automatisch generiert. Im GUI kann die Darstellung angepasst werden.</p>
+<ul class="simple">
+<li><p>Gelb: Knoten</p></li>
+<li><p>Grau: Assets</p></li>
+<li><p>Pfeile: Anbindung der Assets an Knoten oder Transport</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>eao.network_graphs.create_graph(portf = portf, title = &#39;Beispiel: Wärmenetz mit KWK, Wärmepumpe und Speicher&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_power_and_heat_power_and_heat_sample_10_0.png" src="../../_images/samples_power_and_heat_power_and_heat_sample_10_0.png" />
+</div>
+</div>
+</section>
+<section id="Randbemerkung">
+<h2>Randbemerkung<a class="headerlink" href="#Randbemerkung" title="Link to this heading"></a></h2>
+<p>Das EAO ist so aufgesetzt, dass es einfach an eigene Datenbanken und Systeme angebunden werden kann. Z.B. können alle Daten einfach in JSON exportiert (und eingelesen) werden. So auch im GUI</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## in JSON File speichern zur weiteren Verwendung, z.B. in eigener Datenbank, dem GUI, etc. Genauso für Assets, etc.
+eao.serialization.to_json(portf, &#39;portf.json&#39;)      # Gesamtbeispiel
+eao.serialization.to_json(storage, &#39;speicher.json&#39;)
+# ... etc. für alle Assets möglich&#39;
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Daten-laden">
+<h2>Daten laden<a class="headerlink" href="#Daten-laden" title="Link to this heading"></a></h2>
+<p>Hier: Preise und Wärmebedarf aus Excel Datei laden</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>data = pd.read_excel(&quot;2020_sample_daten.xlsx&quot;)
+data.set_index(&#39;datum&#39;, inplace=True)
+data.round(2).head()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>strompreis</th>
+      <th>waerme_bedarf_nord</th>
+      <th>waerme_bedarf_sued</th>
+    </tr>
+    <tr>
+      <th>datum</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2020-01-01 00:00:00</th>
+      <td>41.88</td>
+      <td>-2.11</td>
+      <td>-0.31</td>
+    </tr>
+    <tr>
+      <th>2020-01-01 01:00:00</th>
+      <td>38.60</td>
+      <td>-2.17</td>
+      <td>-0.39</td>
+    </tr>
+    <tr>
+      <th>2020-01-01 02:00:00</th>
+      <td>36.55</td>
+      <td>-2.20</td>
+      <td>-0.49</td>
+    </tr>
+    <tr>
+      <th>2020-01-01 03:00:00</th>
+      <td>32.32</td>
+      <td>-2.20</td>
+      <td>-0.59</td>
+    </tr>
+    <tr>
+      <th>2020-01-01 04:00:00</th>
+      <td>30.85</td>
+      <td>-2.17</td>
+      <td>-0.70</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="Optimierung-durchführen">
+<h2>Optimierung durchführen<a class="headerlink" href="#Optimierung-durchführen" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>Start = dt.date(2020,1,1)
+End   = dt.date(2020,1,3)
+tg    = eao.assets.Timegrid(Start, End, freq = &#39;h&#39;)     # hier: stündlich optimieren
+out   = eao.optimize(portf = portf, timegrid = tg, data = data)
+### Solver nach Geschmack leicht austauschbar. Z.B. Gurobi, CPLEX, freie Solver: SCIP, HIGHS ...
+# out = eao.optimize(portf = portf, timegrid = tg, data = data, solver = &#39;SCIP&#39;)
+### Split problem
+out   = eao.optimize(portf = portf, timegrid = tg, data = data)
+# out   = eao.optimize(portf = portf, timegrid = tg, data = data, split_interval_size=&#39;MS&#39;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Randnotiz-%22Performance-und-Größenbeschränkung%22:">
+<h2>Randnotiz “Performance und Größenbeschränkung”:<a class="headerlink" href="#Randnotiz-%22Performance-und-Größenbeschränkung%22:" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>MIP und LP: Kann das Portfolio als “LP” gelöst werden, ist die Rechenzeit deutlich schneller, als bei einem MIP. Hier kann über den Parameter “make_soft_problem” in der Optimierung gesteuert werden</p></li>
+<li><p>Solver sind nach Geschmack leicht austauschbar. Z.B. Gurobi, CPLEX, freie Solver: SCIP, HIGHS …</p></li>
+<li><p>Generell erzeugen Speicher in der Optimierung leicht schwer lösbare Probleme. Hier empfehlen wir, die “block_size” z.B. auf täglich/wöchentlich zu setzen. So wird der Speicher nur über innerhalb jeden Tages / jeder Woche optimiert</p></li>
+<li><p>“Split Optimization”: Für die meisten Probleme ist es eine gute Näherung, das Problem für jede Woche/ jeden Monat etc. zu lösen. In der entsprechenden Variante setzt EAO die Lösung automatisch zusammen. Randbedingungen wie Speicher Level oder Mindestmengen werden heruntergebrochen</p></li>
+</ul>
+</section>
+<section id="Resultate-analysieren">
+<h2>Resultate analysieren<a class="headerlink" href="#Resultate-analysieren" title="Link to this heading"></a></h2>
+<p>Vereinfachte Darstellung. Im Normalfall Export nach Excel oder in eine Schnittstelle in Datenbanken</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>out[&#39;summary&#39;] # Zusammenfassung. Gesantwert in € (Deckungsbeitrag)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Values</th>
+    </tr>
+    <tr>
+      <th>Parameter</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>status</th>
+      <td>successful</td>
+    </tr>
+    <tr>
+      <th>value</th>
+      <td>1267.861623</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>out[&#39;DCF&#39;].transpose().iloc[:,0:2].round(2) # Detailsicht auf die Cash Flows (auch diskontierte Optimierung möglich (DCF / Maximierung des NPV))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>2020-01-01 00:00:00</th>
+      <th>2020-01-01 01:00:00</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>speicher</th>
+      <td>0.00</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>P2H</th>
+      <td>0.00</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>KWK</th>
+      <td>-125.00</td>
+      <td>-125.00</td>
+    </tr>
+    <tr>
+      <th>strommarkt</th>
+      <td>164.02</td>
+      <td>143.65</td>
+    </tr>
+    <tr>
+      <th>bedarf_nord</th>
+      <td>0.00</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>bedarf_sued</th>
+      <td>0.00</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>netz_ns</th>
+      <td>0.00</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>netz_sn</th>
+      <td>0.00</td>
+      <td>0.00</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Detailsicht auf die Betriebsweise der Anlagen (in MWh)
+print(out[&#39;dispatch&#39;].transpose().iloc[:,0:2].round(2))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+                           2020-01-01 00:00:00  2020-01-01 01:00:00
+speicher (waerme_nord)                    0.25                 0.00
+P2H (strom)                              -0.73                -0.90
+P2H (waerme_nord)                         1.46                 1.80
+KWK (strom)                               4.65                 4.62
+KWK (waerme_sued)                         0.70                 0.76
+strommarkt (strom)                       -3.92                -3.72
+bedarf_nord (waerme_nord)                -2.11                -2.17
+bedarf_sued (waerme_sued)                -0.31                -0.39
+netz_ns (waerme_nord)                    -0.60                -0.61
+netz_ns (waerme_sued)                     0.60                 0.61
+netz_sn (waerme_sued)                    -0.99                -0.98
+netz_sn (waerme_nord)                     0.99                 0.98
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Detailsicht auf die EIngangsgrößen (in €/MWh bzw. MW)  [hier vor Allem die vorgegebenen Preise, andere Analysen möglich --&gt; Kosten für die Wärme pro Stunde]
+out[&#39;prices&#39;].transpose().iloc[:,0:2].round(2)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>2020-01-01 00:00:00</th>
+      <th>2020-01-01 01:00:00</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>nodal price: waerme_nord</th>
+      <td>20.94</td>
+      <td>19.30</td>
+    </tr>
+    <tr>
+      <th>nodal price: strom</th>
+      <td>41.88</td>
+      <td>38.60</td>
+    </tr>
+    <tr>
+      <th>nodal price: waerme_sued</th>
+      <td>20.94</td>
+      <td>19.30</td>
+    </tr>
+    <tr>
+      <th>input data: strompreis</th>
+      <td>41.88</td>
+      <td>38.60</td>
+    </tr>
+    <tr>
+      <th>input data: waerme_bedarf_nord</th>
+      <td>-2.11</td>
+      <td>-2.17</td>
+    </tr>
+    <tr>
+      <th>input data: waerme_bedarf_sued</th>
+      <td>-0.31</td>
+      <td>-0.39</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="Darstellung-in-Graphiken----zur-Diskussion">
+<h2>Darstellung in Graphiken – zur Diskussion<a class="headerlink" href="#Darstellung-in-Graphiken----zur-Diskussion" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df = out[&#39;dispatch&#39;].reset_index()
+df = pd.merge(df, out[&#39;prices&#39;], left_on=&#39;index&#39;, right_index=True, how=&#39;left&#39;)
+fig = px.line(df, x=&quot;index&quot;, y=[&quot;P2H (waerme_nord)&quot;,
+                                &quot;KWK (waerme_sued)&quot;,
+                                &quot;speicher (waerme_nord)&quot;,
+                                &quot;bedarf_nord (waerme_nord)&quot;,
+                                &quot;bedarf_sued (waerme_sued)&quot;,
+                                &quot;input data: strompreis&quot;],
+                                title=&#39;Wärme Fahrplan&#39;)
+fig.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="admonition warning">
+<p>Data type cannot be displayed: application/vnd.plotly.v1+json</p>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df = out[&#39;dispatch&#39;].reset_index()
+df = pd.merge(df, out[&#39;prices&#39;], left_on=&#39;index&#39;, right_index=True, how=&#39;left&#39;)
+fig = px.line(df, x=&quot;index&quot;, y=[&quot;P2H (strom)&quot;,
+                                &quot;KWK (strom)&quot;,
+                                &quot;input data: strompreis&quot;],
+                                title=&#39;Strom Fahrplan&#39;)
+fig.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="admonition warning">
+<p>Data type cannot be displayed: application/vnd.plotly.v1+json</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../grid%20and%20battery/battery_own_consumption.html" class="btn btn-neutral float-left" title="EAO - easy and straight forward optimization of energy setups" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../green_ppa/sample_green_ppa.html" class="btn btn-neutral float-right" title="Sample for optimizing a portfolio that supplies a load minimum share of green energy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
