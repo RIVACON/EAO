@@ -83,8 +83,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config --local user.name actions-user
-          git config --local user.email "actions@github.com"
+          git config --global user.name "actions-user"
+          git config --global user.email "actions@github.com"          
           git clone https://x-access-token:${GITHUB_TOKEN}@github.com/RIVACON/EAO.git --branch gh-pages --single-branch gh-pages
           cp -r doc/build/* gh-pages/
           cd gh-pages
