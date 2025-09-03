@@ -1,0 +1,270 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to the Energy Asset Optimization (EAO) documentation! &mdash; EAO  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="EAO package" href="eao.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            EAO
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="eao.html">EAO package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samples.html">Samples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">EAO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Welcome to the Energy Asset Optimization (EAO) documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="welcome-to-the-energy-asset-optimization-eao-documentation">
+<h1>Welcome to the Energy Asset Optimization (EAO) documentation!<a class="headerlink" href="#welcome-to-the-energy-asset-optimization-eao-documentation" title="Link to this heading"></a></h1>
+<p>The EAO package is a modular Python framework, designed to enable practitioners to
+design, build and optimize energy and commodity trading portfolios using linear or mixed integer programming
+as well as stochastic linear programming. It provides an implementation of</p>
+<ul class="simple">
+<li><p>standard assets such as contracts, transport and storages</p></li>
+<li><p>addition of new asset types</p></li>
+<li><p>their combination to complex portfolios using network structures</p></li>
+<li><p>(de-) serialization to JSON</p></li>
+<li><p>basic input &amp; output functionality</p></li>
+</ul>
+<p>We found that the approach is useful for modeling very different problem settings, such as decentral and renewable power
+generation, green power supply and PPAs and sector coupling in ad-hoc analysis, market modeling or daily operation.</p>
+<p>You can find the code along with some sample notebooks here:
+<a class="reference external" href="https://github.com/EnergyAssetOptimization/EAO">GitHub repository</a></p>
+<p>And an extensive technical report here:
+<a class="reference external" href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3842822">Report</a></p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="eao.html">EAO package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="eao.html#module-eaopack.assets">Assets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.assets.Asset"><code class="docutils literal notranslate"><span class="pre">Asset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.assets.CHPAsset"><code class="docutils literal notranslate"><span class="pre">CHPAsset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.assets.CHPAsset_with_min_load_costs"><code class="docutils literal notranslate"><span class="pre">CHPAsset_with_min_load_costs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.assets.Contract"><code class="docutils literal notranslate"><span class="pre">Contract</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.assets.ExtendedTransport"><code class="docutils literal notranslate"><span class="pre">ExtendedTransport</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.assets.MultiCommodityContract"><code class="docutils literal notranslate"><span class="pre">MultiCommodityContract</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.assets.OrderBook"><code class="docutils literal notranslate"><span class="pre">OrderBook</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.assets.Plant"><code class="docutils literal notranslate"><span class="pre">Plant</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.assets.ScaledAsset"><code class="docutils literal notranslate"><span class="pre">ScaledAsset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.assets.SimpleContract"><code class="docutils literal notranslate"><span class="pre">SimpleContract</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.assets.Storage"><code class="docutils literal notranslate"><span class="pre">Storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.assets.Transport"><code class="docutils literal notranslate"><span class="pre">Transport</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.assets.convert_time_unit"><code class="docutils literal notranslate"><span class="pre">convert_time_unit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.assets.define_restr"><code class="docutils literal notranslate"><span class="pre">define_restr()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="eao.html#module-eaopack.portfolio">Portfolio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.portfolio.LinkedAsset"><code class="docutils literal notranslate"><span class="pre">LinkedAsset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.portfolio.Portfolio"><code class="docutils literal notranslate"><span class="pre">Portfolio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.portfolio.StructuredAsset"><code class="docutils literal notranslate"><span class="pre">StructuredAsset</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="eao.html#module-eaopack.optimization">Optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.optimization.OptimProblem"><code class="docutils literal notranslate"><span class="pre">OptimProblem</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.optimization.Results"><code class="docutils literal notranslate"><span class="pre">Results</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.optimization.SplitOptimProblem"><code class="docutils literal notranslate"><span class="pre">SplitOptimProblem</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="eao.html#module-eaopack.basic_classes">Basic classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.basic_classes.Node"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.basic_classes.StartEndValueDict"><code class="docutils literal notranslate"><span class="pre">StartEndValueDict</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.basic_classes.Timegrid"><code class="docutils literal notranslate"><span class="pre">Timegrid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.basic_classes.Unit"><code class="docutils literal notranslate"><span class="pre">Unit</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="eao.html#module-eaopack.io">Input and output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.io.extract_output"><code class="docutils literal notranslate"><span class="pre">extract_output()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.io.get_param"><code class="docutils literal notranslate"><span class="pre">get_param()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.io.get_params_tree"><code class="docutils literal notranslate"><span class="pre">get_params_tree()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.io.optimize"><code class="docutils literal notranslate"><span class="pre">optimize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.io.output_to_file"><code class="docutils literal notranslate"><span class="pre">output_to_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.io.set_param"><code class="docutils literal notranslate"><span class="pre">set_param()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="eao.html#module-eaopack.serialization">Serialization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.serialization.json_deserialize_objects"><code class="docutils literal notranslate"><span class="pre">json_deserialize_objects()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.serialization.json_serialize_objects"><code class="docutils literal notranslate"><span class="pre">json_serialize_objects()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.serialization.load_from_json"><code class="docutils literal notranslate"><span class="pre">load_from_json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.serialization.run_from_json"><code class="docutils literal notranslate"><span class="pre">run_from_json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.serialization.to_json"><code class="docutils literal notranslate"><span class="pre">to_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="eao.html#module-eaopack.stoch_lin_prog">Stochastic linear program</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.stoch_lin_prog.make_slp"><code class="docutils literal notranslate"><span class="pre">make_slp()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="eao.html#module-eaopack.network_graphs">Network graphs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="eao.html#eaopack.network_graphs.create_graph"><code class="docutils literal notranslate"><span class="pre">create_graph()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="samples.html">Samples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples.html#simple-start-optimizing-power-consumption-with-battery-pv">Simple start: Optimizing power consumption with battery &amp; PV</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/grid%20and%20battery/battery_own_consumption.html">EAO - easy and straight forward optimization of energy setups</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="samples.html#green-ppa-and-structured-downstream-contract">Green PPA and structured downstream contract</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html">Sample for optimizing a portfolio that supplies a load minimum share of green energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Some-prerequisites">Some prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Define-the-portfolio">Define the portfolio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Optimize">Optimize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Interpret-the-results">Interpret the results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="samples.html#marginal-costs-in-portfolio-optimization">Marginal costs in portfolio optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html">Marginal costs - basic concept and example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Some-prerequisites">Some prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Set-up-portfolio">Set up portfolio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Perform-the-optimization">Perform the optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Create-charts-and-interpret-the-results">Create charts and interpret the results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Marginal-costs-and-duals-in-linear-programs">Marginal costs and duals in linear programs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="samples.html#multi-commodity-optimization">Multi commodity optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html">Cross commodity portfolios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html#Some-prerequisites">Some prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html#Perform-the-optimization">Perform the optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html#Create-charts-and-interpret-the-results">Create charts and interpret the results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="samples.html#combined-heat-and-power">Combined Heat and Power</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/combined_heat_power/chp_sample.html">Combined Heat and Power</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="samples.html#battery-optimization-against-an-order-book">Battery optimization against an order book</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/order_book/order_book_battery.html">Discrete supply decisions - example battery in continuous intraday markets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/order_book/order_book_battery.html#Perform-the-optimization">Perform the optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/order_book/order_book_battery.html#Create-charts-and-interpret-the-results">Create charts and interpret the results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="samples.html#stochastic-linear-programs">Stochastic Linear Programs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html">Stochastic linear program (SLP) to take into account uncertainty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Some-prerequisites">Some prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Set-up-portfolio">Set up portfolio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Perform-the-optimization">Perform the optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Create-charts-and-interpret-the-results">Create charts and interpret the results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Backtesting:-SLP-vs.-hard-optimization">Backtesting: SLP vs. hard optimization</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="samples.html#robust-optimization">Robust optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html">Robust optimization - example with szenario analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#Some-prerequisites">Some prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#Define-price-samples">Define price samples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#Running-the-optimization">Running the optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#Analysis">Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="samples.html#split-optimization">Split optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/split_optimization/split_optimization.html">Split Optimization</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="samples.html#parameter-handling">Parameter handling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/parameter_management/parameter_management.html">Parameter management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/parameter_management/parameter_management.html#Looking-at-parameters-and-setting-them-to-new-values">Looking at parameters and setting them to new values</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="eao.html" class="btn btn-neutral float-right" title="EAO package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

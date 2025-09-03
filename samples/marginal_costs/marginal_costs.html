@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marginal costs - basic concept and example &mdash; EAO  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Cross commodity portfolios" href="../cross_commodity/cross_commodity_sample.html" />
+    <link rel="prev" title="Sample for optimizing a portfolio that supplies a load minimum share of green energy" href="../green_ppa/sample_green_ppa.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EAO
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../eao.html">EAO package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../samples.html">Samples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#simple-start-optimizing-power-consumption-with-battery-pv">Simple start: Optimizing power consumption with battery &amp; PV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#green-ppa-and-structured-downstream-contract">Green PPA and structured downstream contract</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../samples.html#marginal-costs-in-portfolio-optimization">Marginal costs in portfolio optimization</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Marginal costs - basic concept and example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Some-prerequisites">Some prerequisites</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Basic-definitions">Basic definitions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Parameter-setting">Parameter setting</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Set-up-portfolio">Set up portfolio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Perform-the-optimization">Perform the optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Create-charts-and-interpret-the-results">Create charts and interpret the results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Marginal-costs-and-duals-in-linear-programs">Marginal costs and duals in linear programs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#multi-commodity-optimization">Multi commodity optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#combined-heat-and-power">Combined Heat and Power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#battery-optimization-against-an-order-book">Battery optimization against an order book</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#stochastic-linear-programs">Stochastic Linear Programs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#robust-optimization">Robust optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#split-optimization">Split optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#parameter-handling">Parameter handling</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EAO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../samples.html">Samples</a></li>
+      <li class="breadcrumb-item active">Marginal costs - basic concept and example</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/samples/marginal_costs/marginal_costs.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Marginal-costs---basic-concept-and-example">
+<h1>Marginal costs - basic concept and example<a class="headerlink" href="#Marginal-costs---basic-concept-and-example" title="Link to this heading"></a></h1>
+<p>In this sample, we illustrate the concept of marginal costs. We use a very simple portfolio of generation assets that are used to cover a given load. The marginal costs of the portfolio indicate at which prices it would be valuable to buy or sell electricity into / out of the portfolio.</p>
+<p>While the example portfolio is simple, the concept is valid for any other case of more complex portfolio or asset</p>
+</section>
+<section id="Some-prerequisites">
+<h1>Some prerequisites<a class="headerlink" href="#Some-prerequisites" title="Link to this heading"></a></h1>
+<section id="Basic-definitions">
+<h2>Basic definitions<a class="headerlink" href="#Basic-definitions" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
+import pandas as pd
+import datetime as dt
+
+# in case eao is not installed
+import os
+import sys
+# in case eao is not installed, set path
+myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
+sys.path.append(myDir)
+addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
+sys.path.append(addDir)
+
+import eaopack as eao
+from eaopack.assets import Node, Timegrid, Contract, Storage, SimpleContract
+from eaopack.portfolio import Portfolio
+
+import matplotlib.pyplot as plt
+%matplotlib inline
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Parameter-setting">
+<h2>Parameter setting<a class="headerlink" href="#Parameter-setting" title="Link to this heading"></a></h2>
+<p>Defining timegrid and main portfolio settings. Note that we do not explain the setup in detail. Please refer to the basic samples to understand the concepts and parameters</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>Start = dt.date(2021,1,1)
+End   = dt.date(2021,1,10)
+timegrid = Timegrid(Start, End, freq = &#39;h&#39;)
+node  = Node(name = &#39;node&#39;, commodity=&#39;power&#39;, unit=&#39;MWh&#39;)
+# very simple setup, working directly on the time grid. Alternatively we can use
+# dictionaries with start/end and values
+load_profile   = -(5+5*(np.cos(np.linspace(0.,10., timegrid.T))))
+# capacities and costs of generation assets in portfolio
+capacities = [1,2,3,2,8]
+costs      = [1,1.5,1.8,4,6]
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Set-up-portfolio">
+<h1>Set up portfolio<a class="headerlink" href="#Set-up-portfolio" title="Link to this heading"></a></h1>
+<ol class="arabic simple">
+<li><p>a given load to cover</p></li>
+<li><p>generation assets with different production costs</p></li>
+</ol>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>assets = []
+assets.append(Contract(name = &#39;load&#39;, min_cap= load_profile, max_cap= load_profile, nodes = node))
+counter = 0
+for my_cap, my_costs in zip(capacities, costs):
+        counter +=1
+        myc = 2 # capacity of each contract
+        assets.append(SimpleContract(name = &#39;gen_&#39;+str(counter), nodes = node, extra_costs = my_costs,max_cap = my_cap))
+portf = Portfolio(assets)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Perform-the-optimization">
+<h1>Perform the optimization<a class="headerlink" href="#Perform-the-optimization" title="Link to this heading"></a></h1>
+<p>Setting up the optimization provlem ans solving. Note that in this setup no (market) prices are needed to solve the problem, as we try to cover the load at minimal costs</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>optim_problem  = portf.setup_optim_problem(timegrid = timegrid)
+result         = optim_problem.optimize()
+output = eao.io.extract_output(portf, optim_problem, result)
+</pre></div>
+</div>
+</div>
+<p>Some minor manupulations to create nicer charts …</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>output[&#39;prices&#39;].rename(columns = {&#39;nodal price: node&#39;:&#39;nodal price&#39;}, inplace = True)
+# omit load (is given by sum of generation)
+output[&#39;dispatch&#39;].drop(columns = [&#39;load&#39;], inplace = True)
+output[&#39;dispatch&#39;] = output[&#39;dispatch&#39;].round(3)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Create-charts-and-interpret-the-results">
+<h1>Create charts and interpret the results<a class="headerlink" href="#Create-charts-and-interpret-the-results" title="Link to this heading"></a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.rcdefaults()
+fig, ax = plt.subplots(1,2,figsize=(7,3), tight_layout = True)
+output[&#39;dispatch&#39;].plot.area(ax = ax[0], stacked = True, alpha = 0.7)
+output[&#39;prices&#39;].plot(ax = ax[1])
+ax[0].set_title(&#39;Cumulative asset dispatch&#39;)
+ax[0].set_ylabel(&#39;MW&#39;)
+ax[1].set_title(&#39;Marginal production cost&#39;)
+ax[1].set_ylabel(&#39;€/MWh&#39;)
+ax[1].legend(loc = &#39;upper right&#39;)
+plt.show()
+#plt.savefig(file_chart)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_marginal_costs_marginal_costs_12_0.svg" src="../../_images/samples_marginal_costs_marginal_costs_12_0.svg" />
+</div>
+</div>
+<p>Left figure: Dispatch of the single assets. The generation units 1-5 are dispatched in the order of their production costs. At lower loads we need only gen_1, while at higher loads we need all of them</p>
+<p>Right figure: The marginal costs are determined by the most expensive asset needed.</p>
+</section>
+<section id="Marginal-costs-and-duals-in-linear-programs">
+<h1>Marginal costs and duals in linear programs<a class="headerlink" href="#Marginal-costs-and-duals-in-linear-programs" title="Link to this heading"></a></h1>
+<p>The marginal cost for each node is given by the dual of the corresponding nodal restriction. Intuitively, it reflects the change in value of the portfolio as at the node we have an infinitesimal extra amount of the commodity available</p>
+<p>In this simple case, the marginal costs are just the production costs of the most expensive asset needed. However, the concept applies directly to any other and more complex portfolio of assets.</p>
+<p>Once more nodes are used in the portfolio, nodal prices may be different if there are transport bottlenecks</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../green_ppa/sample_green_ppa.html" class="btn btn-neutral float-left" title="Sample for optimizing a portfolio that supplies a load minimum share of green energy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../cross_commodity/cross_commodity_sample.html" class="btn btn-neutral float-right" title="Cross commodity portfolios" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

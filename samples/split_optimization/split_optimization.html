@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Split Optimization &mdash; EAO  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Parameter management" href="../parameter_management/parameter_management.html" />
+    <link rel="prev" title="Robust optimization - example with szenario analysis" href="../robust_optimization/robust_optimization_szenarios.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EAO
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../eao.html">EAO package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../samples.html">Samples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#simple-start-optimizing-power-consumption-with-battery-pv">Simple start: Optimizing power consumption with battery &amp; PV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#green-ppa-and-structured-downstream-contract">Green PPA and structured downstream contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#marginal-costs-in-portfolio-optimization">Marginal costs in portfolio optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#multi-commodity-optimization">Multi commodity optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#combined-heat-and-power">Combined Heat and Power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#battery-optimization-against-an-order-book">Battery optimization against an order book</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#stochastic-linear-programs">Stochastic Linear Programs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#robust-optimization">Robust optimization</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../samples.html#split-optimization">Split optimization</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Split Optimization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Portfolio-Definition">Portfolio Definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Split Optimization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Full-Optimization">Full Optimization</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#parameter-handling">Parameter handling</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EAO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../samples.html">Samples</a></li>
+      <li class="breadcrumb-item active">Split Optimization</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/samples/split_optimization/split_optimization.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Split-Optimization">
+<h1>Split Optimization<a class="headerlink" href="#Split-Optimization" title="Link to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import datetime as dt
+import sys
+import os
+myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
+sys.path.append(myDir)
+addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
+sys.path.append(addDir)
+import eaopack as eao
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def plot_results(portfolio, op, res, prices, num_imgs_per_row=2):
+    out = eao.io.extract_output(portfolio, op, res, prices)
+    num_nodes = len(portfolio.nodes)
+    num_img_rows=int(np.ceil((num_nodes+2)/num_imgs_per_row))
+    fig, ax = plt.subplots(num_img_rows, num_imgs_per_row, tight_layout = True, figsize=(18,5*num_img_rows))
+    ax = ax.reshape(-1)
+
+    # Plot the dispatch for each node:
+    current_ax=0
+    dispatch_per_node = {node: [] for node in portfolio.nodes}
+    for mycol in out[&#39;dispatch&#39;].columns.values:
+        for node in dispatch_per_node:
+            if &#39;(&#39; + node + &#39;)&#39; in mycol:
+                dispatch_per_node[node].append(mycol)
+    for node in dispatch_per_node:
+        out[&#39;dispatch&#39;][dispatch_per_node[node]].plot(ax=ax[current_ax], style=&#39;-x&#39;)
+        ax[current_ax].set_title(&quot;Dispatch &quot; + node)
+        current_ax+=1
+
+    # Plot internal variables:
+    for v in out[&#39;internal_variables&#39;]:
+        out[&#39;internal_variables&#39;][v].plot(ax=ax[current_ax], style=&#39;-x&#39;, label=v)
+    if out[&#39;internal_variables&#39;].shape[1] == 0:
+        ax[current_ax].text(0.4, 0.5, &quot;No bool variables present&quot;)
+    ax[current_ax].set_title(&#39;Bool Variables&#39;)
+    ax[current_ax].legend()
+
+    # Remove empty axes:
+    for i in range(current_ax+1, len(ax)):
+        fig.delaxes(ax[i])
+</pre></div>
+</div>
+</div>
+<section id="Portfolio-Definition">
+<h2>Portfolio Definition<a class="headerlink" href="#Portfolio-Definition" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>timegrid = eao.assets.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 4, 1), freq=&#39;h&#39;, main_time_unit=&#39;h&#39;)
+
+prices = {
+    &#39;price_gas&#39;: np.ones(timegrid.T)*2,
+    &#39;price_heat&#39;: np.cos(4*np.pi * np.arange(timegrid.T)/timegrid.T)+2,
+    &#39;price_power&#39;: np.sin(4*np.pi * np.arange(timegrid.T)/timegrid.T)+2,
+}
+
+prices = timegrid.prices_to_grid(prices)
+
+prices.plot(title=&quot;Prices&quot;)
+
+node_power = eao.assets.Node(&#39;node_power&#39;)
+node_heat = eao.assets.Node(&#39;node_heat&#39;)
+node_gas = eao.assets.Node(&#39;node_gas&#39;)
+
+simple_contract_power = eao.assets.SimpleContract(name=&#39;SC_power&#39;, price=&#39;price_power&#39;, nodes=node_power,
+                                             min_cap=-30., max_cap=20)
+simple_contract_heat = eao.assets.SimpleContract(name=&#39;SC_heat&#39;, price=&#39;price_heat&#39;, nodes=node_heat,
+                                             min_cap=-30., max_cap=20.)
+simple_contract_gas = eao.assets.SimpleContract(name=&#39;SC_gas&#39;, price=&#39;price_gas&#39;, nodes=node_gas,
+                                             min_cap=-30., max_cap=20.)
+
+
+chpasset = eao.assets.CHPAsset(name=&#39;CHP&#39;,
+                               nodes=[node_power, node_heat, node_gas],
+                               min_cap=5.,
+                               max_cap=30.,
+                               ramp=10)
+portfolio = eao.portfolio.Portfolio([chpasset, simple_contract_power, simple_contract_heat, simple_contract_gas])
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_split_optimization_split_optimization_4_0.png" src="../../_images/samples_split_optimization_split_optimization_4_0.png" />
+</div>
+</div>
+</section>
+<section id="id1">
+<h2>Split Optimization<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>op_split = portfolio.setup_split_optim_problem(prices, timegrid, interval_size=&quot;1w&quot;)
+res_split = op_split.optimize(solver=&quot;GLPK_MI&quot;)
+print()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
+...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
+...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
+...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
+...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
+...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
+...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
+...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
+...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
+...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
+...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
+...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
+...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
+...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;Value:&quot;, res_split.value)
+plot_results(portfolio, op_split, res_split, prices)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Value: 23393.663322608252
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_split_optimization_split_optimization_7_1.png" src="../../_images/samples_split_optimization_split_optimization_7_1.png" />
+</div>
+</div>
+</section>
+<section id="Full-Optimization">
+<h2>Full Optimization<a class="headerlink" href="#Full-Optimization" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>op_full = portfolio.setup_optim_problem(prices, timegrid)
+res_full = op_full.optimize(solver=&quot;GLPK_MI&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;Value:&quot;, res_full.value)
+plot_results(portfolio, op_full, res_full, prices)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Value: 23464.337087301334
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_split_optimization_split_optimization_10_1.png" src="../../_images/samples_split_optimization_split_optimization_10_1.png" />
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../robust_optimization/robust_optimization_szenarios.html" class="btn btn-neutral float-left" title="Robust optimization - example with szenario analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../parameter_management/parameter_management.html" class="btn btn-neutral float-right" title="Parameter management" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

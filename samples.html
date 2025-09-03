@@ -1,0 +1,377 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Samples &mdash; EAO  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="EAO - easy and straight forward optimization of energy setups" href="samples/grid%20and%20battery/battery_own_consumption.html" />
+    <link rel="prev" title="EAO package" href="eao.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            EAO
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="eao.html">EAO package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Samples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#simple-start-optimizing-power-consumption-with-battery-pv">Simple start: Optimizing power consumption with battery &amp; PV</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/grid%20and%20battery/battery_own_consumption.html">EAO - easy and straight forward optimization of energy setups</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#green-ppa-and-structured-downstream-contract">Green PPA and structured downstream contract</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html">Sample for optimizing a portfolio that supplies a load minimum share of green energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Some-prerequisites">Some prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Define-the-portfolio">Define the portfolio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Optimize">Optimize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Interpret-the-results">Interpret the results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#marginal-costs-in-portfolio-optimization">Marginal costs in portfolio optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html">Marginal costs - basic concept and example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Some-prerequisites">Some prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Set-up-portfolio">Set up portfolio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Perform-the-optimization">Perform the optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Create-charts-and-interpret-the-results">Create charts and interpret the results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Marginal-costs-and-duals-in-linear-programs">Marginal costs and duals in linear programs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#multi-commodity-optimization">Multi commodity optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html">Cross commodity portfolios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html#Some-prerequisites">Some prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html#Perform-the-optimization">Perform the optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html#Create-charts-and-interpret-the-results">Create charts and interpret the results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#combined-heat-and-power">Combined Heat and Power</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/combined_heat_power/chp_sample.html">Combined Heat and Power</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#battery-optimization-against-an-order-book">Battery optimization against an order book</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/order_book/order_book_battery.html">Discrete supply decisions - example battery in continuous intraday markets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/order_book/order_book_battery.html#Perform-the-optimization">Perform the optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/order_book/order_book_battery.html#Create-charts-and-interpret-the-results">Create charts and interpret the results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#stochastic-linear-programs">Stochastic Linear Programs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html">Stochastic linear program (SLP) to take into account uncertainty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Some-prerequisites">Some prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Set-up-portfolio">Set up portfolio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Perform-the-optimization">Perform the optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Create-charts-and-interpret-the-results">Create charts and interpret the results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Backtesting:-SLP-vs.-hard-optimization">Backtesting: SLP vs. hard optimization</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#robust-optimization">Robust optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html">Robust optimization - example with szenario analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#Some-prerequisites">Some prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#Define-price-samples">Define price samples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#Running-the-optimization">Running the optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#Analysis">Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#split-optimization">Split optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/split_optimization/split_optimization.html">Split Optimization</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#parameter-handling">Parameter handling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/parameter_management/parameter_management.html">Parameter management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/parameter_management/parameter_management.html#Looking-at-parameters-and-setting-them-to-new-values">Looking at parameters and setting them to new values</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">EAO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Samples</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/samples.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="samples">
+<h1>Samples<a class="headerlink" href="#samples" title="Link to this heading"></a></h1>
+<section id="simple-start-optimizing-power-consumption-with-battery-pv">
+<h2>Simple start: Optimizing power consumption with battery &amp; PV<a class="headerlink" href="#simple-start-optimizing-power-consumption-with-battery-pv" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="samples/grid%20and%20battery/battery_own_consumption.html">EAO - easy and straight forward optimization of energy setups</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/grid%20and%20battery/battery_own_consumption.html#Import-required-packages">Import required packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/grid%20and%20battery/battery_own_consumption.html#Load-data-&amp;-make-assumptions">Load data &amp; make assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/grid%20and%20battery/battery_own_consumption.html#Optimization">Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/grid%20and%20battery/battery_own_consumption.html#Interpretation-of-the-results">Interpretation of the results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/grid%20and%20battery/battery_own_consumption.html#Another-benchmark:-Own-PV">Another benchmark: Own PV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/grid%20and%20battery/battery_own_consumption.html#Putting-everything-together">Putting everything together</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="green-ppa-and-structured-downstream-contract">
+<h2>Green PPA and structured downstream contract<a class="headerlink" href="#green-ppa-and-structured-downstream-contract" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html">Sample for optimizing a portfolio that supplies a load minimum share of green energy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Some-prerequisites">Some prerequisites</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Basic-definitions">Basic definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Timegrid">Timegrid</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Define-the-portfolio">Define the portfolio</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#The-nodes-as-the-starting-point">The nodes as the starting point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#The-downstream-contract">The downstream contract</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Starting-with-the-load">Starting with the load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Green-restriction">Green restriction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Create-contract-object">Create contract object</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Green-energy-supply-PPAs:-PV-and-wind-with-a-given-generation-profile">Green energy supply PPAs: PV and wind with a given generation profile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Add-storage-to-be-able-to-maximize-green-supply">Add storage to be able to maximize green supply</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#The-market">The market</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Putting-everything-together">Putting everything together</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Optimize">Optimize</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Interpret-the-results">Interpret the results</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/green_ppa/sample_green_ppa.html#Detailed-results">Detailed results</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="marginal-costs-in-portfolio-optimization">
+<h2>Marginal costs in portfolio optimization<a class="headerlink" href="#marginal-costs-in-portfolio-optimization" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html">Marginal costs - basic concept and example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Some-prerequisites">Some prerequisites</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Basic-definitions">Basic definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Parameter-setting">Parameter setting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Set-up-portfolio">Set up portfolio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Perform-the-optimization">Perform the optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Create-charts-and-interpret-the-results">Create charts and interpret the results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samples/marginal_costs/marginal_costs.html#Marginal-costs-and-duals-in-linear-programs">Marginal costs and duals in linear programs</a></li>
+</ul>
+</div>
+</section>
+<section id="multi-commodity-optimization">
+<h2>Multi commodity optimization<a class="headerlink" href="#multi-commodity-optimization" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html">Cross commodity portfolios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html#Some-prerequisites">Some prerequisites</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html#Basics">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html#Define-the-nodes-for-heat-and-power">Define the nodes for heat and power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html#The-overall-portfolio">The overall portfolio</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html#Perform-the-optimization">Perform the optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html#Create-charts-and-interpret-the-results">Create charts and interpret the results</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/cross_commodity/cross_commodity_sample.html#Interpretation">Interpretation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="combined-heat-and-power">
+<h2>Combined Heat and Power<a class="headerlink" href="#combined-heat-and-power" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="samples/combined_heat_power/chp_sample.html">Combined Heat and Power</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/combined_heat_power/chp_sample.html#Technical-Details">Technical Details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/combined_heat_power/chp_sample.html#Input-Parameters">Input Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/combined_heat_power/chp_sample.html#Output-variables">Output variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/combined_heat_power/chp_sample.html#Variable-bounds">Variable bounds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/combined_heat_power/chp_sample.html#Constraints">Constraints</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="samples/combined_heat_power/chp_sample.html#Example-Portfolio">Example Portfolio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="samples/combined_heat_power/chp_sample.html#Imports">Imports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/combined_heat_power/chp_sample.html#Defining-a-portfolio">Defining a portfolio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/combined_heat_power/chp_sample.html#Performing-the-Optimization">Performing the Optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samples/combined_heat_power/chp_sample.html#Plotting-the-Results">Plotting the Results</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="battery-optimization-against-an-order-book">
+<h2>Battery optimization against an order book<a class="headerlink" href="#battery-optimization-against-an-order-book" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="samples/order_book/order_book_battery.html">Discrete supply decisions - example battery in continuous intraday markets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/order_book/order_book_battery.html#Some-prerequisites">Some prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/order_book/order_book_battery.html#Setup-(1)-Basics">Setup (1) Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/order_book/order_book_battery.html#(2)-Order-book">(2) Order book</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/order_book/order_book_battery.html#(3)-Assets">(3) Assets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/order_book/order_book_battery.html#(4)-Setting-up-the-portfolio">(4) Setting up the portfolio</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="samples/order_book/order_book_battery.html#Perform-the-optimization">Perform the optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samples/order_book/order_book_battery.html#Create-charts-and-interpret-the-results">Create charts and interpret the results</a></li>
+</ul>
+</div>
+</section>
+<section id="stochastic-linear-programs">
+<h2>Stochastic Linear Programs<a class="headerlink" href="#stochastic-linear-programs" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html">Stochastic linear program (SLP) to take into account uncertainty</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Some-prerequisites">Some prerequisites</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Basics">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Parameter-setting">Parameter setting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Set-up-portfolio">Set up portfolio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Perform-the-optimization">Perform the optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Create-charts-and-interpret-the-results">Create charts and interpret the results</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Interpretation">Interpretation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Two-stage-vs.-multi-stage-problem:">Two-stage vs. multi-stage problem:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="samples/stochastic_optimization/slp_sample.html#Backtesting:-SLP-vs.-hard-optimization">Backtesting: SLP vs. hard optimization</a></li>
+</ul>
+</div>
+</section>
+<section id="robust-optimization">
+<h2>Robust optimization<a class="headerlink" href="#robust-optimization" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html">Robust optimization - example with szenario analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#Some-prerequisites">Some prerequisites</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#Load-data-from-JSON">Load data from JSON</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#Define-price-samples">Define price samples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#Running-the-optimization">Running the optimization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#(1)-deterministic-optimization-on-the-mean-price">(1) deterministic optimization on the mean price</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#(2)-robust-optimization-on-the-whole-set-of-prices">(2) robust optimization on the whole set of prices</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#Analysis">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#Portfolio-value">Portfolio value</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/robust_optimization/robust_optimization_szenarios.html#Detailed-view">Detailed view</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="split-optimization">
+<h2>Split optimization<a class="headerlink" href="#split-optimization" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="samples/split_optimization/split_optimization.html">Split Optimization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/split_optimization/split_optimization.html#Portfolio-Definition">Portfolio Definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/split_optimization/split_optimization.html#id1">Split Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/split_optimization/split_optimization.html#Full-Optimization">Full Optimization</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="parameter-handling">
+<h2>Parameter handling<a class="headerlink" href="#parameter-handling" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="samples/parameter_management/parameter_management.html">Parameter management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/parameter_management/parameter_management.html#Some-prerequisites-&amp;-basic-definitions">Some prerequisites &amp; basic definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samples/parameter_management/parameter_management.html#Load-sample-portfolio-(and-the-timegrid)">Load sample portfolio (and the timegrid)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="samples/parameter_management/parameter_management.html#Looking-at-parameters-and-setting-them-to-new-values">Looking at parameters and setting them to new values</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samples/parameter_management/parameter_management.html#Sample:-Looping-different-parameters">Sample: Looping different parameters</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="eao.html" class="btn btn-neutral float-left" title="EAO package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="samples/grid%20and%20battery/battery_own_consumption.html" class="btn btn-neutral float-right" title="EAO - easy and straight forward optimization of energy setups" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,604 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sample for optimizing a portfolio that supplies a load minimum share of green energy &mdash; EAO  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Marginal costs - basic concept and example" href="../marginal_costs/marginal_costs.html" />
+    <link rel="prev" title="EAO - easy and straight forward optimization of energy setups" href="../grid%20and%20battery/battery_own_consumption.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EAO
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../eao.html">EAO package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../samples.html">Samples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#simple-start-optimizing-power-consumption-with-battery-pv">Simple start: Optimizing power consumption with battery &amp; PV</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../samples.html#green-ppa-and-structured-downstream-contract">Green PPA and structured downstream contract</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Sample for optimizing a portfolio that supplies a load minimum share of green energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Some-prerequisites">Some prerequisites</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Basic-definitions">Basic definitions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Timegrid">Timegrid</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Define-the-portfolio">Define the portfolio</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#The-nodes-as-the-starting-point">The nodes as the starting point</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#The-downstream-contract">The downstream contract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Green-energy-supply-PPAs:-PV-and-wind-with-a-given-generation-profile">Green energy supply PPAs: PV and wind with a given generation profile</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Add-storage-to-be-able-to-maximize-green-supply">Add storage to be able to maximize green supply</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#The-market">The market</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Putting-everything-together">Putting everything together</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Optimize">Optimize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Interpret-the-results">Interpret the results</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Detailed-results">Detailed results</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#marginal-costs-in-portfolio-optimization">Marginal costs in portfolio optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#multi-commodity-optimization">Multi commodity optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#combined-heat-and-power">Combined Heat and Power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#battery-optimization-against-an-order-book">Battery optimization against an order book</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#stochastic-linear-programs">Stochastic Linear Programs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#robust-optimization">Robust optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#split-optimization">Split optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#parameter-handling">Parameter handling</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EAO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../samples.html">Samples</a></li>
+      <li class="breadcrumb-item active">Sample for optimizing a portfolio that supplies a load minimum share of green energy</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/samples/green_ppa/sample_green_ppa.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Sample-for-optimizing-a-portfolio-that-supplies-a-load-minimum-share-of-green-energy">
+<h1>Sample for optimizing a portfolio that supplies a load minimum share of green energy<a class="headerlink" href="#Sample-for-optimizing-a-portfolio-that-supplies-a-load-minimum-share-of-green-energy" title="Link to this heading"></a></h1>
+<p>In this sample, we define a more realistic example from the power sector: We define a complex sales contract, with an hourly load profile and the obligation to provide at least 80% of the power from green sources. In the portfolio we link it to a wind and a PV PPA along with a battery that allows us to flatten out green production to be abme to meet the target share of green energy.</p>
+</section>
+<section id="Some-prerequisites">
+<h1>Some prerequisites<a class="headerlink" href="#Some-prerequisites" title="Link to this heading"></a></h1>
+<section id="Basic-definitions">
+<h2>Basic definitions<a class="headerlink" href="#Basic-definitions" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
+import pandas as pd
+import datetime as dt
+import os, sys
+from IPython.display import display, HTML
+# in case eao is not installed, set path
+myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
+sys.path.append(myDir)
+addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
+sys.path.append(addDir)
+import eaopack as eao
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Timegrid">
+<h2>Timegrid<a class="headerlink" href="#Timegrid" title="Link to this heading"></a></h2>
+<p>The timegrid defines start and end of the optimization, including discretization and conversion unit from flow (i.e. capacity, here MW) and volume (here MWh)</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>Start = dt.date(2021,1,1)
+End   = dt.date(2021,1,10)
+timegrid = eao.assets.Timegrid(Start, End, freq = &#39;h&#39;, main_time_unit = &#39;h&#39;)
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Define-the-portfolio">
+<h1>Define the portfolio<a class="headerlink" href="#Define-the-portfolio" title="Link to this heading"></a></h1>
+<section id="The-nodes-as-the-starting-point">
+<h2>The nodes as the starting point<a class="headerlink" href="#The-nodes-as-the-starting-point" title="Link to this heading"></a></h2>
+<p>A node reflects a virtual trading point that all assets are connected to. In case of a setup with transport limitations, several nodes may be used. A node always comes with a commodity that is traded at it. Here it’s power. Note that commodity and unit serve for documentation only</p>
+<p>In order to clearly separate “green power” from “grey power” we define two nodes</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>green_sources = eao.assets.Node(&#39;green sources&#39;, commodity= &#39;power&#39;)
+grey_sources  = eao.assets.Node(&#39;grey sources&#39;, commodity= &#39;power&#39;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="The-downstream-contract">
+<h2>The downstream contract<a class="headerlink" href="#The-downstream-contract" title="Link to this heading"></a></h2>
+<p>Assume we have a contract, where we are obliged to</p>
+<ol class="arabic simple">
+<li><p>deliver a given load profile</p></li>
+<li><p>ensure that a fraction (e.g. 80%) of the overall energy comes from green sources (our PPAs). The rest may be provided from the market We assume we have an obligation to deliver at a fixed price.</p></li>
+</ol>
+<p>This is a rather complex asset and we make use of the StructuredAsset. This could be done in a simpler way, but allows us to encapsulate everything in one asset.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>min_fraction_green = 0.8
+sales_fix_price    = 130
+</pre></div>
+</div>
+</div>
+<section id="Starting-with-the-load">
+<h3>Starting with the load<a class="headerlink" href="#Starting-with-the-load" title="Link to this heading"></a></h3>
+<p>The asset is located in it’s own node to ensure delivery is channeled separate from green and grey sources Attention: As the consumer draws power, the load must have negative sign in the contract</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>node_load = eao.assets.Node(&#39;node load&#39;, commodity= &#39;power&#39;)
+load_profile = {&#39;start&#39; : timegrid.timepoints.to_list(),\
+                &#39;values&#39;:  - 5*abs(np.sin(np.pi/22 * timegrid.timepoints.hour.values)     \
+                              + np.sin(0.1 + np.pi/10 * timegrid.timepoints.hour.values)\
+                              + np.sin(0.2 + np.pi/3 * timegrid.timepoints.hour.values) )}
+load         = eao.assets.Contract(name = &#39;load&#39;, min_cap= load_profile, max_cap=load_profile, extra_costs=-sales_fix_price ,nodes = node_load)
+volume_sold  = -load_profile[&#39;values&#39;].sum()
+max_load     = -load_profile[&#39;values&#39;].min()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Green-restriction">
+<h3>Green restriction<a class="headerlink" href="#Green-restriction" title="Link to this heading"></a></h3>
+<p>To link green and grey sources to their delivery counterparts, we define transport assets. The green link implements a “minimum take”, i.e. a minimum volume over the optimization time</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>min_green = {&#39;start&#39;:Start, &#39;end&#39;:End, &#39;values&#39; : volume_sold * min_fraction_green }
+link_green = eao.assets.ExtendedTransport(name = &#39;green link&#39;, min_take = min_green,  min_cap = 0, max_cap = max_load, nodes = [green_sources, node_load])
+link_grey  = eao.assets.Transport(name = &#39;grey link&#39;,   min_cap = 0, max_cap = 20, nodes = [grey_sources, node_load])
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Create-contract-object">
+<h3>Create contract object<a class="headerlink" href="#Create-contract-object" title="Link to this heading"></a></h3>
+<p>To wrap things up, we pack all assets together in a portfolio that defines our downstream contract. This in turn is used to define the new structured asset that connects to the outside world via the sourcing nodes</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>downstream_portfolio = eao.portfolio.Portfolio([load, link_green, link_grey])
+downstream_contract  = eao.portfolio.StructuredAsset(name = &#39;downstream&#39;, nodes = [green_sources, grey_sources], portfolio = downstream_portfolio)
+</pre></div>
+</div>
+</div>
+<p>How does it look like? The network graph explains:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>#eao.network_graphs.create_graph(portf = downstream_portfolio, file_name=&#39;test.eps&#39;, title = &#39;Downstream contract structure&#39;)
+eao.network_graphs.create_graph(portf = downstream_portfolio,title = &#39;Downstream contract structure&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_green_ppa_sample_green_ppa_17_0.svg" src="../../_images/samples_green_ppa_sample_green_ppa_17_0.svg" />
+</div>
+</div>
+</section>
+</section>
+<section id="Green-energy-supply-PPAs:-PV-and-wind-with-a-given-generation-profile">
+<h2>Green energy supply PPAs: PV and wind with a given generation profile<a class="headerlink" href="#Green-energy-supply-PPAs:-PV-and-wind-with-a-given-generation-profile" title="Link to this heading"></a></h2>
+<p>We are using a “contract” as the asset type. This gives us the opportunity to define a detailed minimum and maximum capacity that reflects available generation according to how wind blows and sun shines. We assume those assets are PPAs. Note that the minimum capacity is the same as max. We assume we have the obligation to take off all production at the fix price. They are attached to the “green node”</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PPA_fix_price = 75. # unit: €/MWh
+PV_gen = {&#39;start&#39;: timegrid.timepoints.to_list(),
+          &#39;values&#39;:5*np.maximum(0,-np.cos(2*np.pi/24 * timegrid.timepoints.hour.values))}
+PV         = eao.assets.Contract(name = &#39;PV&#39;, min_cap= PV_gen, max_cap= PV_gen, extra_costs = PPA_fix_price ,nodes = green_sources)
+wind_gen = {&#39;start&#39;: timegrid.timepoints.to_list(),\
+            &#39;values&#39;: 5.*np.random.rand(timegrid.T)}
+wind        = eao.assets.Contract(name = &#39;wind&#39;, min_cap= wind_gen, max_cap= wind_gen, extra_costs = PPA_fix_price, nodes = green_sources)
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Add-storage-to-be-able-to-maximize-green-supply">
+<h2>Add storage to be able to maximize green supply<a class="headerlink" href="#Add-storage-to-be-able-to-maximize-green-supply" title="Link to this heading"></a></h2>
+<p>Green sources are not always available. The storage enables us to flatten green production to match the load The storage is placed at the node “green_sources” so that we ensure there is no mixture of green and grey power. A storage comes with a defined capacity in and out (MW) and storage volume (MWh). Furthermore we define efficiency, costs, etc</p>
+<p>Note that in order to take out computational complexity we define a daily block size. This has the effect that the battery is optimized per day only, going back to start/end fill level each day.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>storage = eao.assets.Storage(name = &#39;battery&#39;, nodes = green_sources, cap_in= 1*max_load, cap_out=1*max_load, size = 4*max_load, cost_in=0.5,cost_out=0.5, eff_in=0.9, block_size=&#39;d&#39;, start_level = 2*max_load, end_level = 2*max_load)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="The-market">
+<h2>The market<a class="headerlink" href="#The-market" title="Link to this heading"></a></h2>
+<p>We may buy and sell energy from/to the spot market at given spot prices. The market is modeled in a simplistic way here, assuming high market depth. If required, more complexity may be added. Note it’s attached to the “grey node”. We also add an external market for surplus green power (sales only)</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>prices = {&#39;spot market&#39;: 50+12.*(np.sin(np.linspace(0.,100., timegrid.T)))}
+prices[&#39;green market&#39;] = prices[&#39;spot market&#39;] + 20.
+spot_market = eao.assets.SimpleContract(name = &#39;spot market&#39;, price = &#39;spot market&#39;,  min_cap = -100, max_cap = 100, nodes= grey_sources)
+green_sales = eao.assets.SimpleContract(name = &#39;green sales&#39;, price = &#39;green market&#39;, min_cap = -100, max_cap = 0,   nodes= green_sources)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Putting-everything-together">
+<h2>Putting everything together<a class="headerlink" href="#Putting-everything-together" title="Link to this heading"></a></h2>
+<p>Add all assets to the portfolio and optimize</p>
+<ol class="arabic simple">
+<li><p>As a portfolio with separate assets. This is the complete structure</p></li>
+</ol>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portfolio_separate = eao.portfolio.Portfolio([ load,link_grey,link_green,   spot_market,  wind, PV,green_sales, storage])
+op_separate = portfolio_separate.setup_optim_problem(prices = prices, timegrid=timegrid)
+res_separate = op_separate.optimize()
+eao.network_graphs.create_graph(portf = portfolio_separate,title = &#39;Complete portfolio with separate assets&#39;)
+#eao.network_graphs.create_graph(portf = portfolio_separate,title = &#39;&#39;, file_name = &#39;full_portfolio.pdf&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_green_ppa_sample_green_ppa_25_0.svg" src="../../_images/samples_green_ppa_sample_green_ppa_25_0.svg" />
+</div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>With the structured downstream contract as a structured asset, hiding some internal mechanics</p></li>
+</ol>
+</section>
+</section>
+<section id="Optimize">
+<h1>Optimize<a class="headerlink" href="#Optimize" title="Link to this heading"></a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portfolio_struct = eao.portfolio.Portfolio([downstream_contract, wind, PV, spot_market, green_sales, storage])
+op_struct = portfolio_struct.setup_optim_problem(prices = prices, timegrid=timegrid)
+res_struct = op_struct.optimize()
+eao.network_graphs.create_graph(portf = portfolio_struct,title = &#39;Complete portfolio with downstream contract&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_green_ppa_sample_green_ppa_28_0.svg" src="../../_images/samples_green_ppa_sample_green_ppa_28_0.svg" />
+</div>
+</div>
+</section>
+<section id="Interpret-the-results">
+<h1>Interpret the results<a class="headerlink" href="#Interpret-the-results" title="Link to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>output = eao.io.extract_output(portfolio_struct, op_struct, res_struct , prices)
+</pre></div>
+</div>
+</div>
+<p>The overall portfolio value is the following (plus an indication that the optimization was successful). In case we want to evaluate how much the promise of 80% renewable energy costs, we can easily recalculate the portcolio, changing this parameter</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(output[&#39;summary&#39;])
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+                 Values
+Parameter
+status       successful
+value      57820.038998
+</pre></div></div>
+</div>
+<section id="Detailed-results">
+<h2>Detailed results<a class="headerlink" href="#Detailed-results" title="Link to this heading"></a></h2>
+<p>Plotting and saving results to file for further inspection</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>eao.io.output_to_file(output,  os.path.join(os.getcwd(), &#39;results.xlsx&#39;))
+display(output[&#39;dispatch&#39;][6:18].round(1))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>downstream (green sources)</th>
+      <th>downstream (grey sources)</th>
+      <th>wind (green sources)</th>
+      <th>PV (green sources)</th>
+      <th>spot market (grey sources)</th>
+      <th>green sales (green sources)</th>
+      <th>battery (green sources)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2021-01-01 06:00:00</th>
+      <td>-9.3</td>
+      <td>-0.0</td>
+      <td>4.7</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>-0.0</td>
+      <td>4.6</td>
+    </tr>
+    <tr>
+      <th>2021-01-01 07:00:00</th>
+      <td>-9.8</td>
+      <td>-2.9</td>
+      <td>2.5</td>
+      <td>1.3</td>
+      <td>2.9</td>
+      <td>-0.0</td>
+      <td>6.0</td>
+    </tr>
+    <tr>
+      <th>2021-01-01 08:00:00</th>
+      <td>-2.7</td>
+      <td>-8.1</td>
+      <td>0.2</td>
+      <td>2.5</td>
+      <td>8.1</td>
+      <td>-0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2021-01-01 09:00:00</th>
+      <td>-4.9</td>
+      <td>-0.0</td>
+      <td>1.5</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>-0.0</td>
+      <td>-0.2</td>
+    </tr>
+    <tr>
+      <th>2021-01-01 10:00:00</th>
+      <td>-0.0</td>
+      <td>-0.3</td>
+      <td>3.6</td>
+      <td>4.3</td>
+      <td>0.3</td>
+      <td>-0.0</td>
+      <td>-7.9</td>
+    </tr>
+    <tr>
+      <th>2021-01-01 11:00:00</th>
+      <td>-0.8</td>
+      <td>-0.0</td>
+      <td>4.6</td>
+      <td>4.8</td>
+      <td>0.0</td>
+      <td>-0.0</td>
+      <td>-8.7</td>
+    </tr>
+    <tr>
+      <th>2021-01-01 12:00:00</th>
+      <td>-2.6</td>
+      <td>-0.0</td>
+      <td>0.9</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>-0.0</td>
+      <td>-3.3</td>
+    </tr>
+    <tr>
+      <th>2021-01-01 13:00:00</th>
+      <td>-5.2</td>
+      <td>-0.0</td>
+      <td>4.4</td>
+      <td>4.8</td>
+      <td>0.0</td>
+      <td>-0.0</td>
+      <td>-4.1</td>
+    </tr>
+    <tr>
+      <th>2021-01-01 14:00:00</th>
+      <td>-3.4</td>
+      <td>-0.0</td>
+      <td>1.5</td>
+      <td>4.3</td>
+      <td>0.0</td>
+      <td>-0.0</td>
+      <td>-2.4</td>
+    </tr>
+    <tr>
+      <th>2021-01-01 15:00:00</th>
+      <td>-1.8</td>
+      <td>-0.0</td>
+      <td>3.4</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>-0.0</td>
+      <td>-5.2</td>
+    </tr>
+    <tr>
+      <th>2021-01-01 16:00:00</th>
+      <td>-5.5</td>
+      <td>-0.0</td>
+      <td>0.2</td>
+      <td>2.5</td>
+      <td>0.0</td>
+      <td>-0.0</td>
+      <td>2.8</td>
+    </tr>
+    <tr>
+      <th>2021-01-01 17:00:00</th>
+      <td>-4.2</td>
+      <td>-0.0</td>
+      <td>1.7</td>
+      <td>1.3</td>
+      <td>0.0</td>
+      <td>-0.0</td>
+      <td>1.2</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
+%matplotlib inline
+# take out complexity of the chart
+output[&#39;dispatch&#39;][&#39;downstream&#39;] = output[&#39;dispatch&#39;][&#39;downstream (green sources)&#39;] +  output[&#39;dispatch&#39;][&#39;downstream (grey sources)&#39;]
+output[&#39;dispatch&#39;].drop([&#39;downstream (green sources)&#39;, &#39;downstream (grey sources)&#39;], axis=1, inplace = True)
+ax = output[&#39;dispatch&#39;].plot(kind=&#39;line&#39;)
+plt.axis(&#39;off&#39;)
+plt.show()
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_green_ppa_sample_green_ppa_35_0.svg" src="../../_images/samples_green_ppa_sample_green_ppa_35_0.svg" />
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../grid%20and%20battery/battery_own_consumption.html" class="btn btn-neutral float-left" title="EAO - easy and straight forward optimization of energy setups" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../marginal_costs/marginal_costs.html" class="btn btn-neutral float-right" title="Marginal costs - basic concept and example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

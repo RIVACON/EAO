@@ -1,0 +1,533 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EAO - easy and straight forward optimization of energy setups &mdash; EAO  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Sample for optimizing a portfolio that supplies a load minimum share of green energy" href="../green_ppa/sample_green_ppa.html" />
+    <link rel="prev" title="Samples" href="../../samples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EAO
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../eao.html">EAO package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../samples.html">Samples</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../samples.html#simple-start-optimizing-power-consumption-with-battery-pv">Simple start: Optimizing power consumption with battery &amp; PV</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">EAO - easy and straight forward optimization of energy setups</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Import-required-packages">Import required packages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Load-data-&amp;-make-assumptions">Load data &amp; make assumptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Optimization">Optimization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Interpretation-of-the-results">Interpretation of the results</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Another-benchmark:-Own-PV">Another benchmark: Own PV</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Putting-everything-together">Putting everything together</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#green-ppa-and-structured-downstream-contract">Green PPA and structured downstream contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#marginal-costs-in-portfolio-optimization">Marginal costs in portfolio optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#multi-commodity-optimization">Multi commodity optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#combined-heat-and-power">Combined Heat and Power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#battery-optimization-against-an-order-book">Battery optimization against an order book</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#stochastic-linear-programs">Stochastic Linear Programs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#robust-optimization">Robust optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#split-optimization">Split optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#parameter-handling">Parameter handling</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EAO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../samples.html">Samples</a></li>
+      <li class="breadcrumb-item active">EAO - easy and straight forward optimization of energy setups</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/samples/grid and battery/battery_own_consumption.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="EAO---easy-and-straight-forward-optimization-of-energy-setups">
+<h1>EAO - easy and straight forward optimization of energy setups<a class="headerlink" href="#EAO---easy-and-straight-forward-optimization-of-energy-setups" title="Link to this heading"></a></h1>
+<section id="Import-required-packages">
+<h2>Import required packages<a class="headerlink" href="#Import-required-packages" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import os, sys
+# in case eao is not installed, set path
+myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
+sys.path.append(myDir)
+addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
+sys.path.append(addDir)
+import eaopack as eao
+import pandas as pd
+import datetime as dt
+import matplotlib.pyplot as plt
+%matplotlib inline
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Load-data-&amp;-make-assumptions">
+<h2>Load data &amp; make assumptions<a class="headerlink" href="#Load-data-&-make-assumptions" title="Link to this heading"></a></h2>
+<p>In this case we load a year of hourly power market data for Germany. Downloaded from smard.de (Bundesnetzagentur | SMARD.de); 01/11/2023 - 01/11/2024. We will use day ahead prices as well as PV production profiles. In addition we will use a standard load profile of German commercial consumers.</p>
+<p>We make some basic assumptions on grid fees for commercial consumers (actual example for 2025 in the medium voltage grid) and define the characteristics on site: yearly consumption, own PV and battery.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>data = pd.read_excel(&#39;DE_dataset.xlsx&#39;)
+data.set_index(&#39;Date&#39;, inplace=True)
+
+### at &gt; 2500 FLH
+grid_fees = {}
+grid_fees[&#39;fix&#39;] = 166000 # €/MW
+grid_fees[&#39;var&#39;] =     13 # €/MWh
+
+######################### settings
+cons    = 500 # MWh # total consumption per year (scaling the profile)
+cap_pv  = 0.25 # MW (1000 flh) capacity of the on-site PV
+battery_data = {} # capacity, size and efficiency of an on-site battery
+battery_data[&#39;cap&#39;]  =  .25 # 250 kW
+battery_data[&#39;size&#39;] = 2 * battery_data[&#39;cap&#39;] # 2 hours
+battery_data[&#39;eff&#39;]  = 0.9 # 90% cycle efficiency
+</pre></div>
+</div>
+</div>
+<p>For the actual optimization we need to do some settings: Defining the time grid for optimization and defining which data to use in our assets.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>######## prepare everything
+## basics
+S = dt.date(2023,11,1)
+E = dt.date(2024,11,1)
+timegrid = eao.Timegrid(S, E, freq = &#39;h&#39;) # hourly
+
+## settings
+input_ts = pd.DataFrame()
+input_ts[&#39;cons&#39;]  = -data[&#39;SLP gewerbe&#39;]*cons
+input_ts[&#39;pv&#39;]    =  data[&#39;pv profile&#39;]*cap_pv
+input_ts[&#39;price&#39;] =  data[&#39;price dah&#39;]
+
+# cast to timegrid
+input_ts = timegrid.prices_to_grid(input_ts)
+</pre></div>
+</div>
+</div>
+<p>Now we define the structure of our optimization problem – our portfolio. The assets may be physical assets such as the battery or contracts such as supply via the grid.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>### Structural setup, distinguishing own assets and supply from the grid
+behind_meter = eao.Node(&#39;behind meter&#39;)
+front_of_meter = eao.Node(&#39;front of meter&#39;)
+
+### Here: No flexibility in our consumption. Easily changed by adjusting min_cap/max_cap
+consumption = eao.assets.SimpleContract(name       = &#39;consumption&#39;,
+                                        nodes      = behind_meter,
+                                        min_cap    = &#39;cons&#39;,
+                                        max_cap    = &#39;cons&#39;)
+### Our own PV module. Also here without flexibility -- easily changed
+pv          = eao.assets.SimpleContract(name       = &#39;pv&#39;,
+                                        nodes      = behind_meter,
+                                        min_cap    = &#39;pv&#39;,
+                                        max_cap    = &#39;pv&#39;)
+### An on-site battery constituting out flexibility
+battery     = eao.assets.Storage(       name       = &#39;battery&#39;,
+                                        nodes      = behind_meter,
+                                        cap_in     = battery_data[&#39;cap&#39;],
+                                        cap_out    = battery_data[&#39;cap&#39;],
+                                        eff_in     = battery_data[&#39;eff&#39;],
+                                        size       = battery_data[&#39;size&#39;],
+                                        start_level= 0.5 * battery_data[&#39;size&#39;],
+                                        end_level  = 0.5 * battery_data[&#39;size&#39;],
+                                        block_size = &#39;d&#39;,   # daily optimization of battery (leaving it 1/2 full every day)
+                                        no_simult_in_out = False) # Important: The battery may now charge and discharge at the same time and
+                                                                  # &quot;burn&quot; power due to efficiency &lt; 100%. This makes computation much faster (no MIP)
+
+### Supply via the grid. Note that we enabling scaling the grid connection -- since grid fees
+#   apply on a yearly basis for the maximum load (which we will minimize utilizing our battery)
+supply  = eao.assets.SimpleContract(    name = &#39;supply&#39;,
+                                        nodes       = front_of_meter,
+                                        price       = &#39;price&#39;,
+                                        extra_costs = .5,  # fee from supplier
+                                        min_cap     = 0,
+                                        max_cap     = 1)
+grid_feedin = eao.assets.Transport(     name   = &#39;grid_out&#39;,  # unlimited feed in capacity
+                                        nodes  = [behind_meter, front_of_meter],
+                                        min_cap = 0,
+                                        max_cap = 1)
+grid_consumption_normed = eao.assets.Transport(name   = &#39;grid_in_normed&#39;,
+                                               nodes  = [front_of_meter, behind_meter],
+                                               costs_const = grid_fees[&#39;var&#39;], # variable grid fees
+                                               min_cap= 0,
+                                               max_cap= 1) # normed capacity (to 1 MW)
+grid_consumption      = eao.assets.ScaledAsset(name       = &#39;grid_in&#39;,
+                                               base_asset = grid_consumption_normed,
+                                               max_scale  = 1000,
+                                               fix_costs  = grid_fees[&#39;fix&#39;]/8760) # yearly fix capacity costs (here scaled to hourly as main time unit)
+### We can feed in our PV own production - here at day ahead prices. If there are feed-in tariffs, price can easily be changed
+feedin     = eao.assets.SimpleContract(name        = &#39;feedin&#39;,
+                                       nodes       = front_of_meter,
+                                       price       = &#39;price&#39;, # assuming no feed in tariff
+                                       min_cap     = -1000,
+                                       max_cap     = 0)
+portf = eao.Portfolio([supply, consumption, grid_feedin, grid_consumption, pv, feedin, battery])
+</pre></div>
+</div>
+</div>
+<p>This is how the portfolio looks like. See below. We could set it up in a simpler way (without distinction into in-front-of-the-meter and behind-the-meter). However, this way everything becomes very explicit in formulation as well as later analysis.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>eao.network_graphs.create_graph(portf)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_grid_and_battery_battery_own_consumption_10_0.png" src="../../_images/samples_grid_and_battery_battery_own_consumption_10_0.png" />
+</div>
+</div>
+</section>
+<section id="Optimization">
+<h2>Optimization<a class="headerlink" href="#Optimization" title="Link to this heading"></a></h2>
+<p>The actual optimization is very simple. We collect all assets in the portfolio object and go. “extract_output” will generate straight-forward tables that can also be exported to Excel. Note that we are optimizing a full year on an hourly basis including a battery. This takes ~1 min.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>out = eao.optimize(portf=portf, timegrid=timegrid, data=input_ts)
+print(out[&#39;summary&#39;])
+eao.io.output_to_file(output=out, file_name=&#39;test.xlsx&#39;) ### All details. Have look into the file
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+                 Values
+Parameter
+status       successful
+value     -29974.687926
+</pre></div></div>
+</div>
+<p>Defining the benchmark to calculate the value of the battery: The same portfolio without the battery</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portf_benchmark = eao.portfolio.Portfolio([supply, consumption, grid_feedin, grid_consumption, pv, feedin])
+out_benchmark   = eao.optimize(portf=portf_benchmark, timegrid=timegrid, data=input_ts)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Interpretation-of-the-results">
+<h2>Interpretation of the results<a class="headerlink" href="#Interpretation-of-the-results" title="Link to this heading"></a></h2>
+<p>Let us analyze the overall costs with and without battery and look into the dispatch behaviour</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Overall costs with battery:    &#39;+ str(round(-out[&#39;summary&#39;].loc[&#39;value&#39;, &#39;Values&#39;])))
+print(&#39;Overall costs without battery: &#39;+ str(round(-out_benchmark[&#39;summary&#39;].loc[&#39;value&#39;, &#39;Values&#39;])))
+print(&#39;So the battery saved us:       &#39;+ str(round(out[&#39;summary&#39;].loc[&#39;value&#39;, &#39;Values&#39;] - out_benchmark[&#39;summary&#39;].loc[&#39;value&#39;, &#39;Values&#39;])))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Overall costs with battery:    29975
+Overall costs without battery: 49494
+So the battery saved us:       19519
+</pre></div></div>
+</div>
+<p>There is a significant saving. But where does the saving come from? Let us look into the details, starting with the overall quantities. See below. Note how quantities are always balanced at nodes. Transport always balances as well – transporting from one node to the other.</p>
+<p>Check out the output “out” in detail. It contains detailed dispatch, cash flows and internal variables such as battery fill levels.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Quantities (MWh) with battery:\n.................................... \n&#39;+str(round(out[&#39;dispatch&#39;].sum())))
+print()
+print(&#39;Quantities (MWh) without battery:\n.................................... \n&#39;+str(round(out_benchmark[&#39;dispatch&#39;].sum())))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Quantities (MWh) with battery:
+....................................
+supply (front of meter)       376.0
+consumption (behind meter)   -500.0
+grid_out (behind meter)      -103.0
+grid_out (front of meter)     103.0
+grid_in (front of meter)     -376.0
+grid_in (behind meter)        376.0
+pv (behind meter)             250.0
+feedin (front of meter)      -103.0
+battery (behind meter)        -23.0
+dtype: float64
+
+Quantities (MWh) without battery:
+....................................
+supply (front of meter)       310.0
+consumption (behind meter)   -500.0
+grid_out (behind meter)       -60.0
+grid_out (front of meter)      60.0
+grid_in (front of meter)     -310.0
+grid_in (behind meter)        310.0
+pv (behind meter)             250.0
+feedin (front of meter)       -60.0
+dtype: float64
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Costs (EUR) with battery:\n.................................... \n&#39;+str(round(out[&#39;DCF&#39;].sum())))
+print(&#39;Total:  &#39;+ str(out[&#39;DCF&#39;].sum().sum().round())+&#39;\n&#39;)
+print(&#39;Costs (EUR) without battery:\n.................................... \n&#39;+str(round(out_benchmark[&#39;DCF&#39;].sum())))
+print(&#39;Total:  &#39;+ str(out_benchmark[&#39;DCF&#39;].sum().sum().round())+&#39;\n&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Costs (EUR) with battery:
+....................................
+supply        -26178.0
+consumption        0.0
+grid_out           0.0
+grid_in       -15948.0
+pv                 0.0
+feedin         12152.0
+battery            0.0
+dtype: float64
+Total:  -29975.0
+
+Costs (EUR) without battery:
+....................................
+supply        -27711.0
+consumption        0.0
+grid_out           0.0
+grid_in       -22788.0
+pv                 0.0
+feedin          1006.0
+dtype: float64
+Total:  -49494.0
+
+</pre></div></div>
+</div>
+<p>There are two contributions:</p>
+<ul class="simple">
+<li><p>supply &amp; PV: we are utilizing the battery to maximize own consumption, mainly to avoid variable grid fees</p></li>
+<li><p>battery &amp; grid: we try to minimize peak load (capacity fee)</p></li>
+<li><p>battery arbitrage: utilizing the battery to consume from grid in cheap hours and feed in in expensive hours</p></li>
+</ul>
+<p>Everything is optimized in a consistent manner in one go!</p>
+<p>The grid connection is a special case: Besides avoiding variable grid fees, we’re sizing the capacity over the course of the year, utilizing the battery to reduce peaks. Here the results. “Value” gives the required capacity:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Grid fixed costs (EUR) with battery:\n.................................................. \n&#39;+str(out[&#39;special&#39;].round(3))+&#39;\n&#39;)
+print(&#39;Grid fixed costs (EUR) without battery:\n.................................................. \n&#39;+str(out_benchmark[&#39;special&#39;].round(3)))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Grid fixed costs (EUR) with battery:
+..................................................
+     asset variable   name  value     costs
+0  grid_in     size  scale  0.066  11058.95
+
+Grid fixed costs (EUR) without battery:
+..................................................
+     asset variable   name  value      costs
+0  grid_in     size  scale  0.113  18754.337
+</pre></div></div>
+</div>
+</section>
+<section id="Another-benchmark:-Own-PV">
+<h2>Another benchmark: Own PV<a class="headerlink" href="#Another-benchmark:-Own-PV" title="Link to this heading"></a></h2>
+<p>To make the picture more complete, let us add another step in the benchmark: to compute the value of the own PV (i.e. a portfolio without PV and battery as the overall starting point)</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portf_start = eao.portfolio.Portfolio([supply, consumption, grid_feedin, grid_consumption, feedin])
+out_start   = eao.optimize(portf=portf_start, timegrid=timegrid, data=input_ts)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Putting-everything-together">
+<h2>Putting everything together<a class="headerlink" href="#Putting-everything-together" title="Link to this heading"></a></h2>
+<p>Let us now put all the data together to analyze the effects of our PV and battery assets. Naturally, we could also do this in Excel, using the output generated by the optimization. This may feel more natural to many users.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## bookkeeping - looking at cost components in different scenarios. Attention - costs are negative numbers
+start  = -out_start[&#39;summary&#39;].loc[&#39;value&#39;, &#39;Values&#39;] # no assets
+with_pv = -out_benchmark[&#39;summary&#39;].loc[&#39;value&#39;, &#39;Values&#39;]  # PV, no battery
+saving_supply = -((out_benchmark[&#39;DCF&#39;][&#39;supply&#39;].sum() + out_benchmark[&#39;DCF&#39;][&#39;feedin&#39;].sum())- (out[&#39;DCF&#39;][&#39;supply&#39;].sum() + out[&#39;DCF&#39;][&#39;feedin&#39;].sum()))
+saving_grid   = -(out_benchmark[&#39;DCF&#39;][&#39;grid_in&#39;].sum() - out[&#39;DCF&#39;][&#39;grid_in&#39;].sum())
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## create a waterfall chart. Thanks for the great module provided by the waterfall_ax team! Very handy
+from waterfall_ax import WaterfallChart
+import warnings
+warnings.filterwarnings(&#39;ignore&#39;)
+import matplotlib.pyplot as plt
+
+# Cumulative values
+step_names = [&#39;Start: grid supply only&#39;, &#39;savings PV&#39;,          &#39;battery: savings supply&#39;,&#39;and grid fees&#39;]
+step_values = [start,                     with_pv,               with_pv-saving_supply,    with_pv-saving_supply-saving_grid]
+last_step_label = &#39;Total&#39;
+color_kwargs = {
+    &#39;c_bar_pos&#39;: &#39;lightgreen&#39;,
+    &#39;c_bar_neg&#39;: &#39;orange&#39;,
+    &#39;c_bar_start&#39;: &#39;grey&#39;,
+    &#39;c_bar_end&#39;: &#39;grey&#39;,
+    &#39;c_text_pos&#39;: &#39;black&#39;,
+    &#39;c_text_neg&#39;: &#39;black&#39;,
+    &#39;c_text_start&#39;: &#39;black&#39;,
+    &#39;c_text_end&#39;: &#39;black&#39;
+}
+# Plot
+waterfall = WaterfallChart(step_values, step_names=step_names, last_step_label=last_step_label)
+wf_ax = waterfall.plot_waterfall(title=&#39;Reducing power costs with own PV and battery&#39;, color_kwargs=color_kwargs)
+plt.ylabel(&#39;yearly costs in EUR&#39;)
+wf_ax.get_yaxis().set_visible(True)
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_grid_and_battery_battery_own_consumption_26_0.png" src="../../_images/samples_grid_and_battery_battery_own_consumption_26_0.png" />
+</div>
+</div>
+<p>… that was it! No rocket science, as you see.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../../samples.html" class="btn btn-neutral float-left" title="Samples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../green_ppa/sample_green_ppa.html" class="btn btn-neutral float-right" title="Sample for optimizing a portfolio that supplies a load minimum share of green energy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

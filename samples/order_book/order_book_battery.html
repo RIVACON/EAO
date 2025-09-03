@@ -1,0 +1,363 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Discrete supply decisions - example battery in continuous intraday markets &mdash; EAO  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Stochastic linear program (SLP) to take into account uncertainty" href="../stochastic_optimization/slp_sample.html" />
+    <link rel="prev" title="Combined Heat and Power" href="../combined_heat_power/chp_sample.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EAO
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../eao.html">EAO package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../samples.html">Samples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#simple-start-optimizing-power-consumption-with-battery-pv">Simple start: Optimizing power consumption with battery &amp; PV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#green-ppa-and-structured-downstream-contract">Green PPA and structured downstream contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#marginal-costs-in-portfolio-optimization">Marginal costs in portfolio optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#multi-commodity-optimization">Multi commodity optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#combined-heat-and-power">Combined Heat and Power</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../samples.html#battery-optimization-against-an-order-book">Battery optimization against an order book</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Discrete supply decisions - example battery in continuous intraday markets</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Some-prerequisites">Some prerequisites</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Setup-(1)-Basics">Setup (1) Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#(2)-Order-book">(2) Order book</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#(3)-Assets">(3) Assets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#(4)-Setting-up-the-portfolio">(4) Setting up the portfolio</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Perform-the-optimization">Perform the optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Create-charts-and-interpret-the-results">Create charts and interpret the results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#stochastic-linear-programs">Stochastic Linear Programs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#robust-optimization">Robust optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#split-optimization">Split optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#parameter-handling">Parameter handling</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EAO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../samples.html">Samples</a></li>
+      <li class="breadcrumb-item active">Discrete supply decisions - example battery in continuous intraday markets</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/samples/order_book/order_book_battery.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Discrete-supply-decisions---example-battery-in-continuous-intraday-markets">
+<h1>Discrete supply decisions - example battery in continuous intraday markets<a class="headerlink" href="#Discrete-supply-decisions---example-battery-in-continuous-intraday-markets" title="Link to this heading"></a></h1>
+<p>We often face discrete execution decisions in energy. Those may be shippings (e.g. LNG) or order books in futures markets. Another example are continuous intraday power or gas markets. Let us focus on the latter in this example of optimizing a battery directly against an intraday power order book.</p>
+<p>Our example: The main market targeted by battery storage (besides reserve markets) is the power intraday market. When power prices are low, the battery is charged, to be discharded at higher power prices. When optimizing a battery against the intraday market, a typical simplification is to assume there is a price for each time interval (such as 15min in central Europe). Following this optimization, we pass the position to our autotrader, that targets to close the position at the assumed price
+curve (or better, naturally).</p>
+<p>This simplification is often good, but does not account for significant features if the market:</p>
+<ul class="simple">
+<li><p>Orders may have to be executed all or nothing. If orders are large as compared to the battery, this cannot be neglected</p></li>
+<li><p>Bid ask spread. There may be a significant price gap between buying and selling</p></li>
+<li><p>Limited liquidity. We may not be able to trade the full dispatch potential of the battery. Particularly for shallow markets and large assets this may have a significant effect</p></li>
+</ul>
+<p>Note how we consistently solve for an exact match between battery dispatch and order execution. If a direct link to an autotrader is established, this enables us to do a direct execution. Naturally there are many aspects to be accounted for in real life from this static demo to a live solution with a changing order and position tracker.</p>
+<section id="Some-prerequisites">
+<h2>Some prerequisites<a class="headerlink" href="#Some-prerequisites" title="Link to this heading"></a></h2>
+<p>Import relevant packages and set links. Note that we set a random seed for the generation of our randomized order book.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
+import pandas as pd
+import datetime as dt
+# in case eao is not installed
+import  os
+import sys
+# in case eao is not installed, set path
+myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
+sys.path.append(myDir)
+addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
+sys.path.append(addDir)
+
+import eaopack as eao
+
+import matplotlib.pyplot as plt
+%matplotlib inline
+np.random.seed(6924)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Setup-(1)-Basics">
+<h2>Setup (1) Basics<a class="headerlink" href="#Setup-(1)-Basics" title="Link to this heading"></a></h2>
+<p>Defining start, end and time grid. Here we optimize over a full day in an hourly granularity. That’s an artificial choice for sake of visual clarity, of course.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>node = eao.assets.Node(&#39;power&#39;)
+S = dt.date(2021,1,1)
+E = dt.date(2021,1,2)
+timegrid = eao.assets.Timegrid(S, E, freq = &#39;h&#39;) # using hours for better visualization
+</pre></div>
+</div>
+</div>
+</section>
+<section id="(2)-Order-book">
+<h2>(2) Order book<a class="headerlink" href="#(2)-Order-book" title="Link to this heading"></a></h2>
+<p>As the first ingredient we generate a randomized order book with orders of various prices, capacities and duration</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># create larger number of orders
+## some time steps, buy &amp; sell
+ob = pd.DataFrame(columns = [&#39;start&#39;, &#39;end&#39;, &#39;capa&#39;, &#39;price&#39;]) # alternative to dict is DataFrame ... converted in asset
+r = dict() # row
+### orders
+# orders with bid/ask spread on base signal
+# base signal
+bs = (30*np.sin(timegrid.I/24*2*np.pi*2)+40).round(0) + 0*np.random.randn(timegrid.T).cumsum()
+prices = {&#39;av&#39;: bs}
+for ii in timegrid.I:
+    tp = timegrid.timepoints[ii]
+    # sell (they sell)
+    for i in range(0,5):
+        r[&#39;start&#39;]   = tp
+        r[&#39;end&#39;]     = tp + pd.Timedelta(np.random.randint(1, 4), &#39;h&#39;)
+        r[&#39;capa&#39;]    = np.random.randint(1, 4)
+        r[&#39;price&#39;]   = bs[ii] + np.random.randint(10, 50)
+        ob.loc[len(ob)] = r
+    # buy (they buy)
+    for i in range(0,5):
+        r[&#39;start&#39;]   = tp
+        r[&#39;end&#39;]     = tp + pd.Timedelta(np.random.randint(1, 4), &#39;h&#39;)
+        r[&#39;capa&#39;]    = -np.random.randint(1, 4)
+        r[&#39;price&#39;]   = bs[ii] + np.random.randint(-10, 10)
+        ob.loc[len(ob)] = r
+<br/></pre></div>
+</div>
+</div>
+<p>The artificial order book shown with their price against time of delivery. The thickness of the orders indicates their sice</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.rcdefaults()
+fig, ax = plt.subplots(1,1,figsize=(10,4), tight_layout = True)
+#out[&#39;dispatch&#39;].loc[:,&#39;battery&#39;].plot(ax = ax)
+for i,r in ob.iterrows():
+    if r[&#39;capa&#39;]&gt;0  :  ax.plot([r[&#39;start&#39;], r[&#39;end&#39;]], [r[&#39;price&#39;],r[&#39;price&#39;]],&#39;b-&#39;,linewidth = abs(r[&#39;capa&#39;]), alpha = 0.3)
+    elif r[&#39;capa&#39;]&lt;0:  ax.plot([r[&#39;start&#39;], r[&#39;end&#39;]], [r[&#39;price&#39;],r[&#39;price&#39;]],&#39;r-&#39;,linewidth = abs(r[&#39;capa&#39;]), alpha = 0.3)
+ax.set_title(&#39;Order book&#39;)
+ax.set_ylabel(&#39;EUR/MWh&#39;)
+# for legend only
+ax.plot([S, S], [0,0],&#39;b-&#39;,linewidth = 5, alpha = 0.3, label = &#39;sell&#39;)
+ax.plot([S, S], [0,0],&#39;r-&#39;,linewidth = 5, alpha = 0.3, label = &#39;buy&#39;)
+ax.legend(loc = &#39;upper right&#39;)
+ax.set_xlim(S, E)
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_order_book_order_book_battery_8_0.png" src="../../_images/samples_order_book_order_book_battery_8_0.png" />
+</div>
+</div>
+</section>
+<section id="(3)-Assets">
+<h2>(3) Assets<a class="headerlink" href="#(3)-Assets" title="Link to this heading"></a></h2>
+<p>Order book: We utilize a specific asset in EAO to implement the behaviour of the order book. Note that the asset has a parameter “full_exec”. Setting it to False, the optimizer is allowed to execute parts of an order – and the optimization problem is continuous and thus very fast (on my laptop 1.4s). In reality most of the orders will still be executed fully due to the nature of the problem setup. If required, the parameter may be set to True, resulting in a more complex MIP as orders must be
+executed fully (6.6s).</p>
+<p>Battery: Our main asset is a battery storage. We choose artificial parameters such as 95% efficiency and a size of 40 MWh as compared to a capacity of 10 MW (a 4h battery). Note that we need to specifc a start and a target fill level.</p>
+<p>Target fill level flex: The target fill level requires some additional thoughts. Left unpenalized, an optimizer will completely drain a battery at the end of the day (in case power prices are positive). In order to avoid this we need to define the value battery power has for us towards the end of the day. We do this by forcing the battery to be left at 50% fill level and adding an “extra source” for power with a market price above the order book. Power drawn from this “extra source” represents
+battery usage from this 50% target fill level.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># order book asset
+order_book = eao.assets.OrderBook(&#39;orders&#39;, node,
+                                    orders    = ob,
+                                    full_exec = True)  # switch to enforce (or not) full order execution
+
+# battery
+efficiency = 0.95
+battery = eao.assets.Storage(&#39;battery&#39;, node, cap_in      = 10,
+                                        cap_out     = 10,
+                                        start_level = 20,
+                                        end_level   = 20,
+                                        eff_in      = efficiency,
+                                        size        = 40,
+                                        no_simult_in_out = True) # at negative prices, we want to ensure the battery does not charge &amp; discharge at the same time to &quot;burn&quot; power
+# last resort - battery end level. May allow battery not to be completely full, &quot;borrowing&quot; in last hours
+extra_power = eao.assets.SimpleContract(&#39;fill_level_adjust&#39;, node,
+                                max_cap   = 10,
+                                min_cap   = 0,
+                                start     = timegrid.timepoints[-2],
+                                end       = E,
+                                price     = &#39;av&#39;,
+                                extra_costs = 20
+                                )
+</pre></div>
+</div>
+</div>
+</section>
+<section id="(4)-Setting-up-the-portfolio">
+<h2>(4) Setting up the portfolio<a class="headerlink" href="#(4)-Setting-up-the-portfolio" title="Link to this heading"></a></h2>
+<p>In EAO we can easily link all assets in a portfolio. By refering to the same node we ensure their dispatch sums to zero.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portf = eao.portfolio.Portfolio([battery, order_book, extra_power])
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Perform-the-optimization">
+<h1>Perform the optimization<a class="headerlink" href="#Perform-the-optimization" title="Link to this heading"></a></h1>
+<p>Once the portfolio is set up, optimization can be called and the output extracted.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>op = portf.setup_optim_problem(prices=prices, timegrid=timegrid)
+res = op.optimize(solver = &#39;SCIP&#39;)
+out = eao.io.extract_output(portf= portf, op=op, res=res)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Create-charts-and-interpret-the-results">
+<h1>Create charts and interpret the results<a class="headerlink" href="#Create-charts-and-interpret-the-results" title="Link to this heading"></a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.rcdefaults()
+fig, ax = plt.subplots(1,1,figsize=(10,4), tight_layout = True)
+for i,r in ob.iterrows():
+    if out[&#39;special&#39;].loc[i,&#39;value&#39;] &gt; 0.95: myal = 1
+    else: myal = 0.05 # executed
+    if   r[&#39;capa&#39;]&gt;0: ax.plot([r[&#39;start&#39;], r[&#39;end&#39;]], [r[&#39;price&#39;],r[&#39;price&#39;]],&#39;b-&#39;,linewidth = abs(r[&#39;capa&#39;]), alpha = myal)
+    elif r[&#39;capa&#39;]&lt;0: ax.plot([r[&#39;start&#39;], r[&#39;end&#39;]], [r[&#39;price&#39;],r[&#39;price&#39;]],&#39;r-&#39;,linewidth = abs(r[&#39;capa&#39;]), alpha = myal)
+ax.set_title(&#39;Executed orders&#39;)
+ax.set_ylabel(&#39;prices of orders EUR/MWh&#39;)
+ax.plot([S, S], [0,0],&#39;b-&#39;,linewidth = 5, alpha = 1, label = &#39;executed sell - we buy&#39;)
+ax.plot([S, S], [0,0],&#39;r-&#39;,linewidth = 5, alpha = 1, label = &#39;executed buy - we sell&#39;)
+ax.set_xlim(S, E)
+ax2 = ax.twinx()
+### show how to manually calculate fill level from dispatch
+# fill_level = -out[&#39;dispatch&#39;].loc[:,&#39;battery&#39;]
+# fill_level[fill_level&gt;0] *= efficiency
+# fill_level = fill_level.cumsum()+20
+### this is the automatic output
+fill_level = out[&#39;internal_variables&#39;][&#39;battery_fill_level&#39;]
+ax2.plot(fill_level, label = &#39;battery fill level&#39;)
+ax2.set_ylabel(&#39;fill level battery in MWh&#39;)
+ax.legend(loc = &#39;upper left&#39;)
+ax2.legend(loc = &#39;upper right&#39;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_order_book_order_book_battery_16_0.png" src="../../_images/samples_order_book_order_book_battery_16_0.png" />
+</div>
+</div>
+<p>In bold color we can observe orders that have been executed. We have successfully combined a battery with a discrete order book consisting of orders that are partly overlapping and come with various prices and sizes.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../combined_heat_power/chp_sample.html" class="btn btn-neutral float-left" title="Combined Heat and Power" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../stochastic_optimization/slp_sample.html" class="btn btn-neutral float-right" title="Stochastic linear program (SLP) to take into account uncertainty" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

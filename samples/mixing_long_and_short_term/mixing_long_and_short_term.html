@@ -1,0 +1,239 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mixing long-term and short-term optimization targets &mdash; EAO  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EAO
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../eao.html">EAO package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../samples.html">Samples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EAO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Mixing long-term and short-term optimization targets</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/samples/mixing_long_and_short_term/mixing_long_and_short_term.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Mixing-long-term-and-short-term-optimization-targets">
+<h1>Mixing long-term and short-term optimization targets<a class="headerlink" href="#Mixing-long-term-and-short-term-optimization-targets" title="Link to this heading"></a></h1>
+<p>In energy, we typically face very short-term optimization tasks (e.g. 15min intervals in power) as well as long-term effects such as saisonality. Bringing both together in optimization can easily make complexity explode – if we optimize all assets on the most granular time grid. In our approach we allow all assets bring along their own time-scale, which may be different from the time-scale that is used on portfolio level.</p>
+<p>In this example we explain the feature using a rather simple example:</p>
+<ul class="simple">
+<li><p>power market with hourly prices that exhibit an hourly as well as a seasonal structure</p></li>
+<li><p>a short-term storage such as a smaller pump storage or a battery that is optimized hourly on a daily basis - but not across more than a week</p></li>
+<li><p>a long-term storage such as a high-volume hydro reservoir that is optimized across the whole seaon on a biweekly basis</p></li>
+</ul>
+</section>
+<section id="Some-prerequisites">
+<h1>Some prerequisites<a class="headerlink" href="#Some-prerequisites" title="Link to this heading"></a></h1>
+<section id="Basics">
+<h2>Basics<a class="headerlink" href="#Basics" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
+import pandas as pd
+import datetime as dt
+# in case eao is not installed
+import os
+import sys
+# in case eao is not installed, set path
+myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
+sys.path.append(myDir)
+addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
+sys.path.append(addDir)
+
+import eaopack as eao
+
+import matplotlib.pyplot as plt
+%matplotlib inline
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Define-portfolio">
+<h2>Define portfolio<a class="headerlink" href="#Define-portfolio" title="Link to this heading"></a></h2>
+<p>We use three different assets:</p>
+<ul class="simple">
+<li><p>Market: a simple contract with a given market price</p></li>
+<li><p>Short-term storage, acting on an hourly basis. We reduce the complexity by enforcing that the optimization is done for every day, but not across weeks</p></li>
+<li><p>Long-term storage acting on a weekly level for the whole season: We reduce complexity by assuming the same (here flat) profile for all hours within two weeks</p></li>
+</ul>
+<p>Note: For sake of clarity in the charts we do the optimization on daily granularity. Finer overall granularity (e.g. hours) is defined on portfolio level in the timegrid</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>start = dt.date(2021,1,1)
+end   = dt.date(2021,12,31)
+
+# the basic setup
+node = eao.assets.Node(&#39;node&#39;)
+timegrid = eao.assets.Timegrid(start, end, freq = &#39;d&#39;)
+market = eao.assets.SimpleContract(name = &#39;market&#39;, price = &#39;price&#39;, nodes = node ,
+                min_cap= -1000., max_cap=1000., start = start, end = end)
+# daily flex
+st = eao.assets.Storage(&#39;ST storage&#39;, nodes = node, \
+        start=start, end=end, size=10, \
+        cap_in=2/24, cap_out=2/24, start_level=5, end_level=5, \
+        block_size= &#39;W&#39;)
+# weekly flex
+lt = eao.assets.Storage(&#39;LT storage&#39;, nodes = node, \
+        start=start, end=end, size=500, \
+        cap_in=2/24, cap_out=2/24, start_level=100, end_level=100, \
+        freq = &#39;14d&#39;)
+
+# price with seasonal and daily pattern
+prices ={&#39;price&#39;: 10*np.sin(np.linspace(0,2*np.pi, timegrid.T)) \
+                + 2*np.sin(np.linspace(0,7*12*np.pi, timegrid.T)) \
+                + 2*np.sin(np.linspace(0,7**24*2*np.pi, timegrid.T))}
+
+portf = eao.portfolio.Portfolio([market, st, lt])
+</pre></div>
+</div>
+</div>
+<p>The below network chart shows the setup of the portfolio.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>eao.network_graphs.create_graph(portf = portf, title = &#39;Simple portfolio example&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_mixing_long_and_short_term_mixing_long_and_short_term_6_0.png" src="../../_images/samples_mixing_long_and_short_term_mixing_long_and_short_term_6_0.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="Perform-the-optimization">
+<h1>Perform the optimization<a class="headerlink" href="#Perform-the-optimization" title="Link to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>op    = portf.setup_optim_problem(prices, timegrid)
+res = op.optimize()
+out = eao.io.extract_output(portf, op, res, prices)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Create-charts-and-interpret-the-results">
+<h1>Create charts and interpret the results<a class="headerlink" href="#Create-charts-and-interpret-the-results" title="Link to this heading"></a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1,2, tight_layout = True, figsize=(12,4))
+out[&#39;dispatch&#39;][[&#39;ST storage&#39;, &#39;LT storage&#39;]].plot(ax = ax[0], style = &#39;-&#39;)
+out[&#39;prices&#39;][&#39;input price: price&#39;].plot(ax = ax[1], style = &#39;-&#39;)
+ax[0].set_title(&#39;power&#39;)
+ax[1].set_title(&#39;power price&#39;)
+plt.show()
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_mixing_long_and_short_term_mixing_long_and_short_term_10_0.png" src="../../_images/samples_mixing_long_and_short_term_mixing_long_and_short_term_10_0.png" />
+</div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

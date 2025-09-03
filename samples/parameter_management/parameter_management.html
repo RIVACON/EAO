@@ -1,0 +1,547 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parameter management &mdash; EAO  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="Split Optimization" href="../split_optimization/split_optimization.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EAO
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../eao.html">EAO package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../samples.html">Samples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#simple-start-optimizing-power-consumption-with-battery-pv">Simple start: Optimizing power consumption with battery &amp; PV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#green-ppa-and-structured-downstream-contract">Green PPA and structured downstream contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#marginal-costs-in-portfolio-optimization">Marginal costs in portfolio optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#multi-commodity-optimization">Multi commodity optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#combined-heat-and-power">Combined Heat and Power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#battery-optimization-against-an-order-book">Battery optimization against an order book</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#stochastic-linear-programs">Stochastic Linear Programs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#robust-optimization">Robust optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#split-optimization">Split optimization</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../samples.html#parameter-handling">Parameter handling</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Parameter management</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Some-prerequisites-&amp;-basic-definitions">Some prerequisites &amp; basic definitions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Load-sample-portfolio-(and-the-timegrid)">Load sample portfolio (and the timegrid)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Looking-at-parameters-and-setting-them-to-new-values">Looking at parameters and setting them to new values</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Sample:-Looping-different-parameters">Sample: Looping different parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EAO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../samples.html">Samples</a></li>
+      <li class="breadcrumb-item active">Parameter management</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/samples/parameter_management/parameter_management.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Parameter-management">
+<h1>Parameter management<a class="headerlink" href="#Parameter-management" title="Link to this heading"></a></h1>
+<section id="Some-prerequisites-&amp;-basic-definitions">
+<h2>Some prerequisites &amp; basic definitions<a class="headerlink" href="#Some-prerequisites-&-basic-definitions" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
+import pandas as pd
+import datetime as dt
+pd.set_option(&quot;mode.chained_assignment&quot;, None)
+# in case eao is not installed
+import os
+import sys
+# in case eao is not installed, set path
+myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
+sys.path.append(myDir)
+addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
+sys.path.append(addDir)
+
+import eaopack as eao
+
+import matplotlib.pyplot as plt
+%matplotlib inline
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Load-sample-portfolio-(and-the-timegrid)">
+<h2>Load sample portfolio (and the timegrid)<a class="headerlink" href="#Load-sample-portfolio-(and-the-timegrid)" title="Link to this heading"></a></h2>
+<p>The portfolio comes prefefined in a JSON. Let us have a look.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>timegrid = eao.serialization.load_from_json(file_name=&#39;timegrid.json&#39;)
+portf    = eao.serialization.load_from_json(file_name=&#39;portfolio_simple_start.json&#39;)
+eao.network_graphs.create_graph(portf)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_parameter_management_parameter_management_4_0.png" src="../../_images/samples_parameter_management_parameter_management_4_0.png" />
+</div>
+</div>
+<p>As we can see. the portfolio is a simple setup with a sourcing possibility and two sales contracts at two locations. For flexibility there is a storage (which we will manipulate in the following)</p>
+</section>
+</section>
+<section id="Looking-at-parameters-and-setting-them-to-new-values">
+<h1>Looking at parameters and setting them to new values<a class="headerlink" href="#Looking-at-parameters-and-setting-them-to-new-values" title="Link to this heading"></a></h1>
+<p>As the next step we look at the parameters that define the portfolio. To this end, EAO provides three routines:</p>
+<ul class="simple">
+<li><p>eao.io.get_params_tree - to retrieve parameters as a dict and the paths to the parameters. To be used mainly with assets &amp; portfolios</p></li>
+<li><p>get_param - to get parameter values using the path</p></li>
+<li><p>set_param - to change the parameters</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>[params, param_dict] = eao.io.get_params_tree(portf)
+for p in params:
+    print(p)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+__class__
+[&#39;assets&#39;, 0, &#39;__class__&#39;]
+[&#39;assets&#39;, 0, &#39;asset_type&#39;]
+[&#39;assets&#39;, 0, &#39;end&#39;]
+[&#39;assets&#39;, 0, &#39;extra_costs&#39;]
+[&#39;assets&#39;, 0, &#39;freq&#39;]
+[&#39;assets&#39;, 0, &#39;max_cap&#39;]
+[&#39;assets&#39;, 0, &#39;min_cap&#39;]
+[&#39;assets&#39;, 0, &#39;name&#39;]
+[&#39;assets&#39;, 0, &#39;nodes&#39;, 0, &#39;__class__&#39;]
+[&#39;assets&#39;, 0, &#39;nodes&#39;, 0, &#39;commodity&#39;]
+[&#39;assets&#39;, 0, &#39;nodes&#39;, 0, &#39;name&#39;]
+[&#39;assets&#39;, 0, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;__class__&#39;]
+[&#39;assets&#39;, 0, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;factor&#39;]
+[&#39;assets&#39;, 0, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;flow&#39;]
+[&#39;assets&#39;, 0, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;volume&#39;]
+[&#39;assets&#39;, 0, &#39;periodicity&#39;]
+[&#39;assets&#39;, 0, &#39;periodicity_duration&#39;]
+[&#39;assets&#39;, 0, &#39;price&#39;]
+[&#39;assets&#39;, 0, &#39;profile&#39;]
+[&#39;assets&#39;, 0, &#39;start&#39;]
+[&#39;assets&#39;, 0, &#39;wacc&#39;]
+[&#39;assets&#39;, 1, &#39;__class__&#39;]
+[&#39;assets&#39;, 1, &#39;asset_type&#39;]
+[&#39;assets&#39;, 1, &#39;end&#39;]
+[&#39;assets&#39;, 1, &#39;extra_costs&#39;]
+[&#39;assets&#39;, 1, &#39;freq&#39;]
+[&#39;assets&#39;, 1, &#39;max_cap&#39;]
+[&#39;assets&#39;, 1, &#39;min_cap&#39;]
+[&#39;assets&#39;, 1, &#39;name&#39;]
+[&#39;assets&#39;, 1, &#39;nodes&#39;, 0, &#39;__class__&#39;]
+[&#39;assets&#39;, 1, &#39;nodes&#39;, 0, &#39;commodity&#39;]
+[&#39;assets&#39;, 1, &#39;nodes&#39;, 0, &#39;name&#39;]
+[&#39;assets&#39;, 1, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;__class__&#39;]
+[&#39;assets&#39;, 1, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;factor&#39;]
+[&#39;assets&#39;, 1, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;flow&#39;]
+[&#39;assets&#39;, 1, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;volume&#39;]
+[&#39;assets&#39;, 1, &#39;periodicity&#39;]
+[&#39;assets&#39;, 1, &#39;periodicity_duration&#39;]
+[&#39;assets&#39;, 1, &#39;price&#39;]
+[&#39;assets&#39;, 1, &#39;profile&#39;]
+[&#39;assets&#39;, 1, &#39;start&#39;]
+[&#39;assets&#39;, 1, &#39;wacc&#39;]
+[&#39;assets&#39;, 2, &#39;__class__&#39;]
+[&#39;assets&#39;, 2, &#39;asset_type&#39;]
+[&#39;assets&#39;, 2, &#39;end&#39;]
+[&#39;assets&#39;, 2, &#39;extra_costs&#39;]
+[&#39;assets&#39;, 2, &#39;freq&#39;]
+[&#39;assets&#39;, 2, &#39;max_cap&#39;]
+[&#39;assets&#39;, 2, &#39;min_cap&#39;]
+[&#39;assets&#39;, 2, &#39;name&#39;]
+[&#39;assets&#39;, 2, &#39;nodes&#39;, 0, &#39;__class__&#39;]
+[&#39;assets&#39;, 2, &#39;nodes&#39;, 0, &#39;commodity&#39;]
+[&#39;assets&#39;, 2, &#39;nodes&#39;, 0, &#39;name&#39;]
+[&#39;assets&#39;, 2, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;__class__&#39;]
+[&#39;assets&#39;, 2, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;factor&#39;]
+[&#39;assets&#39;, 2, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;flow&#39;]
+[&#39;assets&#39;, 2, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;volume&#39;]
+[&#39;assets&#39;, 2, &#39;periodicity&#39;]
+[&#39;assets&#39;, 2, &#39;periodicity_duration&#39;]
+[&#39;assets&#39;, 2, &#39;price&#39;]
+[&#39;assets&#39;, 2, &#39;profile&#39;]
+[&#39;assets&#39;, 2, &#39;start&#39;]
+[&#39;assets&#39;, 2, &#39;wacc&#39;]
+[&#39;assets&#39;, 3, &#39;__class__&#39;]
+[&#39;assets&#39;, 3, &#39;asset_type&#39;]
+[&#39;assets&#39;, 3, &#39;costs_const&#39;]
+[&#39;assets&#39;, 3, &#39;costs_time_series&#39;]
+[&#39;assets&#39;, 3, &#39;efficiency&#39;]
+[&#39;assets&#39;, 3, &#39;end&#39;]
+[&#39;assets&#39;, 3, &#39;freq&#39;]
+[&#39;assets&#39;, 3, &#39;max_cap&#39;]
+[&#39;assets&#39;, 3, &#39;min_cap&#39;]
+[&#39;assets&#39;, 3, &#39;name&#39;]
+[&#39;assets&#39;, 3, &#39;nodes&#39;, 0, &#39;__class__&#39;]
+[&#39;assets&#39;, 3, &#39;nodes&#39;, 0, &#39;commodity&#39;]
+[&#39;assets&#39;, 3, &#39;nodes&#39;, 0, &#39;name&#39;]
+[&#39;assets&#39;, 3, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;__class__&#39;]
+[&#39;assets&#39;, 3, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;factor&#39;]
+[&#39;assets&#39;, 3, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;flow&#39;]
+[&#39;assets&#39;, 3, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;volume&#39;]
+[&#39;assets&#39;, 3, &#39;nodes&#39;, 1, &#39;__class__&#39;]
+[&#39;assets&#39;, 3, &#39;nodes&#39;, 1, &#39;commodity&#39;]
+[&#39;assets&#39;, 3, &#39;nodes&#39;, 1, &#39;name&#39;]
+[&#39;assets&#39;, 3, &#39;nodes&#39;, 1, &#39;unit&#39;, &#39;__class__&#39;]
+[&#39;assets&#39;, 3, &#39;nodes&#39;, 1, &#39;unit&#39;, &#39;factor&#39;]
+[&#39;assets&#39;, 3, &#39;nodes&#39;, 1, &#39;unit&#39;, &#39;flow&#39;]
+[&#39;assets&#39;, 3, &#39;nodes&#39;, 1, &#39;unit&#39;, &#39;volume&#39;]
+[&#39;assets&#39;, 3, &#39;periodicity&#39;]
+[&#39;assets&#39;, 3, &#39;periodicity_duration&#39;]
+[&#39;assets&#39;, 3, &#39;profile&#39;]
+[&#39;assets&#39;, 3, &#39;start&#39;]
+[&#39;assets&#39;, 3, &#39;wacc&#39;]
+[&#39;assets&#39;, 4, &#39;__class__&#39;]
+[&#39;assets&#39;, 4, &#39;asset_type&#39;]
+[&#39;assets&#39;, 4, &#39;block_size&#39;]
+[&#39;assets&#39;, 4, &#39;cap_in&#39;]
+[&#39;assets&#39;, 4, &#39;cap_out&#39;]
+[&#39;assets&#39;, 4, &#39;cost_in&#39;]
+[&#39;assets&#39;, 4, &#39;cost_out&#39;]
+[&#39;assets&#39;, 4, &#39;cost_store&#39;]
+[&#39;assets&#39;, 4, &#39;eff_in&#39;]
+[&#39;assets&#39;, 4, &#39;end&#39;]
+[&#39;assets&#39;, 4, &#39;end_level&#39;]
+[&#39;assets&#39;, 4, &#39;freq&#39;]
+[&#39;assets&#39;, 4, &#39;inflow&#39;]
+[&#39;assets&#39;, 4, &#39;max_store_duration&#39;]
+[&#39;assets&#39;, 4, &#39;name&#39;]
+[&#39;assets&#39;, 4, &#39;no_simult_in_out&#39;]
+[&#39;assets&#39;, 4, &#39;nodes&#39;, 0, &#39;__class__&#39;]
+[&#39;assets&#39;, 4, &#39;nodes&#39;, 0, &#39;commodity&#39;]
+[&#39;assets&#39;, 4, &#39;nodes&#39;, 0, &#39;name&#39;]
+[&#39;assets&#39;, 4, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;__class__&#39;]
+[&#39;assets&#39;, 4, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;factor&#39;]
+[&#39;assets&#39;, 4, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;flow&#39;]
+[&#39;assets&#39;, 4, &#39;nodes&#39;, 0, &#39;unit&#39;, &#39;volume&#39;]
+[&#39;assets&#39;, 4, &#39;periodicity&#39;]
+[&#39;assets&#39;, 4, &#39;periodicity_duration&#39;]
+[&#39;assets&#39;, 4, &#39;price&#39;]
+[&#39;assets&#39;, 4, &#39;profile&#39;]
+[&#39;assets&#39;, 4, &#39;size&#39;]
+[&#39;assets&#39;, 4, &#39;start&#39;]
+[&#39;assets&#39;, 4, &#39;start_level&#39;]
+[&#39;assets&#39;, 4, &#39;wacc&#39;]
+</pre></div></div>
+</div>
+<p>Looking at the parameter tree, note that we extracted the whole tree of parameters in the portfolio. Each entry is a list, that points downwards into the nested object (portfolio –&gt; asset, –&gt; …)</p>
+<p>To access the parameter, we can use any of those entries. Let us concentrate on the storage (asset no. 4):</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>param_dict[&#39;assets&#39;][4]
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;__class__&#39;: &#39;Asset&#39;,
+ &#39;asset_type&#39;: &#39;Storage&#39;,
+ &#39;block_size&#39;: None,
+ &#39;cap_in&#39;: 30,
+ &#39;cap_out&#39;: 30,
+ &#39;cost_in&#39;: 0.2,
+ &#39;cost_out&#39;: 0.2,
+ &#39;cost_store&#39;: 0.0,
+ &#39;eff_in&#39;: 1.0,
+ &#39;end&#39;: None,
+ &#39;end_level&#39;: 5,
+ &#39;freq&#39;: None,
+ &#39;inflow&#39;: 0.0,
+ &#39;max_store_duration&#39;: None,
+ &#39;name&#39;: &#39;storage&#39;,
+ &#39;no_simult_in_out&#39;: False,
+ &#39;nodes&#39;: [{&#39;__class__&#39;: &#39;Node&#39;,
+   &#39;commodity&#39;: None,
+   &#39;name&#39;: &#39;location b&#39;,
+   &#39;unit&#39;: {&#39;__class__&#39;: &#39;Unit&#39;,
+    &#39;factor&#39;: 1.0,
+    &#39;flow&#39;: &#39;MW&#39;,
+    &#39;volume&#39;: &#39;MWh&#39;}}],
+ &#39;periodicity&#39;: None,
+ &#39;periodicity_duration&#39;: None,
+ &#39;price&#39;: None,
+ &#39;profile&#39;: None,
+ &#39;size&#39;: 48,
+ &#39;start&#39;: None,
+ &#39;start_level&#39;: 5,
+ &#39;wacc&#39;: 0.0}
+</pre></div></div>
+</div>
+<p>Now, get direct access via tree entries, e.g. the fill level on start up</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(eao.io.get_param(portf, [&#39;assets&#39;, 4, &#39;start_level&#39;]))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+5
+</pre></div></div>
+</div>
+<p>Going via the complete portfolio is one way. However, it is also possible to directly go via specific assets:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(eao.io.get_param(portf.get_asset(&#39;sales b&#39;), [&#39;price&#39;]))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+price sales b
+</pre></div></div>
+</div>
+<p>Let us manipulate the fill level. Note that this could also be done by diving directly into the object …</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portf.get_asset(&#39;storage&#39;).start_level = 4
+print(portf.get_asset(&#39;storage&#39;).start_level)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+4
+</pre></div></div>
+</div>
+<p>… but setting parameters this way is actually relatively insecure, since this circumvents proper initialization. Therefore, it is better to use the set_param routine:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portf = eao.io.set_param(portf,[&#39;assets&#39;, 4, &#39;start_level&#39;], 6 )
+print(portf.get_asset(&#39;storage&#39;).start_level)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+6
+</pre></div></div>
+</div>
+<p>This routine properly extracts parameters using the serialization machinery and re-initiates the objects. Therefore, all tests are called.</p>
+<p>Let us take a look by setting an invalid parameter. In this case we set the storage size to a value which is smaller than the initial fill level:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
+    portf = eao.io.set_param(portf, [&#39;assets&#39;, 4, &#39;size&#39;], 1.)
+except Exception as error:
+    print(&#39;Not possible&#39;)
+    pass
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Not possible
+</pre></div></div>
+</div>
+<section id="Sample:-Looping-different-parameters">
+<h2>Sample: Looping different parameters<a class="headerlink" href="#Sample:-Looping-different-parameters" title="Link to this heading"></a></h2>
+<p>Here we do a simple loop on the storage size to demonstrate how to manipulate parameters for parameter studies or how to react to live data</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># sample prices
+prices = {&#39;price sourcing&#39;: 5.*np.sin(np.linspace(0.,6., timegrid.T)),
+         &#39;price sales a&#39; : np.ones(timegrid.T)*2.,
+         &#39;price sales b&#39; : 5.+5.*np.sin(np.linspace(0.,6., timegrid.T))  }
+</pre></div>
+</div>
+</div>
+<p>Current storage size</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(eao.io.get_param(portf, [&#39;assets&#39;, 4, &#39;size&#39;]))
+print(eao.io.get_param(portf, [&#39;assets&#39;, 4, &#39;nodes&#39;, 0,&#39;unit&#39;,&#39;volume&#39;]))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+48
+MWh
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>storage_sizes = range(10, 150, 5)
+values = [] # collect results
+
+for my_size in storage_sizes:
+    portf = eao.io.set_param(portf, [&#39;assets&#39;, 4, &#39;size&#39;], my_size )
+    optim_problem  = portf.setup_optim_problem(timegrid = timegrid, prices=prices)
+    result         = optim_problem.optimize()
+    values.append(result.value)
+# output = eao.io.extract_output(portf, optim_problem, result)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize = (12,3))
+plt.bar(storage_sizes, values, width = 4)
+plt.ylim((6000, 7000))
+plt.xlabel(&#39;storage size&#39;)
+plt.ylabel(&#39;total portfolio value&#39;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_parameter_management_parameter_management_24_0.png" src="../../_images/samples_parameter_management_parameter_management_24_0.png" />
+</div>
+</div>
+<p>This is just for demonstration purpose. However - neat to see how the value add of extra storage size decreases.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../split_optimization/split_optimization.html" class="btn btn-neutral float-left" title="Split Optimization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

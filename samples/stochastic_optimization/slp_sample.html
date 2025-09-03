@@ -1,0 +1,392 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stochastic linear program (SLP) to take into account uncertainty &mdash; EAO  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Robust optimization - example with szenario analysis" href="../robust_optimization/robust_optimization_szenarios.html" />
+    <link rel="prev" title="Discrete supply decisions - example battery in continuous intraday markets" href="../order_book/order_book_battery.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            EAO
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../eao.html">EAO package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../samples.html">Samples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#simple-start-optimizing-power-consumption-with-battery-pv">Simple start: Optimizing power consumption with battery &amp; PV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#green-ppa-and-structured-downstream-contract">Green PPA and structured downstream contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#marginal-costs-in-portfolio-optimization">Marginal costs in portfolio optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#multi-commodity-optimization">Multi commodity optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#combined-heat-and-power">Combined Heat and Power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#battery-optimization-against-an-order-book">Battery optimization against an order book</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../samples.html#stochastic-linear-programs">Stochastic Linear Programs</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Stochastic linear program (SLP) to take into account uncertainty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Some-prerequisites">Some prerequisites</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Basics">Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Parameter-setting">Parameter setting</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Set-up-portfolio">Set up portfolio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Perform-the-optimization">Perform the optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Create-charts-and-interpret-the-results">Create charts and interpret the results</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Interpretation">Interpretation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Two-stage-vs.-multi-stage-problem:">Two-stage vs. multi-stage problem:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Backtesting:-SLP-vs.-hard-optimization">Backtesting: SLP vs. hard optimization</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#robust-optimization">Robust optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#split-optimization">Split optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#parameter-handling">Parameter handling</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EAO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../samples.html">Samples</a></li>
+      <li class="breadcrumb-item active">Stochastic linear program (SLP) to take into account uncertainty</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/samples/stochastic_optimization/slp_sample.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Stochastic-linear-program-(SLP)-to-take-into-account-uncertainty">
+<h1>Stochastic linear program (SLP) to take into account uncertainty<a class="headerlink" href="#Stochastic-linear-program-(SLP)-to-take-into-account-uncertainty" title="Link to this heading"></a></h1>
+<p>In this sample we illustrate the usage of SLP for energy portfolios. Our demonstration implements a two-stage problem for a simple portfolio. It may be extended to any portfolio.</p>
+</section>
+<section id="Some-prerequisites">
+<h1>Some prerequisites<a class="headerlink" href="#Some-prerequisites" title="Link to this heading"></a></h1>
+<section id="Basics">
+<h2>Basics<a class="headerlink" href="#Basics" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
+import pandas as pd
+import datetime as dt
+from copy import deepcopy
+# in case eao is not installed
+import os
+import sys
+# in case eao is not installed, set path
+myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
+sys.path.append(myDir)
+addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
+sys.path.append(addDir)
+
+import eaopack as eao
+
+import matplotlib.pyplot as plt
+%matplotlib inline
+np.random.seed(123)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Parameter-setting">
+<h2>Parameter setting<a class="headerlink" href="#Parameter-setting" title="Link to this heading"></a></h2>
+<p>Defining timegrid and main portfolio settings as well as settings for SLP. Note that we do not explain the setup in detail. Please refer to the basic samples to understand the concepts and parameters</p>
+<p>For the SLP part we define the number of samples to be used. Using the parameter ‘sigma’ we can adjust uncertainty in price samples. The parameter ‘start_future’ defines the transition between the two stages of the SLP - present and future. In the two-stage setup we determine the optimal steps in the present given an uncertain future</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>Start = dt.date(2021,1,1)
+End   = dt.date(2021,1,5)
+start_future = Start+dt.timedelta(days=2)
+n_samples    = 200
+sigma        = .5
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Set-up-portfolio">
+<h1>Set up portfolio<a class="headerlink" href="#Set-up-portfolio" title="Link to this heading"></a></h1>
+<ol class="arabic simple">
+<li><p>defining the assets of the portfolio (here a battery and a market with uncertain prices)</p></li>
+<li><p>definition of how prices are sampled</p></li>
+</ol>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>node = eao.assets.Node(&#39;home&#39;)
+timegrid = eao.assets.Timegrid(Start, End, freq = &#39;h&#39;)
+battery  = eao.assets.Storage(name=&#39;battery&#39;, nodes=node, cap_in= 1, cap_out=1, start_level= 24, end_level=24, size= 96)
+market   = eao.assets.SimpleContract(name = &#39;market&#39;, nodes = node, min_cap= -10, max_cap= 10, price = &#39;spot&#39;)
+
+def get_price(start, end, name = &#39;spot&#39;, n_samples = 1, sigma = 0.2, start_future = None, last_sample = None):
+    dates = pd.date_range(start, end, freq =&#39;h&#39;)
+    prices = []
+    n = len(dates)
+    if not start_future is None:
+        Ip = (dates &lt;= pd.Timestamp(start_future))
+    else:
+        Ip = (dates &lt;= dates.max())
+    means     = 2+.5*np.sin(4.+np.linspace(0.,10., n))
+    if last_sample is not None:
+        means[Ip] = last_sample[Ip]
+    for iS in range(0,n_samples):
+        process = np.zeros(n)
+        for i,pres in enumerate(Ip):
+            if not pres:
+                process[i] = process[i-1] + np.random.randn(1)*sigma
+        prices.append({&#39;start&#39; : dates.values, &#39;values&#39;: means + process})
+    return prices
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># define mean price
+mean_price      = get_price(Start, End, sigma = 0.0)[0]
+# standard format needs to be cast onto timegrid
+mean_price_grid = {&#39;spot&#39; :timegrid.values_to_grid(mean_price)}
+
+# create price samples for future (past included, but irrelevant)
+# Note: May want to implement possibility to give only future prices
+sample_prices = get_price(Start, End, n_samples=n_samples, sigma = sigma, start_future = start_future)
+sample_prices_grid = []
+for mys in sample_prices:
+    sample_prices_grid.append( {&#39;spot&#39; :timegrid.values_to_grid(mys)} )
+
+
+portf  = eao.portfolio.Portfolio([battery, market])
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Perform-the-optimization">
+<h1>Perform the optimization<a class="headerlink" href="#Perform-the-optimization" title="Link to this heading"></a></h1>
+<p>For comparison we perform a deterministic optimization on the ‘mean price’ and an SLP on given samples for the future</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>op     = portf.setup_optim_problem(mean_price_grid, timegrid)
+res_hard = op.optimize()
+op_slp = eao.stoch_lin_prog.make_slp(portf = portf,
+                                    optim_problem= deepcopy(op),
+                                    timegrid=timegrid,
+                                    start_future = start_future,
+                                    samples = sample_prices_grid)
+res_slp = op_slp.optimize()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Create-charts-and-interpret-the-results">
+<h1>Create charts and interpret the results<a class="headerlink" href="#Create-charts-and-interpret-the-results" title="Link to this heading"></a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>### check and illustrate results
+out_hard = eao.io.extract_output(portf, op,     res_hard)
+out_slp  = eao.io.extract_output(portf, op_slp, res_slp)
+
+collect = pd.DataFrame()
+collect[&#39;deterministic&#39;] = out_hard[&#39;dispatch&#39;][&#39;battery&#39;]
+collect[&#39;slp (future: mean)&#39;]  = out_slp[&#39;dispatch&#39;][&#39;battery&#39;]
+collect[&#39;start price&#39;] = mean_price_grid[&#39;spot&#39;]
+timegrid.set_restricted_grid(end = start_future)
+for i, ts in enumerate(sample_prices_grid):
+    ts[&#39;spot&#39;][timegrid.restricted.I] = mean_price_grid[&#39;spot&#39;][timegrid.restricted.I]
+    collect[&#39;sample &#39;+&#39;{:1.0f}&#39;.format(i)] = ts[&#39;spot&#39;]
+
+fig, ax = plt.subplots(1,2, tight_layout = True, figsize=(14,4))
+collect[[&#39;deterministic&#39;,&#39;slp (future: mean)&#39;]].plot(ax = ax[0])
+collect[[&#39;start price&#39;, &#39;sample 1&#39;, &#39;sample 2&#39;, &#39;sample 3&#39;, &#39;sample 4&#39;]].plot(ax = ax[1], style = &#39;:&#39;)
+ax[0].axvline(x = start_future, c = &#39;r&#39;)
+ax[1].axvline(x = start_future, c = &#39;r&#39;)
+ax[0].legend(loc = &#39;lower left&#39;)
+ax[1].legend(loc = &#39;lower left&#39;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_stochastic_optimization_slp_sample_11_0.png" src="../../_images/samples_stochastic_optimization_slp_sample_11_0.png" />
+</div>
+</div>
+<section id="Interpretation">
+<h2>Interpretation<a class="headerlink" href="#Interpretation" title="Link to this heading"></a></h2>
+<p>The red line indicates the start of the uncertain future (Jan 3). While for the pending decision (stage 1) prices are certain, for the future (stage 2) we have five price samples that encode the uncertainty. Solutions in this example are relatively similar – but note that the deterministic optimization charges the storage maximally until Jan 03 as future prices are higher than present prices. Since uncertainty is high, the SLP solution starts discharching earlier, as future prices may be higher
+today but are uncertain.</p>
+</section>
+<section id="Two-stage-vs.-multi-stage-problem:">
+<h2>Two-stage vs. multi-stage problem:<a class="headerlink" href="#Two-stage-vs.-multi-stage-problem:" title="Link to this heading"></a></h2>
+<p>In our implementation we provide a formulation of a two-stage SLP generically for any portfolio structure. For the two-stage case problems can typically be handled and often already provide a good appoximation. For the multi-stage case we believe that it will be necessary to resort to numerical approximations, strategies that are specific to the given portfolio or others such as methods from machine learning. Providing a solution to the SLP for a relevant problem class could be a valuable
+research thread for further work.</p>
+</section>
+</section>
+<section id="Backtesting:-SLP-vs.-hard-optimization">
+<h1>Backtesting: SLP vs. hard optimization<a class="headerlink" href="#Backtesting:-SLP-vs.-hard-optimization" title="Link to this heading"></a></h1>
+<p>We’re backtesting the decisions of the hard and SLP decision by sampling over future price outcomes. Naturally, this backtest is more of an illustration for this specific example.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>n_test = 1000 # number of samples for backtesting
+# decisions to fix (hard and SLP)
+fix_slp  = {&#39;I&#39;: start_future, &#39;x&#39;: res_slp.x}
+fix_hard = {&#39;I&#39;: start_future, &#39;x&#39;: res_hard.x}
+# draw random prices and perform optimization for future
+sample_prices = get_price(Start, End, n_samples=n_test, sigma = sigma, start_future = start_future)
+values_slp  = []
+values_hard = []
+for mys in sample_prices:
+    my_price = {&#39;spot&#39; :timegrid.values_to_grid(mys)}
+    op_test_hard = portf.setup_optim_problem(my_price, timegrid, fix_time_window=fix_hard)
+    op_test_slp = portf.setup_optim_problem(my_price, timegrid, fix_time_window=fix_slp)
+    res_test_hard = op_test_hard.optimize()
+    res_test_slp  = op_test_slp.optimize()
+    values_slp.append(res_test_slp.value)
+    values_hard.append(res_test_hard.value)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Mean portfolio value hard optimization: &#39;+&#39;{:2.2f}&#39;.format(np.asarray(values_hard).mean()))
+print(&#39;Mean portfolio value SLP optimization: &#39;+&#39;{:2.2f}&#39;.format(np.asarray(values_slp).mean()))
+
+print(&#39;Variance portfolio value hard optimization: &#39;+&#39;{:2.2f}&#39;.format(np.asarray(values_hard).var()))
+print(&#39;Variance portfolio value SLP optimization: &#39;+&#39;{:2.2f}&#39;.format(np.asarray(values_slp).var()))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Mean portfolio value hard optimization: 67.53
+Mean portfolio value SLP optimization: 68.01
+Variance portfolio value hard optimization: 605.14
+Variance portfolio value SLP optimization: 497.74
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(2,1, tight_layout = True, figsize=(8,4), sharex = &#39;col&#39;)
+ax[0].hist(np.asarray(values_hard), bins = 20)
+ax[1].hist(np.asarray(values_slp), bins = 20)
+ax[0].set_title(&#39;hard optimization&#39;)
+ax[1].set_xlabel(&#39;portfolio value&#39;)
+ax[1].set_title(&#39;SLP optimization&#39;)
+ax[0].axvline(x = np.asarray(values_hard).mean(), c = &#39;r&#39;, label = &#39;mean&#39;)
+ax[1].axvline(x = np.asarray(values_slp).mean(), c = &#39;r&#39;)
+ax[0].legend()
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_stochastic_optimization_slp_sample_16_0.png" src="../../_images/samples_stochastic_optimization_slp_sample_16_0.png" />
+</div>
+</div>
+<p>The comparison shows only relatively small differences in the value. However, this was to be expected, since hard and SLP decisions only differed in a small timeframe for the immediate future. Variances differ more significantly, as also the histograms show.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../order_book/order_book_battery.html" class="btn btn-neutral float-left" title="Discrete supply decisions - example battery in continuous intraday markets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../robust_optimization/robust_optimization_szenarios.html" class="btn btn-neutral float-right" title="Robust optimization - example with szenario analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
