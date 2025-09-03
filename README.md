@@ -1,6 +1,11 @@
 
 [![CI](https://github.com/RIVACON/EAO/actions/workflows/unittests_doc.yml/badge.svg)](https://github.com/RIVACON/EAO/actions/workflows/unittests_doc.yml)
 
+[![documentation](https://img.shields.io/badge/-documentation-blue.svg)](https://rivacon.github.io/EAO/)
+
+
+[![RIVACON](https://img.shields.io/badge/powered%20by-RIVACON-lightgrey.svg)](https://www.rivacon.com/en/)
+
 # The Energy Asset Optimization (EAO) package
 
 The EAO package is a modular Python framework, designed to enable practitioners to use, build and optimize energy and commodity trading portfolios using linear or mixed integer programming as well as stochastic linear programming. It provides an implementation of

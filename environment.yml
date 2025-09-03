@@ -8,6 +8,7 @@ channels:
 dependencies:
   - python
   - pip
+  - pandoc  # Required to build documentation
   - pip:
     - matplotlib
     - numpy
@@ -19,3 +20,4 @@ dependencies:
     - cvxopt
     - openpyxl
     - nbsphinx
+    - sphinx_rtd_theme  # required to build documentation
