@@ -26,6 +26,7 @@ jobs:
 
       - name: Run tests with pytest-cov
         run: |
-          conda init
+          conda init bash
+          source ~/.bashrc
           conda activate eao_env
           pytest --cov=. --cov-report=json:coverage.json
