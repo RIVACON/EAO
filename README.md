@@ -2,7 +2,7 @@
 [![documentation](https://img.shields.io/badge/-documentation-blue.svg)](https://rivacon.github.io/EAO/)
 ![Static Badge](https://img.shields.io/badge/License%20PLACEHOLDER-yellow)
 ![Test Coverage](.github/badges/coverage-badge.svg)
-![Test Success](.github/badges/test-badge.svg)
+![Test Success](.github/badges/tests-badge.svg)
 [![RIVACON](https://img.shields.io/badge/powered%20by-RIVACON-lightgrey.svg)](https://www.rivacon.com/en/)
 
 # The Energy Asset Optimization (EAO) package
