@@ -30,3 +30,18 @@ jobs:
           source ~/.bashrc
           conda activate eao_env
           pytest --cov=. --cov-report=json:coverage.json
+
+
+      - name: Create Test Coverage Badge
+        uses: MeloZ/Simple-Action-for-Pytest-Coverage@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          badge_path: 'coverage-badge.svg'
+
+      - name: Commit Badge to Repository
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add coverage-badge.svg
+          git commit -m "Aggiornato il badge di copertura"
+          git push
