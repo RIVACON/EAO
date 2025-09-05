@@ -26,6 +26,7 @@ jobs:
           use-only-actions-cli: true
 
       - name: Run tests with pytest-cov
+        id: run_tests_and_coverage
         continue-on-error: true
         run: |
           conda init bash
@@ -33,15 +34,13 @@ jobs:
           conda activate eao_env
           pytest --cov=. --cov-report=json:coverage.json
 
-      - name: Set Test Status (Passed)
-        if: ${{ success() }}
+      - name: Set Test Status
         run: |
+            if [ "${{ steps.run_tests_and_coverage.outcome }}" == "success" ]; then
               echo '{"status": "passed"}' > test_status.json
-
-      - name: Set Test Status (Failed)
-        if: ${{ failure() }}
-        run: |
+            else
               echo '{"status": "failed"}' > test_status.json
+            fi
 
       - name: Create Test Coverage Badge
         run: python .github/badges/generate_cov_and_test_badges.py
