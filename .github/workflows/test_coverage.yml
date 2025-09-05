@@ -26,5 +26,22 @@ jobs:
 
       - name: Run tests with pytest-cov
         run: |
+          conda init
           conda activate eao_env
           pytest --cov=. --cov-report=json:coverage.json
+
+      - name: Create Coverage Badge
+        uses: jaywcjlove/coverage-badges-action@v1.1.2
+        with:
+          branch: main
+          gist_id: 8c9161e49c2043ddc964034a355cc05a
+          gist_token: ${{ secrets.GIST_TOKEN }}
+          filename: coverage-badge.svg
+
+      - name: Commit Badge to Repository
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add coverage-badge.svg
+          git commit -m "Updating covering badge"
+          git push
