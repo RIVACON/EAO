@@ -42,3 +42,4 @@ doc/source/samples/power_and_heat/portf.json
 doc/source/samples/power_and_heat/speicher.json
 .vscode/settings.json
 coverage.json
+.coverage

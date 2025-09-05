@@ -1,0 +1,29 @@
+name: Test Coverage with Conda
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          miniconda-version: "latest"
+          python-version: "3.12"
+          activate-environment: eao_env
+          environment-file: environment.yml
+          use-only-actions-cli: true
+
+      - name: Run tests with pytest-cov
+        run: |
+          conda activate eao_env
+          pytest --cov=. --cov-report=json:coverage.json

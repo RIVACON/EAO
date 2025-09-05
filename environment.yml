@@ -13,8 +13,8 @@ dependencies:
   - python==3.12
   - pip
   - pandoc  # Required to build documentation
+  - pytest
   - pytest-cov
-  - scip
   - pip:
     - matplotlib
     - numpy
@@ -24,6 +24,7 @@ dependencies:
     - sphinx
     - cvxpy
     - cvxopt
+    - scip
     - openpyxl
     - nbsphinx
     - sphinx_rtd_theme  # required to build documentation
