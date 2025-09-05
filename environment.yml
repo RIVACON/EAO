@@ -1,14 +1,20 @@
 # generate from notebook: !conda env export > environment.yml
-name: python
+
+# REMARK: file manually modified to accomodate some latest updates.
+# If this file is supposed to be automatically generated, then the generator
+# correctness must be checked to ensure the same output is produced.
+name: eao_env
 
 channels:
     - conda-forge
     - defaults
 
 dependencies:
-  - python
+  - python==3.12
   - pip
   - pandoc  # Required to build documentation
+  - pytest-cov
+  - scip
   - pip:
     - matplotlib
     - numpy
