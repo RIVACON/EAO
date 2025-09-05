@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feature/experimental_bp
+      - develop
 
 jobs:
   run-tests:
@@ -31,13 +32,24 @@ jobs:
           conda activate eao_env
           pytest --cov=. --cov-report=json:coverage.json
 
+      - name: Set Test Status (Passed)
+        if: ${{ success() }}
+        run: |
+              echo '{"status": "passed"}' > test_status.json
+
+      - name: Set Test Status (Failed)
+        if: ${{ failure() }}
+        run: |
+              echo '{"status": "failed"}' > test_status.json
+
       - name: Create Test Coverage Badge
-        run: python generate_coverage_badge.py
+        run: python .github/badges/generate_cov_and_test_badges.py
+
 
       - name: Commit Badge to Repository
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add coverage-badge.svg
+          git add .github/badges/coverage-badge.svg .github/badges/tests-badge.svg
           git commit -m "Updating coverage badge"
           git push
