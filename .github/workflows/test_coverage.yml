@@ -3,7 +3,8 @@ name: Test Coverage with Conda
 on:
   push:
     branches:
-      - experimental_bp
+      - main
+      - feature/experimental_bp
 
 jobs:
   run-tests:
