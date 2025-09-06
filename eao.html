@@ -1440,8 +1440,9 @@ here specific types may be defined:</p>
 Alternative: ‘robust’, maximizing the minimum DCF across given price samples</p></li>
 <li><p><strong>samples</strong> (<em>List</em>) – Samples to be used in specific optimization targets
 - Robust optimization: list of costs arrays (maximizing minimal DCF)</p></li>
-<li><p><strong>interface</strong> (<em>str</em><em>, </em><em>optional</em>) – Chosen interface architecture. Defaults to ‘cvxpy’.</p></li>
-<li><p><strong>solver</strong> (<em>str</em><em>, </em><em>optional</em>) – Solver for interface. Defaults to None</p></li>
+<li><p><strong>interface</strong> (<em>str</em><em>, </em><em>optional</em>) – Chosen interface architecture. Defaults to ‘cvxpy’. “ortools” also possible.</p></li>
+<li><p><strong>solver</strong> (<em>str</em><em>, </em><em>optional</em>) – Solver for interface. Defaults to None, in which case SCIP is utilized (currently best experience)
+choose “CVXPY” to let CVXPY decide (with interface “cvxpy”)</p></li>
 <li><p><strong>make_soft_problem</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, relax the boolean variables and allow float values instead. Defaults to False</p></li>
 </ul>
 </dd>
