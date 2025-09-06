@@ -33,6 +33,6 @@ dependencies:
 #    - cvxopt
 #    - scip
 #    - openpyxl
-    - sphinx
-    - nbsphinx
-    - sphinx_rtd_theme  # required to build documentation
+#    - sphinx
+#    - nbsphinx
+#    - sphinx_rtd_theme  # required to build documentation
