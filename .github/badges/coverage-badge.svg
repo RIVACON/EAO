@@ -1,6 +1,6 @@
 
-<svg xmlns="http://www.w3.org/2000/svg" width="105" height="20" role="img" aria-label="Coverage: 93%">
-    <title>Coverage: 93%</title>
+<svg xmlns="http://www.w3.org/2000/svg" width="105" height="20" role="img" aria-label="Coverage: 94%">
+    <title>Coverage: 94%</title>
     <linearGradient id="s" x2="0" y2="100%">
         <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
         <stop offset="1" stop-opacity=".1"/>
@@ -16,7 +16,7 @@
     <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="11px">
         <text aria-hidden="true" x="35" y="15" fill="#010101" fill-opacity=".3">coverage</text>
         <text x="35" y="14">coverage</text>
-        <text aria-hidden="true" x="87.5" y="15" fill="#010101" fill-opacity=".3">93%</text>
-        <text x="87.5" y="14">93%</text>
+        <text aria-hidden="true" x="87.5" y="15" fill="#010101" fill-opacity=".3">94%</text>
+        <text x="87.5" y="14">94%</text>
     </g>
 </svg>
