@@ -24,3 +24,9 @@ And an extensive technical report here:
 To install:
 pip install eaopack
 
+
+Please feel free to contact us if you have questions or if you are interested in using EAO:
+['Contact'](https://rivacon.com/kontakt/)
+
+
+['Impressum'](https://rivacon.com/impressum/) 
