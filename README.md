@@ -23,8 +23,7 @@ Please feel free to contact us if you have questions or if you are interested in
 
 To install: pip install eaopack
 
-<span style="font-size: smaller;">
-[`Impressum`](https://rivacon.com/impressum/) 
+-----------------------------------------------------
+[`Impressum`](https://rivacon.com/impressum/)  
 (C) 2025 Rivacon
-</span>
 
