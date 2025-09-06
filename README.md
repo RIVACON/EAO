@@ -15,18 +15,16 @@ The EAO package is a modular Python framework, designed to enable practitioners 
 
 We found that the approach is useful for modeling very different problem settings, such as decentral and renewable power generation, green power supply and PPAs and sector coupling in ad-hoc analysis, market modeling or daily operation.
 
-You can find the documentation along with several sample notebooks here:
-[`EAO documentation`](https://RIVACON.github.io/EAO)
+Further information:
+ - documentation along with several sample notebooks: [`EAO documentation`](https://RIVACON.github.io/EAO) 
+ - extensive technical report: [`Report`](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3842822)
 
-And an extensive technical report here:
-[`Report`](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3842822)
+Please feel free to contact us if you have questions or if you are interested in using EAO: [`Contact`](https://rivacon.com/kontakt/)
 
-To install:
-pip install eaopack
+To install: pip install eaopack
 
+<span style="font-size: smaller;">
+[`Impressum`](https://rivacon.com/impressum/) 
+(C) 2025 Rivacon
+</span>
 
-Please feel free to contact us if you have questions or if you are interested in using EAO:
-['Contact'](https://rivacon.com/kontakt/)
-
-
-['Impressum'](https://rivacon.com/impressum/) 
