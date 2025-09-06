@@ -193,10 +193,10 @@ class OptimProblem:
         self.mapping.set_index('new_idx', inplace = True)
 
 
-    def optimize(self, target = 'value',
-                       samples = None,
+    def optimize(self, target        = 'value',
+                       samples       = None,
                        interface:str = 'cvxpy', 
-                       solver = None,
+                       solver        = None,  
                        make_soft_problem=False,
                        solver_params=None)->Results:
         """ optimize the optimization problem
@@ -206,8 +206,9 @@ class OptimProblem:
                                            Alternative: 'robust', maximizing the minimum DCF across given price samples
             samples (List): Samples to be used in specific optimization targets
                             - Robust optimization: list of costs arrays (maximizing minimal DCF)
-            interface (str, optional): Chosen interface architecture. Defaults to 'cvxpy'.
-            solver (str, optional): Solver for interface. Defaults to None
+            interface (str, optional): Chosen interface architecture. Defaults to 'cvxpy'. "ortools" also possible.
+            solver (str, optional): Solver for interface. Defaults to None, in which case SCIP is utilized (currently best experience)
+                                    choose "CVXPY" to let CVXPY decide (with interface "cvxpy")
             make_soft_problem (bool, optional): If true, relax the boolean variables and allow float values instead. Defaults to False
         """
         assert np.all(self.l <= self.u), 'Error. Lower bounds must be smaller or equal to upper bounds'
@@ -230,6 +231,11 @@ class OptimProblem:
 
         if interface == 'cvxpy':
             import cvxpy as CVX
+            ########### default solver
+            if solver is None: solver = "SCIP"  # setting SCIP as default solver - currently best experience
+            elif solver.upper() == "CVXPY":
+                solver = None # let CVXPY decide
+
             # reformulate boolean var list - backwards compatibility
             if isMIP:
                 if (CVX.__version__>='1.6'): my_bools = (my_bools,)
@@ -311,15 +317,15 @@ class OptimProblem:
                 objective = DCF_min
             else:
                 raise NotImplementedError('Target function -- '+target+' -- not implemented')
-
-
             prob = CVX.Problem(CVX.Maximize(objective), constraints)
-
+          
             if solver is None:
                 prob.solve()
             else:
-                prob.solve(solver = getattr(CVX, solver))
-                
+                inst_solv = CVX.installed_solvers()
+                if not solver in inst_solv:
+                    raise ValueError('Solver '+solver+' not installed. Installed solvers are: '+str(inst_solv))
+                prob.solve(solver = getattr(CVX, solver))                
 
             if prob.status == 'optimal':
                 # print("Status: " +prob.status)
