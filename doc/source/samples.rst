@@ -41,6 +41,21 @@ Multi commodity optimization
 
    samples/cross_commodity/cross_commodity_sample
 
+
+Split optimization (to speed up large problems)
+-----------------------------------------------
+
+.. toctree:: 
+
+   samples/split_optimization/split_optimization
+
+Mixing long-term (e.g. seasonal) and short-term storages (e.g. battery)
+
+.. toctree:: 
+
+   samples/mixing_long_and_short_term/mixing_long_and_short_term
+   
+
 Combined Heat and Power
 ----------------------------
 
@@ -71,13 +86,6 @@ Robust optimization
 
    samples/robust_optimization/robust_optimization_szenarios
 
-
-Split optimization
-------------------
-
-.. toctree:: 
-
-   samples/split_optimization/split_optimization
 
 
 Parameter handling
