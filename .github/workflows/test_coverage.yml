@@ -50,6 +50,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git pull
           git add .github/badges/coverage-badge.svg .github/badges/tests-badge.svg
           git commit -m "Updating coverage badge" || true 
           git push
