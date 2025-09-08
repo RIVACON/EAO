@@ -25,8 +25,7 @@ jobs:
           environment-file: environment.yml
           use-only-actions-cli: true
 
-      - name: Run tests with pytest-cov
-        id: run_tests_and_coverage
+      - name: Initialize conda and build the docs
         continue-on-error: true
         run: |
           conda init bash
@@ -34,10 +33,7 @@ jobs:
           conda activate eao_env
           conda install pandoc
           pip install sphinx nbsphinx sphinx_rtd_theme
-
-
-      - name: Generate the documentation
-        run: sphinx-build -b html doc/source/ doc/build
+          sphinx-build -b html doc/source/ doc/build
 
       - name: Upload it into gh-pages
         env:
