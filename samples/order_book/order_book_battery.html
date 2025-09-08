@@ -124,23 +124,23 @@ curve (or better, naturally).</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
-import pandas as pd
-import datetime as dt
-# in case eao is not installed
-import  os
-import sys
-# in case eao is not installed, set path
-myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
-sys.path.append(myDir)
-addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
-sys.path.append(addDir)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
+<span class="c1"># in case eao is not installed</span>
+<span class="kn">import</span><span class="w">  </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="c1"># in case eao is not installed, set path</span>
+<span class="n">myDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">myDir</span><span class="p">)</span>
+<span class="n">addDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../../../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addDir</span><span class="p">)</span>
 
-import eaopack as eao
+<span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
 
-import matplotlib.pyplot as plt
-%matplotlib inline
-np.random.seed(6924)
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">6924</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -152,10 +152,10 @@ np.random.seed(6924)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>node = eao.assets.Node(&#39;power&#39;)
-S = dt.date(2021,1,1)
-E = dt.date(2021,1,2)
-timegrid = eao.assets.Timegrid(S, E, freq = &#39;h&#39;) # using hours for better visualization
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;power&#39;</span><span class="p">)</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">E</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">timegrid</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Timegrid</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;h&#39;</span><span class="p">)</span> <span class="c1"># using hours for better visualization</span>
 </pre></div>
 </div>
 </div>
@@ -167,31 +167,31 @@ timegrid = eao.assets.Timegrid(S, E, freq = &#39;h&#39;) # using hours for bette
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># create larger number of orders
-## some time steps, buy &amp; sell
-ob = pd.DataFrame(columns = [&#39;start&#39;, &#39;end&#39;, &#39;capa&#39;, &#39;price&#39;]) # alternative to dict is DataFrame ... converted in asset
-r = dict() # row
-### orders
-# orders with bid/ask spread on base signal
-# base signal
-bs = (30*np.sin(timegrid.I/24*2*np.pi*2)+40).round(0) + 0*np.random.randn(timegrid.T).cumsum()
-prices = {&#39;av&#39;: bs}
-for ii in timegrid.I:
-    tp = timegrid.timepoints[ii]
-    # sell (they sell)
-    for i in range(0,5):
-        r[&#39;start&#39;]   = tp
-        r[&#39;end&#39;]     = tp + pd.Timedelta(np.random.randint(1, 4), &#39;h&#39;)
-        r[&#39;capa&#39;]    = np.random.randint(1, 4)
-        r[&#39;price&#39;]   = bs[ii] + np.random.randint(10, 50)
-        ob.loc[len(ob)] = r
-    # buy (they buy)
-    for i in range(0,5):
-        r[&#39;start&#39;]   = tp
-        r[&#39;end&#39;]     = tp + pd.Timedelta(np.random.randint(1, 4), &#39;h&#39;)
-        r[&#39;capa&#39;]    = -np.random.randint(1, 4)
-        r[&#39;price&#39;]   = bs[ii] + np.random.randint(-10, 10)
-        ob.loc[len(ob)] = r
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create larger number of orders</span>
+<span class="c1">## some time steps, buy &amp; sell</span>
+<span class="n">ob</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="s1">&#39;capa&#39;</span><span class="p">,</span> <span class="s1">&#39;price&#39;</span><span class="p">])</span> <span class="c1"># alternative to dict is DataFrame ... converted in asset</span>
+<span class="n">r</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="c1"># row</span>
+<span class="c1">### orders</span>
+<span class="c1"># orders with bid/ask spread on base signal</span>
+<span class="c1"># base signal</span>
+<span class="n">bs</span> <span class="o">=</span> <span class="p">(</span><span class="mi">30</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">timegrid</span><span class="o">.</span><span class="n">I</span><span class="o">/</span><span class="mi">24</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="mi">40</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+<span class="n">prices</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;av&#39;</span><span class="p">:</span> <span class="n">bs</span><span class="p">}</span>
+<span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">I</span><span class="p">:</span>
+    <span class="n">tp</span> <span class="o">=</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">timepoints</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
+    <span class="c1"># sell (they sell)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">):</span>
+        <span class="n">r</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span>   <span class="o">=</span> <span class="n">tp</span>
+        <span class="n">r</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span>     <span class="o">=</span> <span class="n">tp</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s1">&#39;h&#39;</span><span class="p">)</span>
+        <span class="n">r</span><span class="p">[</span><span class="s1">&#39;capa&#39;</span><span class="p">]</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">r</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span>   <span class="o">=</span> <span class="n">bs</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="n">ob</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">ob</span><span class="p">)]</span> <span class="o">=</span> <span class="n">r</span>
+    <span class="c1"># buy (they buy)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">):</span>
+        <span class="n">r</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span>   <span class="o">=</span> <span class="n">tp</span>
+        <span class="n">r</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span>     <span class="o">=</span> <span class="n">tp</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s1">&#39;h&#39;</span><span class="p">)</span>
+        <span class="n">r</span><span class="p">[</span><span class="s1">&#39;capa&#39;</span><span class="p">]</span>    <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">r</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span>   <span class="o">=</span> <span class="n">bs</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">ob</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">ob</span><span class="p">)]</span> <span class="o">=</span> <span class="n">r</span>
 <br/></pre></div>
 </div>
 </div>
@@ -200,20 +200,20 @@ for ii in timegrid.I:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.rcdefaults()
-fig, ax = plt.subplots(1,1,figsize=(10,4), tight_layout = True)
-#out[&#39;dispatch&#39;].loc[:,&#39;battery&#39;].plot(ax = ax)
-for i,r in ob.iterrows():
-    if r[&#39;capa&#39;]&gt;0  :  ax.plot([r[&#39;start&#39;], r[&#39;end&#39;]], [r[&#39;price&#39;],r[&#39;price&#39;]],&#39;b-&#39;,linewidth = abs(r[&#39;capa&#39;]), alpha = 0.3)
-    elif r[&#39;capa&#39;]&lt;0:  ax.plot([r[&#39;start&#39;], r[&#39;end&#39;]], [r[&#39;price&#39;],r[&#39;price&#39;]],&#39;r-&#39;,linewidth = abs(r[&#39;capa&#39;]), alpha = 0.3)
-ax.set_title(&#39;Order book&#39;)
-ax.set_ylabel(&#39;EUR/MWh&#39;)
-# for legend only
-ax.plot([S, S], [0,0],&#39;b-&#39;,linewidth = 5, alpha = 0.3, label = &#39;sell&#39;)
-ax.plot([S, S], [0,0],&#39;r-&#39;,linewidth = 5, alpha = 0.3, label = &#39;buy&#39;)
-ax.legend(loc = &#39;upper right&#39;)
-ax.set_xlim(S, E)
-plt.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">rcdefaults</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">tight_layout</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="c1">#out[&#39;dispatch&#39;].loc[:,&#39;battery&#39;].plot(ax = ax)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">r</span> <span class="ow">in</span> <span class="n">ob</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;capa&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span>  <span class="p">:</span>  <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]],</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]],</span><span class="s1">&#39;b-&#39;</span><span class="p">,</span><span class="n">linewidth</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;capa&#39;</span><span class="p">]),</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;capa&#39;</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>  <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]],</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]],</span><span class="s1">&#39;r-&#39;</span><span class="p">,</span><span class="n">linewidth</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;capa&#39;</span><span class="p">]),</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Order book&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;EUR/MWh&#39;</span><span class="p">)</span>
+<span class="c1"># for legend only</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">S</span><span class="p">,</span> <span class="n">S</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="s1">&#39;b-&#39;</span><span class="p">,</span><span class="n">linewidth</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;sell&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">S</span><span class="p">,</span> <span class="n">S</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="s1">&#39;r-&#39;</span><span class="p">,</span><span class="n">linewidth</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;buy&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span> <span class="o">=</span> <span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -236,29 +236,29 @@ battery usage from this 50% target fill level.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># order book asset
-order_book = eao.assets.OrderBook(&#39;orders&#39;, node,
-                                    orders    = ob,
-                                    full_exec = True)  # switch to enforce (or not) full order execution
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># order book asset</span>
+<span class="n">order_book</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">OrderBook</span><span class="p">(</span><span class="s1">&#39;orders&#39;</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span>
+                                    <span class="n">orders</span>    <span class="o">=</span> <span class="n">ob</span><span class="p">,</span>
+                                    <span class="n">full_exec</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>  <span class="c1"># switch to enforce (or not) full order execution</span>
 
-# battery
-efficiency = 0.95
-battery = eao.assets.Storage(&#39;battery&#39;, node, cap_in      = 10,
-                                        cap_out     = 10,
-                                        start_level = 20,
-                                        end_level   = 20,
-                                        eff_in      = efficiency,
-                                        size        = 40,
-                                        no_simult_in_out = True) # at negative prices, we want to ensure the battery does not charge &amp; discharge at the same time to &quot;burn&quot; power
-# last resort - battery end level. May allow battery not to be completely full, &quot;borrowing&quot; in last hours
-extra_power = eao.assets.SimpleContract(&#39;fill_level_adjust&#39;, node,
-                                max_cap   = 10,
-                                min_cap   = 0,
-                                start     = timegrid.timepoints[-2],
-                                end       = E,
-                                price     = &#39;av&#39;,
-                                extra_costs = 20
-                                )
+<span class="c1"># battery</span>
+<span class="n">efficiency</span> <span class="o">=</span> <span class="mf">0.95</span>
+<span class="n">battery</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Storage</span><span class="p">(</span><span class="s1">&#39;battery&#39;</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">cap_in</span>      <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                                        <span class="n">cap_out</span>     <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                                        <span class="n">start_level</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+                                        <span class="n">end_level</span>   <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+                                        <span class="n">eff_in</span>      <span class="o">=</span> <span class="n">efficiency</span><span class="p">,</span>
+                                        <span class="n">size</span>        <span class="o">=</span> <span class="mi">40</span><span class="p">,</span>
+                                        <span class="n">no_simult_in_out</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="c1"># at negative prices, we want to ensure the battery does not charge &amp; discharge at the same time to &quot;burn&quot; power</span>
+<span class="c1"># last resort - battery end level. May allow battery not to be completely full, &quot;borrowing&quot; in last hours</span>
+<span class="n">extra_power</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="s1">&#39;fill_level_adjust&#39;</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span>
+                                <span class="n">max_cap</span>   <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                                <span class="n">min_cap</span>   <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                                <span class="n">start</span>     <span class="o">=</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">timepoints</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span>
+                                <span class="n">end</span>       <span class="o">=</span> <span class="n">E</span><span class="p">,</span>
+                                <span class="n">price</span>     <span class="o">=</span> <span class="s1">&#39;av&#39;</span><span class="p">,</span>
+                                <span class="n">extra_costs</span> <span class="o">=</span> <span class="mi">20</span>
+                                <span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -270,7 +270,7 @@ extra_power = eao.assets.SimpleContract(&#39;fill_level_adjust&#39;, node,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portf = eao.portfolio.Portfolio([battery, order_book, extra_power])
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">portf</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">battery</span><span class="p">,</span> <span class="n">order_book</span><span class="p">,</span> <span class="n">extra_power</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -283,9 +283,9 @@ extra_power = eao.assets.SimpleContract(&#39;fill_level_adjust&#39;, node,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>op = portf.setup_optim_problem(prices=prices, timegrid=timegrid)
-res = op.optimize(solver = &#39;SCIP&#39;)
-out = eao.io.extract_output(portf= portf, op=op, res=res)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">portf</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">prices</span><span class="o">=</span><span class="n">prices</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">=</span><span class="n">timegrid</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span> <span class="o">=</span> <span class="s1">&#39;SCIP&#39;</span><span class="p">)</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">extract_output</span><span class="p">(</span><span class="n">portf</span><span class="o">=</span> <span class="n">portf</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">op</span><span class="p">,</span> <span class="n">res</span><span class="o">=</span><span class="n">res</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -296,30 +296,30 @@ out = eao.io.extract_output(portf= portf, op=op, res=res)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.rcdefaults()
-fig, ax = plt.subplots(1,1,figsize=(10,4), tight_layout = True)
-for i,r in ob.iterrows():
-    if out[&#39;special&#39;].loc[i,&#39;value&#39;] &gt; 0.95: myal = 1
-    else: myal = 0.05 # executed
-    if   r[&#39;capa&#39;]&gt;0: ax.plot([r[&#39;start&#39;], r[&#39;end&#39;]], [r[&#39;price&#39;],r[&#39;price&#39;]],&#39;b-&#39;,linewidth = abs(r[&#39;capa&#39;]), alpha = myal)
-    elif r[&#39;capa&#39;]&lt;0: ax.plot([r[&#39;start&#39;], r[&#39;end&#39;]], [r[&#39;price&#39;],r[&#39;price&#39;]],&#39;r-&#39;,linewidth = abs(r[&#39;capa&#39;]), alpha = myal)
-ax.set_title(&#39;Executed orders&#39;)
-ax.set_ylabel(&#39;prices of orders EUR/MWh&#39;)
-ax.plot([S, S], [0,0],&#39;b-&#39;,linewidth = 5, alpha = 1, label = &#39;executed sell - we buy&#39;)
-ax.plot([S, S], [0,0],&#39;r-&#39;,linewidth = 5, alpha = 1, label = &#39;executed buy - we sell&#39;)
-ax.set_xlim(S, E)
-ax2 = ax.twinx()
-### show how to manually calculate fill level from dispatch
-# fill_level = -out[&#39;dispatch&#39;].loc[:,&#39;battery&#39;]
-# fill_level[fill_level&gt;0] *= efficiency
-# fill_level = fill_level.cumsum()+20
-### this is the automatic output
-fill_level = out[&#39;internal_variables&#39;][&#39;battery_fill_level&#39;]
-ax2.plot(fill_level, label = &#39;battery fill level&#39;)
-ax2.set_ylabel(&#39;fill level battery in MWh&#39;)
-ax.legend(loc = &#39;upper left&#39;)
-ax2.legend(loc = &#39;upper right&#39;)
-plt.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">rcdefaults</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">tight_layout</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">r</span> <span class="ow">in</span> <span class="n">ob</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;special&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.95</span><span class="p">:</span> <span class="n">myal</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span> <span class="n">myal</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="c1"># executed</span>
+    <span class="k">if</span>   <span class="n">r</span><span class="p">[</span><span class="s1">&#39;capa&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]],</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]],</span><span class="s1">&#39;b-&#39;</span><span class="p">,</span><span class="n">linewidth</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;capa&#39;</span><span class="p">]),</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">myal</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;capa&#39;</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]],</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]],</span><span class="s1">&#39;r-&#39;</span><span class="p">,</span><span class="n">linewidth</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;capa&#39;</span><span class="p">]),</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">myal</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Executed orders&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;prices of orders EUR/MWh&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">S</span><span class="p">,</span> <span class="n">S</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="s1">&#39;b-&#39;</span><span class="p">,</span><span class="n">linewidth</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;executed sell - we buy&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">S</span><span class="p">,</span> <span class="n">S</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="s1">&#39;r-&#39;</span><span class="p">,</span><span class="n">linewidth</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;executed buy - we sell&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span>
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+<span class="c1">### show how to manually calculate fill level from dispatch</span>
+<span class="c1"># fill_level = -out[&#39;dispatch&#39;].loc[:,&#39;battery&#39;]</span>
+<span class="c1"># fill_level[fill_level&gt;0] *= efficiency</span>
+<span class="c1"># fill_level = fill_level.cumsum()+20</span>
+<span class="c1">### this is the automatic output</span>
+<span class="n">fill_level</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;internal_variables&#39;</span><span class="p">][</span><span class="s1">&#39;battery_fill_level&#39;</span><span class="p">]</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fill_level</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;battery fill level&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;fill level battery in MWh&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span> <span class="o">=</span> <span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span> <span class="o">=</span> <span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

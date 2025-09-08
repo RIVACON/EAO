@@ -118,25 +118,25 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
-import pandas as pd
-import datetime as dt
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
 
-# in case eao is not installed
-import os
-import sys
-# in case eao is not installed, set path
-myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
-sys.path.append(myDir)
-addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
-sys.path.append(addDir)
+<span class="c1"># in case eao is not installed</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="c1"># in case eao is not installed, set path</span>
+<span class="n">myDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">myDir</span><span class="p">)</span>
+<span class="n">addDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../../../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addDir</span><span class="p">)</span>
 
-import eaopack as eao
-from eaopack.assets import Node, Timegrid, Contract, Storage, SimpleContract
-from eaopack.portfolio import Portfolio
+<span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eaopack.assets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Timegrid</span><span class="p">,</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">Storage</span><span class="p">,</span> <span class="n">SimpleContract</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eaopack.portfolio</span><span class="w"> </span><span class="kn">import</span> <span class="n">Portfolio</span>
 
-import matplotlib.pyplot as plt
-%matplotlib inline
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
 </pre></div>
 </div>
 </div>
@@ -148,16 +148,16 @@ import matplotlib.pyplot as plt
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>Start = dt.date(2021,1,1)
-End   = dt.date(2021,1,10)
-timegrid = Timegrid(Start, End, freq = &#39;h&#39;)
-node  = Node(name = &#39;node&#39;, commodity=&#39;power&#39;, unit=&#39;MWh&#39;)
-# very simple setup, working directly on the time grid. Alternatively we can use
-# dictionaries with start/end and values
-load_profile   = -(5+5*(np.cos(np.linspace(0.,10., timegrid.T))))
-# capacities and costs of generation assets in portfolio
-capacities = [1,2,3,2,8]
-costs      = [1,1.5,1.8,4,6]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Start</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">End</span>   <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">timegrid</span> <span class="o">=</span> <span class="n">Timegrid</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;h&#39;</span><span class="p">)</span>
+<span class="n">node</span>  <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;node&#39;</span><span class="p">,</span> <span class="n">commodity</span><span class="o">=</span><span class="s1">&#39;power&#39;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;MWh&#39;</span><span class="p">)</span>
+<span class="c1"># very simple setup, working directly on the time grid. Alternatively we can use</span>
+<span class="c1"># dictionaries with start/end and values</span>
+<span class="n">load_profile</span>   <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="mi">5</span><span class="o">+</span><span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">10.</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">))))</span>
+<span class="c1"># capacities and costs of generation assets in portfolio</span>
+<span class="n">capacities</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span>
+<span class="n">costs</span>      <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -173,14 +173,14 @@ costs      = [1,1.5,1.8,4,6]
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>assets = []
-assets.append(Contract(name = &#39;load&#39;, min_cap= load_profile, max_cap= load_profile, nodes = node))
-counter = 0
-for my_cap, my_costs in zip(capacities, costs):
-        counter +=1
-        myc = 2 # capacity of each contract
-        assets.append(SimpleContract(name = &#39;gen_&#39;+str(counter), nodes = node, extra_costs = my_costs,max_cap = my_cap))
-portf = Portfolio(assets)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">assets</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">assets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Contract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="n">load_profile</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span> <span class="n">load_profile</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">node</span><span class="p">))</span>
+<span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">my_cap</span><span class="p">,</span> <span class="n">my_costs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">capacities</span><span class="p">,</span> <span class="n">costs</span><span class="p">):</span>
+        <span class="n">counter</span> <span class="o">+=</span><span class="mi">1</span>
+        <span class="n">myc</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># capacity of each contract</span>
+        <span class="n">assets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;gen_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">counter</span><span class="p">),</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">node</span><span class="p">,</span> <span class="n">extra_costs</span> <span class="o">=</span> <span class="n">my_costs</span><span class="p">,</span><span class="n">max_cap</span> <span class="o">=</span> <span class="n">my_cap</span><span class="p">))</span>
+<span class="n">portf</span> <span class="o">=</span> <span class="n">Portfolio</span><span class="p">(</span><span class="n">assets</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -192,9 +192,9 @@ portf = Portfolio(assets)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>optim_problem  = portf.setup_optim_problem(timegrid = timegrid)
-result         = optim_problem.optimize()
-output = eao.io.extract_output(portf, optim_problem, result)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">optim_problem</span>  <span class="o">=</span> <span class="n">portf</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">timegrid</span> <span class="o">=</span> <span class="n">timegrid</span><span class="p">)</span>
+<span class="n">result</span>         <span class="o">=</span> <span class="n">optim_problem</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">extract_output</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">optim_problem</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -203,10 +203,10 @@ output = eao.io.extract_output(portf, optim_problem, result)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>output[&#39;prices&#39;].rename(columns = {&#39;nodal price: node&#39;:&#39;nodal price&#39;}, inplace = True)
-# omit load (is given by sum of generation)
-output[&#39;dispatch&#39;].drop(columns = [&#39;load&#39;], inplace = True)
-output[&#39;dispatch&#39;] = output[&#39;dispatch&#39;].round(3)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;prices&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;nodal price: node&#39;</span><span class="p">:</span><span class="s1">&#39;nodal price&#39;</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="c1"># omit load (is given by sum of generation)</span>
+<span class="n">output</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;load&#39;</span><span class="p">],</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">output</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -217,17 +217,17 @@ output[&#39;dispatch&#39;] = output[&#39;dispatch&#39;].round(3)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.rcdefaults()
-fig, ax = plt.subplots(1,2,figsize=(7,3), tight_layout = True)
-output[&#39;dispatch&#39;].plot.area(ax = ax[0], stacked = True, alpha = 0.7)
-output[&#39;prices&#39;].plot(ax = ax[1])
-ax[0].set_title(&#39;Cumulative asset dispatch&#39;)
-ax[0].set_ylabel(&#39;MW&#39;)
-ax[1].set_title(&#39;Marginal production cost&#39;)
-ax[1].set_ylabel(&#39;€/MWh&#39;)
-ax[1].legend(loc = &#39;upper right&#39;)
-plt.show()
-#plt.savefig(file_chart)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">rcdefaults</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">tight_layout</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">output</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">area</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">stacked</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">)</span>
+<span class="n">output</span><span class="p">[</span><span class="s1">&#39;prices&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Cumulative asset dispatch&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;MW&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Marginal production cost&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;€/MWh&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span> <span class="o">=</span> <span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="c1">#plt.savefig(file_chart)</span>
 </pre></div>
 </div>
 </div>

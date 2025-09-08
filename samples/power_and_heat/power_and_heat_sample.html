@@ -125,12 +125,12 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import eaopack as eao
-#####################################################
-import pandas as pd
-import datetime as dt
-import matplotlib.pyplot as plt
-%matplotlib inline
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
+<span class="c1">#####################################################</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
 </pre></div>
 </div>
 </div>
@@ -142,13 +142,13 @@ import matplotlib.pyplot as plt
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Definition der phys. Einheiten
-unit_power      = eao.assets.Unit(volume = &#39;MWh(el)&#39;, flow = &#39;MW(el)&#39;)
-unit_heat       = eao.assets.Unit(volume = &#39;MWh(th)&#39;, flow = &#39;MW(th)&#39;)
-# Definition der Knoten
-node_power      = eao.assets.Node(name = &#39;strom&#39;      , unit = unit_power)
-node_heat_nord  = eao.assets.Node(name = &#39;waerme_nord&#39;, unit = unit_heat)
-node_heat_sued  = eao.assets.Node(name = &#39;waerme_sued&#39;, unit = unit_heat)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Definition der phys. Einheiten</span>
+<span class="n">unit_power</span>      <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">volume</span> <span class="o">=</span> <span class="s1">&#39;MWh(el)&#39;</span><span class="p">,</span> <span class="n">flow</span> <span class="o">=</span> <span class="s1">&#39;MW(el)&#39;</span><span class="p">)</span>
+<span class="n">unit_heat</span>       <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">volume</span> <span class="o">=</span> <span class="s1">&#39;MWh(th)&#39;</span><span class="p">,</span> <span class="n">flow</span> <span class="o">=</span> <span class="s1">&#39;MW(th)&#39;</span><span class="p">)</span>
+<span class="c1"># Definition der Knoten</span>
+<span class="n">node_power</span>      <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;strom&#39;</span>      <span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">unit_power</span><span class="p">)</span>
+<span class="n">node_heat_nord</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;waerme_nord&#39;</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">unit_heat</span><span class="p">)</span>
+<span class="n">node_heat_sued</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;waerme_sued&#39;</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">unit_heat</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -164,59 +164,59 @@ node_heat_sued  = eao.assets.Node(name = &#39;waerme_sued&#39;, unit = unit_heat
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span># (1) Wärmespeicher
-storage = eao.assets.Storage(name       = &#39;speicher&#39;,
-                            nodes       = node_heat_nord,
-                            cap_out     = .5,
-                            cap_in      = .5,
-                            size        = 3.,
-                            start_level = 0.25,
-                            end_level   = 0.25,
-                            eff_in      = 0.9,
-                            block_size  = &#39;d&#39;)     # Speicher soll täglich neu optimiert werden (nicht &quot;leer hinterlassen&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="c1"># (1) Wärmespeicher</span>
+<span class="n">storage</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Storage</span><span class="p">(</span><span class="n">name</span>       <span class="o">=</span> <span class="s1">&#39;speicher&#39;</span><span class="p">,</span>
+                            <span class="n">nodes</span>       <span class="o">=</span> <span class="n">node_heat_nord</span><span class="p">,</span>
+                            <span class="n">cap_out</span>     <span class="o">=</span> <span class="mf">.5</span><span class="p">,</span>
+                            <span class="n">cap_in</span>      <span class="o">=</span> <span class="mf">.5</span><span class="p">,</span>
+                            <span class="n">size</span>        <span class="o">=</span> <span class="mf">3.</span><span class="p">,</span>
+                            <span class="n">start_level</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span>
+                            <span class="n">end_level</span>   <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span>
+                            <span class="n">eff_in</span>      <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
+                            <span class="n">block_size</span>  <span class="o">=</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>     <span class="c1"># Speicher soll täglich neu optimiert werden (nicht &quot;leer hinterlassen&quot;)</span>
 
-# (2) Power to Heat Anlage (die Wärmepumpe). Hier vereinfacht abgebildet
-#     Wir können zu einem gegebenen Wirkungsgrad &quot;Strom in Wärme tauschen&quot;
-power2heat   = eao.assets.MultiCommodityContract(name = &#39;P2H&#39;,                           # Wärmepumpe (z.B. Geothermie)
-                                                 min_cap = 0,
-                                                 max_cap = 2,
-                                                 nodes = [node_power, node_heat_nord],   # Lokalisierung: Knoten Nord für Wärme  -  plus Stromknoten
-                                                 factors_commodities=[-1, 2])            # Wirkundsgrad: 1 MWh Strom zu 2 MWh Wärme
+<span class="c1"># (2) Power to Heat Anlage (die Wärmepumpe). Hier vereinfacht abgebildet</span>
+<span class="c1">#     Wir können zu einem gegebenen Wirkungsgrad &quot;Strom in Wärme tauschen&quot;</span>
+<span class="n">power2heat</span>   <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">MultiCommodityContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;P2H&#39;</span><span class="p">,</span>                           <span class="c1"># Wärmepumpe (z.B. Geothermie)</span>
+                                                 <span class="n">min_cap</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                                                 <span class="n">max_cap</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                                                 <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_power</span><span class="p">,</span> <span class="n">node_heat_nord</span><span class="p">],</span>   <span class="c1"># Lokalisierung: Knoten Nord für Wärme  -  plus Stromknoten</span>
+                                                 <span class="n">factors_commodities</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>            <span class="c1"># Wirkundsgrad: 1 MWh Strom zu 2 MWh Wärme</span>
 
-# (3) Kraft-Wärme-Kopplung (KWK). Hier als GuD abgebildet
-#     Achtung - hier sind einige Parameter als Standardwerte gesetzt, die je nach Anwendungsfall angepasst werden sollten
-KWK    = eao.assets.CHPAsset(name = &quot;KWK&quot;,
-                                   min_cap     = 0,
-                                   max_cap     = 5,                             # max. Leistung Strom
-                                   nodes       = [node_power, node_heat_sued],  # Erzeugung von Strom und Wärme in die entsprechenden Netze, bei Bedarf auch Gas
-                                   start_costs = 0,                             # im Beispiel keine Startkosten
-                                   extra_costs = 25,                            # Brennstoffkosten in €/MWh, natürlich auch als Zeitreihe möglich
-                                   conversion_factor_power_heat=0.5,            # Verhältnis Produktion Wärme zu Strom 2:1, d.h. 1MW Stromverlust bei 2MW Wärmeproduktion
-                                   max_share_heat = .5)                         # max. Anteil der Wärme an Gesamtproduktion (in MWh)
-                                   ### ..viele weitere Parameter möglich, siehe Dokumentation. Z.B. Rampen, Mindestlaufzeiten, etc.
+<span class="c1"># (3) Kraft-Wärme-Kopplung (KWK). Hier als GuD abgebildet</span>
+<span class="c1">#     Achtung - hier sind einige Parameter als Standardwerte gesetzt, die je nach Anwendungsfall angepasst werden sollten</span>
+<span class="n">KWK</span>    <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">CHPAsset</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;KWK&quot;</span><span class="p">,</span>
+                                   <span class="n">min_cap</span>     <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                                   <span class="n">max_cap</span>     <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>                             <span class="c1"># max. Leistung Strom</span>
+                                   <span class="n">nodes</span>       <span class="o">=</span> <span class="p">[</span><span class="n">node_power</span><span class="p">,</span> <span class="n">node_heat_sued</span><span class="p">],</span>  <span class="c1"># Erzeugung von Strom und Wärme in die entsprechenden Netze, bei Bedarf auch Gas</span>
+                                   <span class="n">start_costs</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>                             <span class="c1"># im Beispiel keine Startkosten</span>
+                                   <span class="n">extra_costs</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span>                            <span class="c1"># Brennstoffkosten in €/MWh, natürlich auch als Zeitreihe möglich</span>
+                                   <span class="n">conversion_factor_power_heat</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>            <span class="c1"># Verhältnis Produktion Wärme zu Strom 2:1, d.h. 1MW Stromverlust bei 2MW Wärmeproduktion</span>
+                                   <span class="n">max_share_heat</span> <span class="o">=</span> <span class="mf">.5</span><span class="p">)</span>                         <span class="c1"># max. Anteil der Wärme an Gesamtproduktion (in MWh)</span>
+                                   <span class="c1">### ..viele weitere Parameter möglich, siehe Dokumentation. Z.B. Rampen, Mindestlaufzeiten, etc.</span>
 
-# (4) Wärmebedarf
-#     Der Wärmebedarf muss immer gedeckt werden. Hier als &quot;Contract&quot; abgebildet; Maximum = Minimum bedeutet &quot;keine Flexibilität&quot;
-bedarf_nord  = eao.assets.Contract(name = &quot;bedarf_nord&quot;,
-                                   min_cap  = &quot;waerme_bedarf_nord&quot;, # Referenziert auf Bezeichnung in Datenquelle
-                                   max_cap  = &quot;waerme_bedarf_nord&quot;,
-                                   nodes    = node_heat_nord)
-bedarf_sued  = eao.assets.Contract(name     = &quot;bedarf_sued&quot;,
-                                   min_cap  = &quot;waerme_bedarf_sued&quot;,
-                                   max_cap  = &quot;waerme_bedarf_sued&quot;,
-                                   nodes = node_heat_sued)
-# (5) Wärmeübertragungsnetz. Hier als &quot;Transport&quot; Asset abgebildet
-#     Generell wird der Fluss immer in eine Richtung definiert. Daher im Beispiel 2 einzelne Richtungen Süd-&gt;Nord und Nord-&gt;Süd
-netz_nord_sued  = eao.assets.Transport(name = &#39;netz_ns&#39;,
-                                       max_cap = 2,                 # max. Wärmeübertragungskapazität
-                                       nodes = [node_heat_nord, node_heat_sued])
-netz_sued_nord  = eao.assets.Transport(name = &#39;netz_sn&#39;,
-                                       max_cap = 1.5,
-                                       nodes = [node_heat_sued, node_heat_nord])
+<span class="c1"># (4) Wärmebedarf</span>
+<span class="c1">#     Der Wärmebedarf muss immer gedeckt werden. Hier als &quot;Contract&quot; abgebildet; Maximum = Minimum bedeutet &quot;keine Flexibilität&quot;</span>
+<span class="n">bedarf_nord</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Contract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;bedarf_nord&quot;</span><span class="p">,</span>
+                                   <span class="n">min_cap</span>  <span class="o">=</span> <span class="s2">&quot;waerme_bedarf_nord&quot;</span><span class="p">,</span> <span class="c1"># Referenziert auf Bezeichnung in Datenquelle</span>
+                                   <span class="n">max_cap</span>  <span class="o">=</span> <span class="s2">&quot;waerme_bedarf_nord&quot;</span><span class="p">,</span>
+                                   <span class="n">nodes</span>    <span class="o">=</span> <span class="n">node_heat_nord</span><span class="p">)</span>
+<span class="n">bedarf_sued</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Contract</span><span class="p">(</span><span class="n">name</span>     <span class="o">=</span> <span class="s2">&quot;bedarf_sued&quot;</span><span class="p">,</span>
+                                   <span class="n">min_cap</span>  <span class="o">=</span> <span class="s2">&quot;waerme_bedarf_sued&quot;</span><span class="p">,</span>
+                                   <span class="n">max_cap</span>  <span class="o">=</span> <span class="s2">&quot;waerme_bedarf_sued&quot;</span><span class="p">,</span>
+                                   <span class="n">nodes</span> <span class="o">=</span> <span class="n">node_heat_sued</span><span class="p">)</span>
+<span class="c1"># (5) Wärmeübertragungsnetz. Hier als &quot;Transport&quot; Asset abgebildet</span>
+<span class="c1">#     Generell wird der Fluss immer in eine Richtung definiert. Daher im Beispiel 2 einzelne Richtungen Süd-&gt;Nord und Nord-&gt;Süd</span>
+<span class="n">netz_nord_sued</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Transport</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;netz_ns&#39;</span><span class="p">,</span>
+                                       <span class="n">max_cap</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>                 <span class="c1"># max. Wärmeübertragungskapazität</span>
+                                       <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_heat_nord</span><span class="p">,</span> <span class="n">node_heat_sued</span><span class="p">])</span>
+<span class="n">netz_sued_nord</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Transport</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;netz_sn&#39;</span><span class="p">,</span>
+                                       <span class="n">max_cap</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
+                                       <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_heat_sued</span><span class="p">,</span> <span class="n">node_heat_nord</span><span class="p">])</span>
 
-# (3) Strommarkt
-#     Wir können praktisch unbegrenzt Strom kaufen und verkaufen - zum vorgegebenen Preis
-market       = eao.assets.SimpleContract(name = &#39;strommarkt&#39;, price=&#39;strompreis&#39;, min_cap= -1000, max_cap=1000, nodes = node_power)
+<span class="c1"># (3) Strommarkt</span>
+<span class="c1">#     Wir können praktisch unbegrenzt Strom kaufen und verkaufen - zum vorgegebenen Preis</span>
+<span class="n">market</span>       <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;strommarkt&#39;</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="s1">&#39;strompreis&#39;</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">node_power</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -233,14 +233,14 @@ market       = eao.assets.SimpleContract(name = &#39;strommarkt&#39;, price=&#39
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portf        = eao.portfolio.Portfolio([storage,
-                                        power2heat,
-                                        KWK,
-                                        market,
-                                        bedarf_nord,
-                                        bedarf_sued,
-                                        netz_nord_sued,
-                                        netz_sued_nord])
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">portf</span>        <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">storage</span><span class="p">,</span>
+                                        <span class="n">power2heat</span><span class="p">,</span>
+                                        <span class="n">KWK</span><span class="p">,</span>
+                                        <span class="n">market</span><span class="p">,</span>
+                                        <span class="n">bedarf_nord</span><span class="p">,</span>
+                                        <span class="n">bedarf_sued</span><span class="p">,</span>
+                                        <span class="n">netz_nord_sued</span><span class="p">,</span>
+                                        <span class="n">netz_sued_nord</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -257,7 +257,7 @@ market       = eao.assets.SimpleContract(name = &#39;strommarkt&#39;, price=&#39
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>eao.network_graphs.create_graph(portf = portf, title = &#39;Beispiel: Wärmenetz mit KWK, Wärmepumpe und Speicher&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">portf</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Beispiel: Wärmenetz mit KWK, Wärmepumpe und Speicher&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -276,10 +276,10 @@ market       = eao.assets.SimpleContract(name = &#39;strommarkt&#39;, price=&#39
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## in JSON File speichern zur weiteren Verwendung, z.B. in eigener Datenbank, dem GUI, etc. Genauso für Assets, etc.
-eao.serialization.to_json(portf, &#39;portf.json&#39;)      # Gesamtbeispiel
-eao.serialization.to_json(storage, &#39;speicher.json&#39;)
-# ... etc. für alle Assets möglich&#39;
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## in JSON File speichern zur weiteren Verwendung, z.B. in eigener Datenbank, dem GUI, etc. Genauso für Assets, etc.</span>
+<span class="n">eao</span><span class="o">.</span><span class="n">serialization</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="s1">&#39;portf.json&#39;</span><span class="p">)</span>      <span class="c1"># Gesamtbeispiel</span>
+<span class="n">eao</span><span class="o">.</span><span class="n">serialization</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="s1">&#39;speicher.json&#39;</span><span class="p">)</span>
+<span class="c1"># ... etc. für alle Assets möglich&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -291,9 +291,9 @@ eao.serialization.to_json(storage, &#39;speicher.json&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>data = pd.read_excel(&quot;2020_sample_daten.xlsx&quot;)
-data.set_index(&#39;datum&#39;, inplace=True)
-data.round(2).head()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s2">&quot;2020_sample_daten.xlsx&quot;</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;datum&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -373,15 +373,15 @@ data.round(2).head()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>Start = dt.date(2020,1,1)
-End   = dt.date(2020,1,3)
-tg    = eao.assets.Timegrid(Start, End, freq = &#39;h&#39;)     # hier: stündlich optimieren
-out   = eao.optimize(portf = portf, timegrid = tg, data = data)
-### Solver nach Geschmack leicht austauschbar. Z.B. Gurobi, CPLEX, freie Solver: SCIP, HIGHS ...
-# out = eao.optimize(portf = portf, timegrid = tg, data = data, solver = &#39;SCIP&#39;)
-### Split problem
-out   = eao.optimize(portf = portf, timegrid = tg, data = data)
-# out   = eao.optimize(portf = portf, timegrid = tg, data = data, split_interval_size=&#39;MS&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Start</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">End</span>   <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">tg</span>    <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Timegrid</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;h&#39;</span><span class="p">)</span>     <span class="c1"># hier: stündlich optimieren</span>
+<span class="n">out</span>   <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span> <span class="o">=</span> <span class="n">tg</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">)</span>
+<span class="c1">### Solver nach Geschmack leicht austauschbar. Z.B. Gurobi, CPLEX, freie Solver: SCIP, HIGHS ...</span>
+<span class="c1"># out = eao.optimize(portf = portf, timegrid = tg, data = data, solver = &#39;SCIP&#39;)</span>
+<span class="c1">### Split problem</span>
+<span class="n">out</span>   <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span> <span class="o">=</span> <span class="n">tg</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">)</span>
+<span class="c1"># out   = eao.optimize(portf = portf, timegrid = tg, data = data, split_interval_size=&#39;MS&#39;)</span>
 </pre></div>
 </div>
 </div>
@@ -402,7 +402,7 @@ out   = eao.optimize(portf = portf, timegrid = tg, data = data)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>out[&#39;summary&#39;] # Zusammenfassung. Gesantwert in € (Deckungsbeitrag)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">]</span> <span class="c1"># Zusammenfassung. Gesantwert in € (Deckungsbeitrag)</span>
 </pre></div>
 </div>
 </div>
@@ -453,7 +453,7 @@ out   = eao.optimize(portf = portf, timegrid = tg, data = data)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>out[&#39;DCF&#39;].transpose().iloc[:,0:2].round(2) # Detailsicht auf die Cash Flows (auch diskontierte Optimierung möglich (DCF / Maximierung des NPV))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;DCF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># Detailsicht auf die Cash Flows (auch diskontierte Optimierung möglich (DCF / Maximierung des NPV))</span>
 </pre></div>
 </div>
 </div>
@@ -533,8 +533,8 @@ out   = eao.optimize(portf = portf, timegrid = tg, data = data)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Detailsicht auf die Betriebsweise der Anlagen (in MWh)
-print(out[&#39;dispatch&#39;].transpose().iloc[:,0:2].round(2))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Detailsicht auf die Betriebsweise der Anlagen (in MWh)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -562,8 +562,8 @@ netz_sn (waerme_nord)                     0.99                 0.98
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Detailsicht auf die EIngangsgrößen (in €/MWh bzw. MW)  [hier vor Allem die vorgegebenen Preise, andere Analysen möglich --&gt; Kosten für die Wärme pro Stunde]
-out[&#39;prices&#39;].transpose().iloc[:,0:2].round(2)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Detailsicht auf die EIngangsgrößen (in €/MWh bzw. MW)  [hier vor Allem die vorgegebenen Preise, andere Analysen möglich --&gt; Kosten für die Wärme pro Stunde]</span>
+<span class="n">out</span><span class="p">[</span><span class="s1">&#39;prices&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -636,22 +636,22 @@ out[&#39;prices&#39;].transpose().iloc[:,0:2].round(2)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df = pd.merge(out[&#39;dispatch&#39;], out[&#39;prices&#39;], left_index=True, right_index=True, how=&#39;left&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;prices&#39;</span><span class="p">],</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
 
-heat = [&#39;P2H (waerme_nord)&#39;,
-        &#39;KWK (waerme_sued)&#39;,
-        &#39;speicher (waerme_nord)&#39;]
-power = [&#39;P2H (strom)&#39;,
-         &#39;KWK (strom)&#39;]
+<span class="n">heat</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;P2H (waerme_nord)&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;KWK (waerme_sued)&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;speicher (waerme_nord)&#39;</span><span class="p">]</span>
+<span class="n">power</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;P2H (strom)&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;KWK (strom)&#39;</span><span class="p">]</span>
 
-fig, ax = plt.subplots(1,3, tight_layout = True, figsize=(12,4))
-df[heat].plot(ax = ax[0], style = &#39;-&#39;)
-df[power].plot(ax = ax[1], style = &#39;-&#39;)
-df[&#39;input data: strompreis&#39;].plot(ax = ax[2], style = &#39;-&#39;)
-ax[0].set_title(&#39;Wärme&#39;)
-ax[1].set_title(&#39;Strom&#39;)
-ax[2].set_title(&#39;Strompreis&#39;)
-plt.show()
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">tight_layout</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">df</span><span class="p">[</span><span class="n">heat</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="n">power</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;input data: strompreis&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Wärme&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Strom&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Strompreis&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <br/></pre></div>
 </div>
 </div>

@@ -87,19 +87,19 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
-import datetime as dt
-import matplotlib.pyplot as plt
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
-sys.path.append(myDir)
-addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
-sys.path.append(addDir)
+<span class="n">myDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">myDir</span><span class="p">)</span>
+<span class="n">addDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../../../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addDir</span><span class="p">)</span>
 
-import eaopack as eao
-from eaopack.portfolio import Portfolio, LinkedAsset
-from eaopack.basic_classes import Timegrid
-from eaopack.optimization import Results
+<span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eaopack.portfolio</span><span class="w"> </span><span class="kn">import</span> <span class="n">Portfolio</span><span class="p">,</span> <span class="n">LinkedAsset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eaopack.basic_classes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Timegrid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eaopack.optimization</span><span class="w"> </span><span class="kn">import</span> <span class="n">Results</span>
 </pre></div>
 </div>
 </div>
@@ -110,60 +110,60 @@ from eaopack.optimization import Results
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>node_power = eao.assets.Node(&#39;node_power&#39;)
-node_heat = eao.assets.Node(&#39;node_heat&#39;)
-node_gas = eao.assets.Node(&#39;node_gas&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node_power</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;node_power&#39;</span><span class="p">)</span>
+<span class="n">node_heat</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;node_heat&#39;</span><span class="p">)</span>
+<span class="n">node_gas</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;node_gas&#39;</span><span class="p">)</span>
 
-timegrid = eao.assets.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq=&#39;h&#39;, main_time_unit=&#39;h&#39;)
-simple_contract_power = eao.assets.SimpleContract(name=&#39;SC_power&#39;, price=&#39;price_power&#39;, nodes=node_power,
-                                             min_cap=-100., max_cap=0)
-simple_contract_heat = eao.assets.SimpleContract(name=&#39;SC_heat&#39;, price=&#39;price_heat&#39;, nodes=node_heat,
-                                             min_cap=-100., max_cap=0.)
-simple_contract_gas = eao.assets.SimpleContract(name=&#39;SC_gas&#39;, price=&#39;price_gas&#39;, nodes=node_gas,
-                                             min_cap=0., max_cap=100.)
+<span class="n">timegrid</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Timegrid</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="n">main_time_unit</span><span class="o">=</span><span class="s1">&#39;h&#39;</span><span class="p">)</span>
+<span class="n">simple_contract_power</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;SC_power&#39;</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="s1">&#39;price_power&#39;</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">node_power</span><span class="p">,</span>
+                                             <span class="n">min_cap</span><span class="o">=-</span><span class="mf">100.</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">simple_contract_heat</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;SC_heat&#39;</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="s1">&#39;price_heat&#39;</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">node_heat</span><span class="p">,</span>
+                                             <span class="n">min_cap</span><span class="o">=-</span><span class="mf">100.</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+<span class="n">simple_contract_gas</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;SC_gas&#39;</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="s1">&#39;price_gas&#39;</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">node_gas</span><span class="p">,</span>
+                                             <span class="n">min_cap</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span><span class="mf">100.</span><span class="p">)</span>
 
 
-chpasset1 = eao.assets.CHPAsset(name=&#39;CHP1&#39;,
-                               nodes=[node_power, node_heat, node_gas],
-                               min_cap=5.,
-                               max_cap=30.,
-                               extra_costs=0,
-                               freq=&#39;h&#39;,
-                               conversion_factor_power_heat=0.5,
-                               max_share_heat=0.5,
-                               ramp=20,
-                               start_costs=0.,
-                               running_costs=0.,
-                               min_runtime=0,
-                               time_already_running=0.,
-                               last_dispatch=0.,
-                               start_fuel=0)
-chpasset2 = eao.assets.CHPAsset(name=&#39;CHP2&#39;,
-                               nodes=[node_power, node_heat, node_gas],
-                               min_cap=5.,
-                               max_cap=30.,
-                               extra_costs=0,
-                               freq=&#39;h&#39;,
-                               conversion_factor_power_heat=0.5,
-                               max_share_heat=0.5,
-                               ramp=20,
-                               start_costs=0.,
-                               running_costs=0.,
-                               min_runtime=0,
-                               time_already_running=1.,
-                               last_dispatch=0.,
-                               start_fuel=0)
+<span class="n">chpasset1</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">CHPAsset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;CHP1&#39;</span><span class="p">,</span>
+                               <span class="n">nodes</span><span class="o">=</span><span class="p">[</span><span class="n">node_power</span><span class="p">,</span> <span class="n">node_heat</span><span class="p">,</span> <span class="n">node_gas</span><span class="p">],</span>
+                               <span class="n">min_cap</span><span class="o">=</span><span class="mf">5.</span><span class="p">,</span>
+                               <span class="n">max_cap</span><span class="o">=</span><span class="mf">30.</span><span class="p">,</span>
+                               <span class="n">extra_costs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                               <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;h&#39;</span><span class="p">,</span>
+                               <span class="n">conversion_factor_power_heat</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                               <span class="n">max_share_heat</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                               <span class="n">ramp</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+                               <span class="n">start_costs</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                               <span class="n">running_costs</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                               <span class="n">min_runtime</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                               <span class="n">time_already_running</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                               <span class="n">last_dispatch</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                               <span class="n">start_fuel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">chpasset2</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">CHPAsset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;CHP2&#39;</span><span class="p">,</span>
+                               <span class="n">nodes</span><span class="o">=</span><span class="p">[</span><span class="n">node_power</span><span class="p">,</span> <span class="n">node_heat</span><span class="p">,</span> <span class="n">node_gas</span><span class="p">],</span>
+                               <span class="n">min_cap</span><span class="o">=</span><span class="mf">5.</span><span class="p">,</span>
+                               <span class="n">max_cap</span><span class="o">=</span><span class="mf">30.</span><span class="p">,</span>
+                               <span class="n">extra_costs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                               <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;h&#39;</span><span class="p">,</span>
+                               <span class="n">conversion_factor_power_heat</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                               <span class="n">max_share_heat</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                               <span class="n">ramp</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+                               <span class="n">start_costs</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                               <span class="n">running_costs</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                               <span class="n">min_runtime</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                               <span class="n">time_already_running</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>
+                               <span class="n">last_dispatch</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                               <span class="n">start_fuel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-prices = {&#39;price_power&#39;: np.sin(0.5*np.pi * np.arange(timegrid.T)*np.pi/10)+2,
-          &#39;price_heat&#39;: np.cos(0.5*np.pi * np.arange(timegrid.T)*np.pi/10)+2,
-          &#39;price_gas&#39;: np.ones(timegrid.T)*2,
-          }
+<span class="n">prices</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;price_power&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span>
+          <span class="s1">&#39;price_heat&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span>
+          <span class="s1">&#39;price_gas&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span>
+          <span class="p">}</span>
 
-linkedAsset_portfolio = Portfolio([chpasset1, chpasset2])
-linkedAsset = LinkedAsset(portfolio=linkedAsset_portfolio, asset1_variable=(chpasset1, &quot;bool_on&quot;, None), asset2_variable=(chpasset2, &quot;bool_on&quot;, None), name=&quot;linkedAsset&quot;, nodes=[node_power, node_heat, node_gas], time_back=2, time_forward=1)
+<span class="n">linkedAsset_portfolio</span> <span class="o">=</span> <span class="n">Portfolio</span><span class="p">([</span><span class="n">chpasset1</span><span class="p">,</span> <span class="n">chpasset2</span><span class="p">])</span>
+<span class="n">linkedAsset</span> <span class="o">=</span> <span class="n">LinkedAsset</span><span class="p">(</span><span class="n">portfolio</span><span class="o">=</span><span class="n">linkedAsset_portfolio</span><span class="p">,</span> <span class="n">asset1_variable</span><span class="o">=</span><span class="p">(</span><span class="n">chpasset1</span><span class="p">,</span> <span class="s2">&quot;bool_on&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">asset2_variable</span><span class="o">=</span><span class="p">(</span><span class="n">chpasset2</span><span class="p">,</span> <span class="s2">&quot;bool_on&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;linkedAsset&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="p">[</span><span class="n">node_power</span><span class="p">,</span> <span class="n">node_heat</span><span class="p">,</span> <span class="n">node_gas</span><span class="p">],</span> <span class="n">time_back</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">time_forward</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-portfolio = eao.portfolio.Portfolio([linkedAsset, simple_contract_power, simple_contract_heat, simple_contract_gas])
-eao.network_graphs.create_graph(portf = portfolio)
+<span class="n">portfolio</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">linkedAsset</span><span class="p">,</span> <span class="n">simple_contract_power</span><span class="p">,</span> <span class="n">simple_contract_heat</span><span class="p">,</span> <span class="n">simple_contract_gas</span><span class="p">])</span>
+<span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">portfolio</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -181,11 +181,11 @@ eao.network_graphs.create_graph(portf = portfolio)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>op = portfolio.setup_optim_problem(prices, timegrid)
-res = op.optimize(solver=&quot;GLPK_MI&quot;)
-# res = op.optimize(solver=&quot;GLPK&quot;, make_soft_problem=True)  # Relax bool variables, i.e. allow &quot;half on&quot;
-out = eao.io.extract_output(portfolio, op, res, prices)
-out[&#39;summary&#39;]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">portfolio</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">prices</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;GLPK_MI&quot;</span><span class="p">)</span>
+<span class="c1"># res = op.optimize(solver=&quot;GLPK&quot;, make_soft_problem=True)  # Relax bool variables, i.e. allow &quot;half on&quot;</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">extract_output</span><span class="p">(</span><span class="n">portfolio</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">prices</span><span class="p">)</span>
+<span class="n">out</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -247,44 +247,44 @@ out[&#39;summary&#39;]
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Define the grid size to display the figures:
-num_imgs_per_row = 3
-num_nodes = len(portfolio.nodes)
-num_imgs = num_nodes+2
-num_img_rows=int(np.ceil(num_imgs/num_imgs_per_row))
-fig, ax = plt.subplots(num_img_rows, num_imgs_per_row, tight_layout = True, figsize=(18,5*num_img_rows))
-ax = ax.reshape(-1)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define the grid size to display the figures:</span>
+<span class="n">num_imgs_per_row</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">num_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">portfolio</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+<span class="n">num_imgs</span> <span class="o">=</span> <span class="n">num_nodes</span><span class="o">+</span><span class="mi">2</span>
+<span class="n">num_img_rows</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">num_imgs</span><span class="o">/</span><span class="n">num_imgs_per_row</span><span class="p">))</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">num_img_rows</span><span class="p">,</span> <span class="n">num_imgs_per_row</span><span class="p">,</span> <span class="n">tight_layout</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span><span class="mi">5</span><span class="o">*</span><span class="n">num_img_rows</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
-# Plot the dispatch for each node:
-current_ax=0
-dispatch_per_node = {node: [] for node in portfolio.nodes}
-for mycol in out[&#39;dispatch&#39;].columns.values:
-    for node in dispatch_per_node:
-        if &#39;(&#39; + node + &#39;)&#39; in mycol:
-            dispatch_per_node[node].append(mycol)
-for node in dispatch_per_node:
-    out[&#39;dispatch&#39;][dispatch_per_node[node]].plot(ax=ax[current_ax], style=&#39;-x&#39;)
-    ax[current_ax].set_title(&quot;Dispatch &quot; + node)
-    current_ax+=1
+<span class="c1"># Plot the dispatch for each node:</span>
+<span class="n">current_ax</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">dispatch_per_node</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">portfolio</span><span class="o">.</span><span class="n">nodes</span><span class="p">}</span>
+<span class="k">for</span> <span class="n">mycol</span> <span class="ow">in</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">dispatch_per_node</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="n">node</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span> <span class="ow">in</span> <span class="n">mycol</span><span class="p">:</span>
+            <span class="n">dispatch_per_node</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mycol</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">dispatch_per_node</span><span class="p">:</span>
+    <span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][</span><span class="n">dispatch_per_node</span><span class="p">[</span><span class="n">node</span><span class="p">]]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="n">current_ax</span><span class="p">],</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;-x&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">current_ax</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Dispatch &quot;</span> <span class="o">+</span> <span class="n">node</span><span class="p">)</span>
+    <span class="n">current_ax</span><span class="o">+=</span><span class="mi">1</span>
 
-# Plot internal variables:
-for v in out[&#39;internal_variables&#39;]:
-    out[&#39;internal_variables&#39;][v].plot(ax=ax[current_ax], style=&#39;-x&#39;, label=v)
-if out[&#39;internal_variables&#39;].shape[1] == 0:
-    ax[current_ax].text(0.4, 0.5, &quot;No bool variables present&quot;)
-ax[current_ax].set_title(&#39;Bool Variables&#39;)
-ax[current_ax].legend()
-current_ax+=1
+<span class="c1"># Plot internal variables:</span>
+<span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;internal_variables&#39;</span><span class="p">]:</span>
+    <span class="n">out</span><span class="p">[</span><span class="s1">&#39;internal_variables&#39;</span><span class="p">][</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="n">current_ax</span><span class="p">],</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;-x&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;internal_variables&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">current_ax</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;No bool variables present&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="n">current_ax</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Bool Variables&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="n">current_ax</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">current_ax</span><span class="o">+=</span><span class="mi">1</span>
 
-# Plot prices
-for key in out[&#39;prices&#39;]:
-    out[&#39;prices&#39;][key].plot(ax=ax[current_ax], style=&#39;-x&#39;, label=key)
-ax[current_ax].set_title(&#39;Prices&#39;)
-ax[current_ax].legend()
+<span class="c1"># Plot prices</span>
+<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;prices&#39;</span><span class="p">]:</span>
+    <span class="n">out</span><span class="p">[</span><span class="s1">&#39;prices&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="n">current_ax</span><span class="p">],</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;-x&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="n">current_ax</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Prices&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="n">current_ax</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 
-# Remove empty axes:
-for i in range(current_ax+1, len(ax)):
-    fig.delaxes(ax[i])
+<span class="c1"># Remove empty axes:</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">current_ax</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ax</span><span class="p">)):</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">delaxes</span><span class="p">(</span><span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>

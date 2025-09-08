@@ -121,24 +121,24 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
-import pandas as pd
-import datetime as dt
-from copy import deepcopy
-# in case eao is not installed
-import os
-import sys
-# in case eao is not installed, set path
-myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
-sys.path.append(myDir)
-addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
-sys.path.append(addDir)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="c1"># in case eao is not installed</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="c1"># in case eao is not installed, set path</span>
+<span class="n">myDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">myDir</span><span class="p">)</span>
+<span class="n">addDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../../../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addDir</span><span class="p">)</span>
 
-import eaopack as eao
+<span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
 
-import matplotlib.pyplot as plt
-%matplotlib inline
-np.random.seed(123)
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -151,11 +151,11 @@ np.random.seed(123)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>Start = dt.date(2021,1,1)
-End   = dt.date(2021,1,5)
-start_future = Start+dt.timedelta(days=2)
-n_samples    = 200
-sigma        = .5
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Start</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">End</span>   <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">start_future</span> <span class="o">=</span> <span class="n">Start</span><span class="o">+</span><span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">n_samples</span>    <span class="o">=</span> <span class="mi">200</span>
+<span class="n">sigma</span>        <span class="o">=</span> <span class="mf">.5</span>
 </pre></div>
 </div>
 </div>
@@ -171,29 +171,29 @@ sigma        = .5
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>node = eao.assets.Node(&#39;home&#39;)
-timegrid = eao.assets.Timegrid(Start, End, freq = &#39;h&#39;)
-battery  = eao.assets.Storage(name=&#39;battery&#39;, nodes=node, cap_in= 1, cap_out=1, start_level= 24, end_level=24, size= 96)
-market   = eao.assets.SimpleContract(name = &#39;market&#39;, nodes = node, min_cap= -10, max_cap= 10, price = &#39;spot&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">)</span>
+<span class="n">timegrid</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Timegrid</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;h&#39;</span><span class="p">)</span>
+<span class="n">battery</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Storage</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;battery&#39;</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">node</span><span class="p">,</span> <span class="n">cap_in</span><span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cap_out</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_level</span><span class="o">=</span> <span class="mi">24</span><span class="p">,</span> <span class="n">end_level</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span> <span class="mi">96</span><span class="p">)</span>
+<span class="n">market</span>   <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;market&#39;</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">node</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">price</span> <span class="o">=</span> <span class="s1">&#39;spot&#39;</span><span class="p">)</span>
 
-def get_price(start, end, name = &#39;spot&#39;, n_samples = 1, sigma = 0.2, start_future = None, last_sample = None):
-    dates = pd.date_range(start, end, freq =&#39;h&#39;)
-    prices = []
-    n = len(dates)
-    if not start_future is None:
-        Ip = (dates &lt;= pd.Timestamp(start_future))
-    else:
-        Ip = (dates &lt;= dates.max())
-    means     = 2+.5*np.sin(4.+np.linspace(0.,10., n))
-    if last_sample is not None:
-        means[Ip] = last_sample[Ip]
-    for iS in range(0,n_samples):
-        process = np.zeros(n)
-        for i,pres in enumerate(Ip):
-            if not pres:
-                process[i] = process[i-1] + np.random.randn(1)*sigma
-        prices.append({&#39;start&#39; : dates.values, &#39;values&#39;: means + process})
-    return prices
+<span class="k">def</span><span class="w"> </span><span class="nf">get_price</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;spot&#39;</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">start_future</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">last_sample</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span><span class="s1">&#39;h&#39;</span><span class="p">)</span>
+    <span class="n">prices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">start_future</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Ip</span> <span class="o">=</span> <span class="p">(</span><span class="n">dates</span> <span class="o">&lt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">start_future</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Ip</span> <span class="o">=</span> <span class="p">(</span><span class="n">dates</span> <span class="o">&lt;=</span> <span class="n">dates</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+    <span class="n">means</span>     <span class="o">=</span> <span class="mi">2</span><span class="o">+</span><span class="mf">.5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">4.</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">10.</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">last_sample</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">means</span><span class="p">[</span><span class="n">Ip</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_sample</span><span class="p">[</span><span class="n">Ip</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">iS</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">n_samples</span><span class="p">):</span>
+        <span class="n">process</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">pres</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Ip</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pres</span><span class="p">:</span>
+                <span class="n">process</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">process</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">sigma</span>
+        <span class="n">prices</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;start&#39;</span> <span class="p">:</span> <span class="n">dates</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="s1">&#39;values&#39;</span><span class="p">:</span> <span class="n">means</span> <span class="o">+</span> <span class="n">process</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">prices</span>
 </pre></div>
 </div>
 </div>
@@ -201,20 +201,20 @@ def get_price(start, end, name = &#39;spot&#39;, n_samples = 1, sigma = 0.2, sta
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># define mean price
-mean_price      = get_price(Start, End, sigma = 0.0)[0]
-# standard format needs to be cast onto timegrid
-mean_price_grid = {&#39;spot&#39; :timegrid.values_to_grid(mean_price)}
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># define mean price</span>
+<span class="n">mean_price</span>      <span class="o">=</span> <span class="n">get_price</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1"># standard format needs to be cast onto timegrid</span>
+<span class="n">mean_price_grid</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;spot&#39;</span> <span class="p">:</span><span class="n">timegrid</span><span class="o">.</span><span class="n">values_to_grid</span><span class="p">(</span><span class="n">mean_price</span><span class="p">)}</span>
 
-# create price samples for future (past included, but irrelevant)
-# Note: May want to implement possibility to give only future prices
-sample_prices = get_price(Start, End, n_samples=n_samples, sigma = sigma, start_future = start_future)
-sample_prices_grid = []
-for mys in sample_prices:
-    sample_prices_grid.append( {&#39;spot&#39; :timegrid.values_to_grid(mys)} )
+<span class="c1"># create price samples for future (past included, but irrelevant)</span>
+<span class="c1"># Note: May want to implement possibility to give only future prices</span>
+<span class="n">sample_prices</span> <span class="o">=</span> <span class="n">get_price</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">start_future</span> <span class="o">=</span> <span class="n">start_future</span><span class="p">)</span>
+<span class="n">sample_prices_grid</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">mys</span> <span class="ow">in</span> <span class="n">sample_prices</span><span class="p">:</span>
+    <span class="n">sample_prices_grid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">{</span><span class="s1">&#39;spot&#39;</span> <span class="p">:</span><span class="n">timegrid</span><span class="o">.</span><span class="n">values_to_grid</span><span class="p">(</span><span class="n">mys</span><span class="p">)}</span> <span class="p">)</span>
 
 
-portf  = eao.portfolio.Portfolio([battery, market])
+<span class="n">portf</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">battery</span><span class="p">,</span> <span class="n">market</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -226,14 +226,14 @@ portf  = eao.portfolio.Portfolio([battery, market])
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>op     = portf.setup_optim_problem(mean_price_grid, timegrid)
-res_hard = op.optimize()
-op_slp = eao.stoch_lin_prog.make_slp(portf = portf,
-                                    optim_problem= deepcopy(op),
-                                    timegrid=timegrid,
-                                    start_future = start_future,
-                                    samples = sample_prices_grid)
-res_slp = op_slp.optimize()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">op</span>     <span class="o">=</span> <span class="n">portf</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">mean_price_grid</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">)</span>
+<span class="n">res_hard</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+<span class="n">op_slp</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">stoch_lin_prog</span><span class="o">.</span><span class="n">make_slp</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">portf</span><span class="p">,</span>
+                                    <span class="n">optim_problem</span><span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">op</span><span class="p">),</span>
+                                    <span class="n">timegrid</span><span class="o">=</span><span class="n">timegrid</span><span class="p">,</span>
+                                    <span class="n">start_future</span> <span class="o">=</span> <span class="n">start_future</span><span class="p">,</span>
+                                    <span class="n">samples</span> <span class="o">=</span> <span class="n">sample_prices_grid</span><span class="p">)</span>
+<span class="n">res_slp</span> <span class="o">=</span> <span class="n">op_slp</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -244,27 +244,27 @@ res_slp = op_slp.optimize()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>### check and illustrate results
-out_hard = eao.io.extract_output(portf, op,     res_hard)
-out_slp  = eao.io.extract_output(portf, op_slp, res_slp)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">### check and illustrate results</span>
+<span class="n">out_hard</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">extract_output</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span>     <span class="n">res_hard</span><span class="p">)</span>
+<span class="n">out_slp</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">extract_output</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">op_slp</span><span class="p">,</span> <span class="n">res_slp</span><span class="p">)</span>
 
-collect = pd.DataFrame()
-collect[&#39;deterministic&#39;] = out_hard[&#39;dispatch&#39;][&#39;battery&#39;]
-collect[&#39;slp (future: mean)&#39;]  = out_slp[&#39;dispatch&#39;][&#39;battery&#39;]
-collect[&#39;start price&#39;] = mean_price_grid[&#39;spot&#39;]
-timegrid.set_restricted_grid(end = start_future)
-for i, ts in enumerate(sample_prices_grid):
-    ts[&#39;spot&#39;][timegrid.restricted.I] = mean_price_grid[&#39;spot&#39;][timegrid.restricted.I]
-    collect[&#39;sample &#39;+&#39;{:1.0f}&#39;.format(i)] = ts[&#39;spot&#39;]
+<span class="n">collect</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+<span class="n">collect</span><span class="p">[</span><span class="s1">&#39;deterministic&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_hard</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][</span><span class="s1">&#39;battery&#39;</span><span class="p">]</span>
+<span class="n">collect</span><span class="p">[</span><span class="s1">&#39;slp (future: mean)&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="n">out_slp</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][</span><span class="s1">&#39;battery&#39;</span><span class="p">]</span>
+<span class="n">collect</span><span class="p">[</span><span class="s1">&#39;start price&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean_price_grid</span><span class="p">[</span><span class="s1">&#39;spot&#39;</span><span class="p">]</span>
+<span class="n">timegrid</span><span class="o">.</span><span class="n">set_restricted_grid</span><span class="p">(</span><span class="n">end</span> <span class="o">=</span> <span class="n">start_future</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sample_prices_grid</span><span class="p">):</span>
+    <span class="n">ts</span><span class="p">[</span><span class="s1">&#39;spot&#39;</span><span class="p">][</span><span class="n">timegrid</span><span class="o">.</span><span class="n">restricted</span><span class="o">.</span><span class="n">I</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean_price_grid</span><span class="p">[</span><span class="s1">&#39;spot&#39;</span><span class="p">][</span><span class="n">timegrid</span><span class="o">.</span><span class="n">restricted</span><span class="o">.</span><span class="n">I</span><span class="p">]</span>
+    <span class="n">collect</span><span class="p">[</span><span class="s1">&#39;sample &#39;</span><span class="o">+</span><span class="s1">&#39;</span><span class="si">{:1.0f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ts</span><span class="p">[</span><span class="s1">&#39;spot&#39;</span><span class="p">]</span>
 
-fig, ax = plt.subplots(1,2, tight_layout = True, figsize=(14,4))
-collect[[&#39;deterministic&#39;,&#39;slp (future: mean)&#39;]].plot(ax = ax[0])
-collect[[&#39;start price&#39;, &#39;sample 1&#39;, &#39;sample 2&#39;, &#39;sample 3&#39;, &#39;sample 4&#39;]].plot(ax = ax[1], style = &#39;:&#39;)
-ax[0].axvline(x = start_future, c = &#39;r&#39;)
-ax[1].axvline(x = start_future, c = &#39;r&#39;)
-ax[0].legend(loc = &#39;lower left&#39;)
-ax[1].legend(loc = &#39;lower left&#39;)
-plt.show()
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">tight_layout</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">collect</span><span class="p">[[</span><span class="s1">&#39;deterministic&#39;</span><span class="p">,</span><span class="s1">&#39;slp (future: mean)&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">collect</span><span class="p">[[</span><span class="s1">&#39;start price&#39;</span><span class="p">,</span> <span class="s1">&#39;sample 1&#39;</span><span class="p">,</span> <span class="s1">&#39;sample 2&#39;</span><span class="p">,</span> <span class="s1">&#39;sample 3&#39;</span><span class="p">,</span> <span class="s1">&#39;sample 4&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">start_future</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">start_future</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span> <span class="o">=</span> <span class="s1">&#39;lower left&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span> <span class="o">=</span> <span class="s1">&#39;lower left&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -293,22 +293,22 @@ research thread for further work.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>n_test = 1000 # number of samples for backtesting
-# decisions to fix (hard and SLP)
-fix_slp  = {&#39;I&#39;: start_future, &#39;x&#39;: res_slp.x}
-fix_hard = {&#39;I&#39;: start_future, &#39;x&#39;: res_hard.x}
-# draw random prices and perform optimization for future
-sample_prices = get_price(Start, End, n_samples=n_test, sigma = sigma, start_future = start_future)
-values_slp  = []
-values_hard = []
-for mys in sample_prices:
-    my_price = {&#39;spot&#39; :timegrid.values_to_grid(mys)}
-    op_test_hard = portf.setup_optim_problem(my_price, timegrid, fix_time_window=fix_hard)
-    op_test_slp = portf.setup_optim_problem(my_price, timegrid, fix_time_window=fix_slp)
-    res_test_hard = op_test_hard.optimize()
-    res_test_slp  = op_test_slp.optimize()
-    values_slp.append(res_test_slp.value)
-    values_hard.append(res_test_hard.value)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_test</span> <span class="o">=</span> <span class="mi">1000</span> <span class="c1"># number of samples for backtesting</span>
+<span class="c1"># decisions to fix (hard and SLP)</span>
+<span class="n">fix_slp</span>  <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;I&#39;</span><span class="p">:</span> <span class="n">start_future</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">res_slp</span><span class="o">.</span><span class="n">x</span><span class="p">}</span>
+<span class="n">fix_hard</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;I&#39;</span><span class="p">:</span> <span class="n">start_future</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">res_hard</span><span class="o">.</span><span class="n">x</span><span class="p">}</span>
+<span class="c1"># draw random prices and perform optimization for future</span>
+<span class="n">sample_prices</span> <span class="o">=</span> <span class="n">get_price</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="n">n_test</span><span class="p">,</span> <span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">start_future</span> <span class="o">=</span> <span class="n">start_future</span><span class="p">)</span>
+<span class="n">values_slp</span>  <span class="o">=</span> <span class="p">[]</span>
+<span class="n">values_hard</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">mys</span> <span class="ow">in</span> <span class="n">sample_prices</span><span class="p">:</span>
+    <span class="n">my_price</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;spot&#39;</span> <span class="p">:</span><span class="n">timegrid</span><span class="o">.</span><span class="n">values_to_grid</span><span class="p">(</span><span class="n">mys</span><span class="p">)}</span>
+    <span class="n">op_test_hard</span> <span class="o">=</span> <span class="n">portf</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">my_price</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">fix_time_window</span><span class="o">=</span><span class="n">fix_hard</span><span class="p">)</span>
+    <span class="n">op_test_slp</span> <span class="o">=</span> <span class="n">portf</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">my_price</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">fix_time_window</span><span class="o">=</span><span class="n">fix_slp</span><span class="p">)</span>
+    <span class="n">res_test_hard</span> <span class="o">=</span> <span class="n">op_test_hard</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+    <span class="n">res_test_slp</span>  <span class="o">=</span> <span class="n">op_test_slp</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+    <span class="n">values_slp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res_test_slp</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">values_hard</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res_test_hard</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -316,11 +316,11 @@ for mys in sample_prices:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Mean portfolio value hard optimization: &#39;+&#39;{:2.2f}&#39;.format(np.asarray(values_hard).mean()))
-print(&#39;Mean portfolio value SLP optimization: &#39;+&#39;{:2.2f}&#39;.format(np.asarray(values_slp).mean()))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Mean portfolio value hard optimization: &#39;</span><span class="o">+</span><span class="s1">&#39;</span><span class="si">{:2.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values_hard</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Mean portfolio value SLP optimization: &#39;</span><span class="o">+</span><span class="s1">&#39;</span><span class="si">{:2.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values_slp</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()))</span>
 
-print(&#39;Variance portfolio value hard optimization: &#39;+&#39;{:2.2f}&#39;.format(np.asarray(values_hard).var()))
-print(&#39;Variance portfolio value SLP optimization: &#39;+&#39;{:2.2f}&#39;.format(np.asarray(values_slp).var()))
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Variance portfolio value hard optimization: &#39;</span><span class="o">+</span><span class="s1">&#39;</span><span class="si">{:2.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values_hard</span><span class="p">)</span><span class="o">.</span><span class="n">var</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Variance portfolio value SLP optimization: &#39;</span><span class="o">+</span><span class="s1">&#39;</span><span class="si">{:2.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values_slp</span><span class="p">)</span><span class="o">.</span><span class="n">var</span><span class="p">()))</span>
 </pre></div>
 </div>
 </div>
@@ -339,16 +339,16 @@ Variance portfolio value SLP optimization: 497.74
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(2,1, tight_layout = True, figsize=(8,4), sharex = &#39;col&#39;)
-ax[0].hist(np.asarray(values_hard), bins = 20)
-ax[1].hist(np.asarray(values_slp), bins = 20)
-ax[0].set_title(&#39;hard optimization&#39;)
-ax[1].set_xlabel(&#39;portfolio value&#39;)
-ax[1].set_title(&#39;SLP optimization&#39;)
-ax[0].axvline(x = np.asarray(values_hard).mean(), c = &#39;r&#39;, label = &#39;mean&#39;)
-ax[1].axvline(x = np.asarray(values_slp).mean(), c = &#39;r&#39;)
-ax[0].legend()
-plt.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="n">tight_layout</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">sharex</span> <span class="o">=</span> <span class="s1">&#39;col&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values_hard</span><span class="p">),</span> <span class="n">bins</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values_slp</span><span class="p">),</span> <span class="n">bins</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;hard optimization&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;portfolio value&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;SLP optimization&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values_hard</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">c</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values_slp</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">c</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

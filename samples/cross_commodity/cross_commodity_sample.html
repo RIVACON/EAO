@@ -120,14 +120,14 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
-import pandas as pd
-import datetime as dt
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
 
-import eaopack as eao
+<span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
 
-import matplotlib.pyplot as plt
-%matplotlib inline
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
 </pre></div>
 </div>
 </div>
@@ -141,10 +141,10 @@ import matplotlib.pyplot as plt
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>unit_power = eao.assets.Unit(volume = &#39;MWh(el)&#39;, flow = &#39;MW(el)&#39;)
-node_power = eao.assets.Node(name = &#39;power&#39;, unit = unit_power)
-unit_heat  = eao.assets.Unit(volume = &#39;MWh(th)&#39;, flow = &#39;MW(th)&#39;)
-node_heat     = eao.assets.Node(name = &#39;heat&#39;, unit = unit_heat)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unit_power</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">volume</span> <span class="o">=</span> <span class="s1">&#39;MWh(el)&#39;</span><span class="p">,</span> <span class="n">flow</span> <span class="o">=</span> <span class="s1">&#39;MW(el)&#39;</span><span class="p">)</span>
+<span class="n">node_power</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;power&#39;</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">unit_power</span><span class="p">)</span>
+<span class="n">unit_heat</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">volume</span> <span class="o">=</span> <span class="s1">&#39;MWh(th)&#39;</span><span class="p">,</span> <span class="n">flow</span> <span class="o">=</span> <span class="s1">&#39;MW(th)&#39;</span><span class="p">)</span>
+<span class="n">node_heat</span>     <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;heat&#39;</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">unit_heat</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -163,30 +163,30 @@ node_heat     = eao.assets.Node(name = &#39;heat&#39;, unit = unit_heat)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span>## create battery
-storage = eao.assets.Storage(name       = &#39;heat_storage&#39;,
-                            nodes       = node_heat,
-                            cap_out     = .5,
-                            cap_in      = .5,
-                            size        = 3.,
-                            start_level = 0.,
-                            end_level   = 0.,
-                            eff_in      = 0.9,
-                            block_size  = &#39;d&#39;)     # optimization for each day independently
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="c1">## create battery</span>
+<span class="n">storage</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Storage</span><span class="p">(</span><span class="n">name</span>       <span class="o">=</span> <span class="s1">&#39;heat_storage&#39;</span><span class="p">,</span>
+                            <span class="n">nodes</span>       <span class="o">=</span> <span class="n">node_heat</span><span class="p">,</span>
+                            <span class="n">cap_out</span>     <span class="o">=</span> <span class="mf">.5</span><span class="p">,</span>
+                            <span class="n">cap_in</span>      <span class="o">=</span> <span class="mf">.5</span><span class="p">,</span>
+                            <span class="n">size</span>        <span class="o">=</span> <span class="mf">3.</span><span class="p">,</span>
+                            <span class="n">start_level</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span>
+                            <span class="n">end_level</span>   <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span>
+                            <span class="n">eff_in</span>      <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
+                            <span class="n">block_size</span>  <span class="o">=</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>     <span class="c1"># optimization for each day independently</span>
 
-power2heat   = eao.assets.MultiCommodityContract(name = &#39;power-2-heat&#39;, min_cap= 0, max_cap = 1, nodes = [node_power, node_heat], factors_commodities=[-1, 2])
-power_gen    = eao.assets.MultiCommodityContract(name = &#39;CHP&#39;, extra_costs = 50, min_cap= 0, max_cap=1, nodes = [node_power, node_heat], factors_commodities=[0.8, 2.2])
-market       = eao.assets.SimpleContract(name = &#39;power_market&#39;, price=&#39;price&#39;, min_cap= -10, max_cap=10, nodes = node_power)
+<span class="n">power2heat</span>   <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">MultiCommodityContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;power-2-heat&#39;</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max_cap</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_power</span><span class="p">,</span> <span class="n">node_heat</span><span class="p">],</span> <span class="n">factors_commodities</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">power_gen</span>    <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">MultiCommodityContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;CHP&#39;</span><span class="p">,</span> <span class="n">extra_costs</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_power</span><span class="p">,</span> <span class="n">node_heat</span><span class="p">],</span> <span class="n">factors_commodities</span><span class="o">=</span><span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">])</span>
+<span class="n">market</span>       <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;power_market&#39;</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">node_power</span><span class="p">)</span>
 
-Start = dt.date(2020,1,1)
-End   = dt.date(2020,1,3)
-dates = pd.date_range(Start, End, freq = &#39;h&#39;).values
+<span class="n">Start</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">End</span>   <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;h&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
 
-heat_curve = {&#39;start&#39;  : dates,
-                &#39;values&#39; : - np.sin(np.linspace(0,3, len(dates)))}
-heat_demand  = eao.assets.Contract(name = &#39;heat_demand&#39;,  extra_costs = -20, min_cap= heat_curve, max_cap=heat_curve, nodes = node_heat)
-portf        = eao.portfolio.Portfolio([storage, power2heat, power_gen, market, heat_demand])
-portf.set_timegrid(eao.assets.Timegrid(Start, End, freq = &#39;h&#39;))
+<span class="n">heat_curve</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span>  <span class="p">:</span> <span class="n">dates</span><span class="p">,</span>
+                <span class="s1">&#39;values&#39;</span> <span class="p">:</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)))}</span>
+<span class="n">heat_demand</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Contract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;heat_demand&#39;</span><span class="p">,</span>  <span class="n">extra_costs</span> <span class="o">=</span> <span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="n">heat_curve</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span><span class="n">heat_curve</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">node_heat</span><span class="p">)</span>
+<span class="n">portf</span>        <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">storage</span><span class="p">,</span> <span class="n">power2heat</span><span class="p">,</span> <span class="n">power_gen</span><span class="p">,</span> <span class="n">market</span><span class="p">,</span> <span class="n">heat_demand</span><span class="p">])</span>
+<span class="n">portf</span><span class="o">.</span><span class="n">set_timegrid</span><span class="p">(</span><span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Timegrid</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;h&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -199,7 +199,7 @@ portf.set_timegrid(eao.assets.Timegrid(Start, End, freq = &#39;h&#39;))
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>eao.network_graphs.create_graph(portf = portf, title = &#39;Simple portfolio example&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">portf</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Simple portfolio example&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -219,12 +219,12 @@ portf.set_timegrid(eao.assets.Timegrid(Start, End, freq = &#39;h&#39;))
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>prices = pd.read_csv(&#39;2020_price_sample.csv&#39;)
-# cast to timegrid (in this case not necessary, but may be if input granularity does not correspond to timegrid in optimization)
-prices = {&#39;price&#39;: portf.timegrid.values_to_grid({&#39;start&#39;: pd.to_datetime(prices[&#39;start&#39;].values), &#39;values&#39;: prices[&#39;price&#39;].values})}
-op     = portf.setup_optim_problem(prices)
-res    = op.optimize()
-out    = eao.io.extract_output(portf, op, res, prices)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">prices</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;2020_price_sample.csv&#39;</span><span class="p">)</span>
+<span class="c1"># cast to timegrid (in this case not necessary, but may be if input granularity does not correspond to timegrid in optimization)</span>
+<span class="n">prices</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;price&#39;</span><span class="p">:</span> <span class="n">portf</span><span class="o">.</span><span class="n">timegrid</span><span class="o">.</span><span class="n">values_to_grid</span><span class="p">({</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">prices</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="s1">&#39;values&#39;</span><span class="p">:</span> <span class="n">prices</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">})}</span>
+<span class="n">op</span>     <span class="o">=</span> <span class="n">portf</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span>
+<span class="n">res</span>    <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+<span class="n">out</span>    <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">extract_output</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">prices</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -235,22 +235,22 @@ out    = eao.io.extract_output(portf, op, res, prices)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>allcols = out[&#39;dispatch&#39;].columns.values
-heat = []
-power = []
-for mycol in allcols:
-    if &#39;(heat)&#39; in mycol:
-        heat.append(mycol)
-    else:
-        power.append(mycol)
-fig, ax = plt.subplots(1,3, tight_layout = True, figsize=(12,4))
-out[&#39;dispatch&#39;][heat].plot(ax = ax[0], style = &#39;-&#39;)
-out[&#39;dispatch&#39;][power].plot(ax = ax[1], style = &#39;-&#39;)
-out[&#39;prices&#39;][&#39;input data: price&#39;].plot(ax = ax[2], style = &#39;-&#39;)
-ax[0].set_title(&#39;heat&#39;)
-ax[1].set_title(&#39;power&#39;)
-ax[2].set_title(&#39;power price&#39;)
-plt.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">allcols</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span>
+<span class="n">heat</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">power</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">mycol</span> <span class="ow">in</span> <span class="n">allcols</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s1">&#39;(heat)&#39;</span> <span class="ow">in</span> <span class="n">mycol</span><span class="p">:</span>
+        <span class="n">heat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mycol</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">power</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mycol</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">tight_layout</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][</span><span class="n">heat</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
+<span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][</span><span class="n">power</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
+<span class="n">out</span><span class="p">[</span><span class="s1">&#39;prices&#39;</span><span class="p">][</span><span class="s1">&#39;input data: price&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;heat&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;power&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;power price&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <br/></pre></div>
 </div>
 </div>

@@ -112,17 +112,17 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import os, sys
-# in case eao is not installed, set path
-myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
-sys.path.append(myDir)
-addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
-sys.path.append(addDir)
-import eaopack as eao
-import pandas as pd
-import datetime as dt
-import matplotlib.pyplot as plt
-%matplotlib inline
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">sys</span>
+<span class="c1"># in case eao is not installed, set path</span>
+<span class="n">myDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">myDir</span><span class="p">)</span>
+<span class="n">addDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../../../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addDir</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
 </pre></div>
 </div>
 </div>
@@ -135,21 +135,21 @@ import matplotlib.pyplot as plt
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>data = pd.read_excel(&#39;DE_dataset.xlsx&#39;)
-data.set_index(&#39;Date&#39;, inplace=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s1">&#39;DE_dataset.xlsx&#39;</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-### at &gt; 2500 FLH
-grid_fees = {}
-grid_fees[&#39;fix&#39;] = 166000 # €/MW
-grid_fees[&#39;var&#39;] =     13 # €/MWh
+<span class="c1">### at &gt; 2500 FLH</span>
+<span class="n">grid_fees</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">grid_fees</span><span class="p">[</span><span class="s1">&#39;fix&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">166000</span> <span class="c1"># €/MW</span>
+<span class="n">grid_fees</span><span class="p">[</span><span class="s1">&#39;var&#39;</span><span class="p">]</span> <span class="o">=</span>     <span class="mi">13</span> <span class="c1"># €/MWh</span>
 
-######################### settings
-cons    = 500 # MWh # total consumption per year (scaling the profile)
-cap_pv  = 0.25 # MW (1000 flh) capacity of the on-site PV
-battery_data = {} # capacity, size and efficiency of an on-site battery
-battery_data[&#39;cap&#39;]  =  .25 # 250 kW
-battery_data[&#39;size&#39;] = 2 * battery_data[&#39;cap&#39;] # 2 hours
-battery_data[&#39;eff&#39;]  = 0.9 # 90% cycle efficiency
+<span class="c1">######################### settings</span>
+<span class="n">cons</span>    <span class="o">=</span> <span class="mi">500</span> <span class="c1"># MWh # total consumption per year (scaling the profile)</span>
+<span class="n">cap_pv</span>  <span class="o">=</span> <span class="mf">0.25</span> <span class="c1"># MW (1000 flh) capacity of the on-site PV</span>
+<span class="n">battery_data</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># capacity, size and efficiency of an on-site battery</span>
+<span class="n">battery_data</span><span class="p">[</span><span class="s1">&#39;cap&#39;</span><span class="p">]</span>  <span class="o">=</span>  <span class="mf">.25</span> <span class="c1"># 250 kW</span>
+<span class="n">battery_data</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">battery_data</span><span class="p">[</span><span class="s1">&#39;cap&#39;</span><span class="p">]</span> <span class="c1"># 2 hours</span>
+<span class="n">battery_data</span><span class="p">[</span><span class="s1">&#39;eff&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="mf">0.9</span> <span class="c1"># 90% cycle efficiency</span>
 </pre></div>
 </div>
 </div>
@@ -158,20 +158,20 @@ battery_data[&#39;eff&#39;]  = 0.9 # 90% cycle efficiency
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>######## prepare everything
-## basics
-S = dt.date(2023,11,1)
-E = dt.date(2024,11,1)
-timegrid = eao.Timegrid(S, E, freq = &#39;h&#39;) # hourly
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">######## prepare everything</span>
+<span class="c1">## basics</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2023</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">E</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">timegrid</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">Timegrid</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;h&#39;</span><span class="p">)</span> <span class="c1"># hourly</span>
 
-## settings
-input_ts = pd.DataFrame()
-input_ts[&#39;cons&#39;]  = -data[&#39;SLP gewerbe&#39;]*cons
-input_ts[&#39;pv&#39;]    =  data[&#39;pv profile&#39;]*cap_pv
-input_ts[&#39;price&#39;] =  data[&#39;price dah&#39;]
+<span class="c1">## settings</span>
+<span class="n">input_ts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+<span class="n">input_ts</span><span class="p">[</span><span class="s1">&#39;cons&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="o">-</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;SLP gewerbe&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">cons</span>
+<span class="n">input_ts</span><span class="p">[</span><span class="s1">&#39;pv&#39;</span><span class="p">]</span>    <span class="o">=</span>  <span class="n">data</span><span class="p">[</span><span class="s1">&#39;pv profile&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">cap_pv</span>
+<span class="n">input_ts</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span> <span class="o">=</span>  <span class="n">data</span><span class="p">[</span><span class="s1">&#39;price dah&#39;</span><span class="p">]</span>
 
-# cast to timegrid
-input_ts = timegrid.prices_to_grid(input_ts)
+<span class="c1"># cast to timegrid</span>
+<span class="n">input_ts</span> <span class="o">=</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">prices_to_grid</span><span class="p">(</span><span class="n">input_ts</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -180,61 +180,61 @@ input_ts = timegrid.prices_to_grid(input_ts)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>### Structural setup, distinguishing own assets and supply from the grid
-behind_meter = eao.Node(&#39;behind meter&#39;)
-front_of_meter = eao.Node(&#39;front of meter&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">### Structural setup, distinguishing own assets and supply from the grid</span>
+<span class="n">behind_meter</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;behind meter&#39;</span><span class="p">)</span>
+<span class="n">front_of_meter</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;front of meter&#39;</span><span class="p">)</span>
 
-### Here: No flexibility in our consumption. Easily changed by adjusting min_cap/max_cap
-consumption = eao.assets.SimpleContract(name       = &#39;consumption&#39;,
-                                        nodes      = behind_meter,
-                                        min_cap    = &#39;cons&#39;,
-                                        max_cap    = &#39;cons&#39;)
-### Our own PV module. Also here without flexibility -- easily changed
-pv          = eao.assets.SimpleContract(name       = &#39;pv&#39;,
-                                        nodes      = behind_meter,
-                                        min_cap    = &#39;pv&#39;,
-                                        max_cap    = &#39;pv&#39;)
-### An on-site battery constituting out flexibility
-battery     = eao.assets.Storage(       name       = &#39;battery&#39;,
-                                        nodes      = behind_meter,
-                                        cap_in     = battery_data[&#39;cap&#39;],
-                                        cap_out    = battery_data[&#39;cap&#39;],
-                                        eff_in     = battery_data[&#39;eff&#39;],
-                                        size       = battery_data[&#39;size&#39;],
-                                        start_level= 0.5 * battery_data[&#39;size&#39;],
-                                        end_level  = 0.5 * battery_data[&#39;size&#39;],
-                                        block_size = &#39;d&#39;,   # daily optimization of battery (leaving it 1/2 full every day)
-                                        no_simult_in_out = False) # Important: The battery may now charge and discharge at the same time and
-                                                                  # &quot;burn&quot; power due to efficiency &lt; 100%. This makes computation much faster (no MIP)
+<span class="c1">### Here: No flexibility in our consumption. Easily changed by adjusting min_cap/max_cap</span>
+<span class="n">consumption</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span>       <span class="o">=</span> <span class="s1">&#39;consumption&#39;</span><span class="p">,</span>
+                                        <span class="n">nodes</span>      <span class="o">=</span> <span class="n">behind_meter</span><span class="p">,</span>
+                                        <span class="n">min_cap</span>    <span class="o">=</span> <span class="s1">&#39;cons&#39;</span><span class="p">,</span>
+                                        <span class="n">max_cap</span>    <span class="o">=</span> <span class="s1">&#39;cons&#39;</span><span class="p">)</span>
+<span class="c1">### Our own PV module. Also here without flexibility -- easily changed</span>
+<span class="n">pv</span>          <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span>       <span class="o">=</span> <span class="s1">&#39;pv&#39;</span><span class="p">,</span>
+                                        <span class="n">nodes</span>      <span class="o">=</span> <span class="n">behind_meter</span><span class="p">,</span>
+                                        <span class="n">min_cap</span>    <span class="o">=</span> <span class="s1">&#39;pv&#39;</span><span class="p">,</span>
+                                        <span class="n">max_cap</span>    <span class="o">=</span> <span class="s1">&#39;pv&#39;</span><span class="p">)</span>
+<span class="c1">### An on-site battery constituting out flexibility</span>
+<span class="n">battery</span>     <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Storage</span><span class="p">(</span>       <span class="n">name</span>       <span class="o">=</span> <span class="s1">&#39;battery&#39;</span><span class="p">,</span>
+                                        <span class="n">nodes</span>      <span class="o">=</span> <span class="n">behind_meter</span><span class="p">,</span>
+                                        <span class="n">cap_in</span>     <span class="o">=</span> <span class="n">battery_data</span><span class="p">[</span><span class="s1">&#39;cap&#39;</span><span class="p">],</span>
+                                        <span class="n">cap_out</span>    <span class="o">=</span> <span class="n">battery_data</span><span class="p">[</span><span class="s1">&#39;cap&#39;</span><span class="p">],</span>
+                                        <span class="n">eff_in</span>     <span class="o">=</span> <span class="n">battery_data</span><span class="p">[</span><span class="s1">&#39;eff&#39;</span><span class="p">],</span>
+                                        <span class="n">size</span>       <span class="o">=</span> <span class="n">battery_data</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">],</span>
+                                        <span class="n">start_level</span><span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">battery_data</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">],</span>
+                                        <span class="n">end_level</span>  <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">battery_data</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">],</span>
+                                        <span class="n">block_size</span> <span class="o">=</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span>   <span class="c1"># daily optimization of battery (leaving it 1/2 full every day)</span>
+                                        <span class="n">no_simult_in_out</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="c1"># Important: The battery may now charge and discharge at the same time and</span>
+                                                                  <span class="c1"># &quot;burn&quot; power due to efficiency &lt; 100%. This makes computation much faster (no MIP)</span>
 
-### Supply via the grid. Note that we enabling scaling the grid connection -- since grid fees
-#   apply on a yearly basis for the maximum load (which we will minimize utilizing our battery)
-supply  = eao.assets.SimpleContract(    name = &#39;supply&#39;,
-                                        nodes       = front_of_meter,
-                                        price       = &#39;price&#39;,
-                                        extra_costs = .5,  # fee from supplier
-                                        min_cap     = 0,
-                                        max_cap     = 1)
-grid_feedin = eao.assets.Transport(     name   = &#39;grid_out&#39;,  # unlimited feed in capacity
-                                        nodes  = [behind_meter, front_of_meter],
-                                        min_cap = 0,
-                                        max_cap = 1)
-grid_consumption_normed = eao.assets.Transport(name   = &#39;grid_in_normed&#39;,
-                                               nodes  = [front_of_meter, behind_meter],
-                                               costs_const = grid_fees[&#39;var&#39;], # variable grid fees
-                                               min_cap= 0,
-                                               max_cap= 1) # normed capacity (to 1 MW)
-grid_consumption      = eao.assets.ScaledAsset(name       = &#39;grid_in&#39;,
-                                               base_asset = grid_consumption_normed,
-                                               max_scale  = 1000,
-                                               fix_costs  = grid_fees[&#39;fix&#39;]/8760) # yearly fix capacity costs (here scaled to hourly as main time unit)
-### We can feed in our PV own production - here at day ahead prices. If there are feed-in tariffs, price can easily be changed
-feedin     = eao.assets.SimpleContract(name        = &#39;feedin&#39;,
-                                       nodes       = front_of_meter,
-                                       price       = &#39;price&#39;, # assuming no feed in tariff
-                                       min_cap     = -1000,
-                                       max_cap     = 0)
-portf = eao.Portfolio([supply, consumption, grid_feedin, grid_consumption, pv, feedin, battery])
+<span class="c1">### Supply via the grid. Note that we enabling scaling the grid connection -- since grid fees</span>
+<span class="c1">#   apply on a yearly basis for the maximum load (which we will minimize utilizing our battery)</span>
+<span class="n">supply</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span>    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;supply&#39;</span><span class="p">,</span>
+                                        <span class="n">nodes</span>       <span class="o">=</span> <span class="n">front_of_meter</span><span class="p">,</span>
+                                        <span class="n">price</span>       <span class="o">=</span> <span class="s1">&#39;price&#39;</span><span class="p">,</span>
+                                        <span class="n">extra_costs</span> <span class="o">=</span> <span class="mf">.5</span><span class="p">,</span>  <span class="c1"># fee from supplier</span>
+                                        <span class="n">min_cap</span>     <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                                        <span class="n">max_cap</span>     <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">grid_feedin</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Transport</span><span class="p">(</span>     <span class="n">name</span>   <span class="o">=</span> <span class="s1">&#39;grid_out&#39;</span><span class="p">,</span>  <span class="c1"># unlimited feed in capacity</span>
+                                        <span class="n">nodes</span>  <span class="o">=</span> <span class="p">[</span><span class="n">behind_meter</span><span class="p">,</span> <span class="n">front_of_meter</span><span class="p">],</span>
+                                        <span class="n">min_cap</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                                        <span class="n">max_cap</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">grid_consumption_normed</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Transport</span><span class="p">(</span><span class="n">name</span>   <span class="o">=</span> <span class="s1">&#39;grid_in_normed&#39;</span><span class="p">,</span>
+                                               <span class="n">nodes</span>  <span class="o">=</span> <span class="p">[</span><span class="n">front_of_meter</span><span class="p">,</span> <span class="n">behind_meter</span><span class="p">],</span>
+                                               <span class="n">costs_const</span> <span class="o">=</span> <span class="n">grid_fees</span><span class="p">[</span><span class="s1">&#39;var&#39;</span><span class="p">],</span> <span class="c1"># variable grid fees</span>
+                                               <span class="n">min_cap</span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                                               <span class="n">max_cap</span><span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># normed capacity (to 1 MW)</span>
+<span class="n">grid_consumption</span>      <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">ScaledAsset</span><span class="p">(</span><span class="n">name</span>       <span class="o">=</span> <span class="s1">&#39;grid_in&#39;</span><span class="p">,</span>
+                                               <span class="n">base_asset</span> <span class="o">=</span> <span class="n">grid_consumption_normed</span><span class="p">,</span>
+                                               <span class="n">max_scale</span>  <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+                                               <span class="n">fix_costs</span>  <span class="o">=</span> <span class="n">grid_fees</span><span class="p">[</span><span class="s1">&#39;fix&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">8760</span><span class="p">)</span> <span class="c1"># yearly fix capacity costs (here scaled to hourly as main time unit)</span>
+<span class="c1">### We can feed in our PV own production - here at day ahead prices. If there are feed-in tariffs, price can easily be changed</span>
+<span class="n">feedin</span>     <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span>        <span class="o">=</span> <span class="s1">&#39;feedin&#39;</span><span class="p">,</span>
+                                       <span class="n">nodes</span>       <span class="o">=</span> <span class="n">front_of_meter</span><span class="p">,</span>
+                                       <span class="n">price</span>       <span class="o">=</span> <span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="c1"># assuming no feed in tariff</span>
+                                       <span class="n">min_cap</span>     <span class="o">=</span> <span class="o">-</span><span class="mi">1000</span><span class="p">,</span>
+                                       <span class="n">max_cap</span>     <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">portf</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">supply</span><span class="p">,</span> <span class="n">consumption</span><span class="p">,</span> <span class="n">grid_feedin</span><span class="p">,</span> <span class="n">grid_consumption</span><span class="p">,</span> <span class="n">pv</span><span class="p">,</span> <span class="n">feedin</span><span class="p">,</span> <span class="n">battery</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -243,7 +243,7 @@ portf = eao.Portfolio([supply, consumption, grid_feedin, grid_consumption, pv, f
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>eao.network_graphs.create_graph(portf)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -262,9 +262,9 @@ portf = eao.Portfolio([supply, consumption, grid_feedin, grid_consumption, pv, f
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>out = eao.optimize(portf=portf, timegrid=timegrid, data=input_ts)
-print(out[&#39;summary&#39;])
-eao.io.output_to_file(output=out, file_name=&#39;test.xlsx&#39;) ### All details. Have look into the file
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="o">=</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">=</span><span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">input_ts</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">])</span>
+<span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">output_to_file</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;test.xlsx&#39;</span><span class="p">)</span> <span class="c1">### All details. Have look into the file</span>
 </pre></div>
 </div>
 </div>
@@ -284,8 +284,8 @@ value     -29974.687926
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portf_benchmark = eao.portfolio.Portfolio([supply, consumption, grid_feedin, grid_consumption, pv, feedin])
-out_benchmark   = eao.optimize(portf=portf_benchmark, timegrid=timegrid, data=input_ts)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">portf_benchmark</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">supply</span><span class="p">,</span> <span class="n">consumption</span><span class="p">,</span> <span class="n">grid_feedin</span><span class="p">,</span> <span class="n">grid_consumption</span><span class="p">,</span> <span class="n">pv</span><span class="p">,</span> <span class="n">feedin</span><span class="p">])</span>
+<span class="n">out_benchmark</span>   <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="o">=</span><span class="n">portf_benchmark</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">=</span><span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">input_ts</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -297,9 +297,9 @@ out_benchmark   = eao.optimize(portf=portf_benchmark, timegrid=timegrid, data=in
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Overall costs with battery:    &#39;+ str(round(-out[&#39;summary&#39;].loc[&#39;value&#39;, &#39;Values&#39;])))
-print(&#39;Overall costs without battery: &#39;+ str(round(-out_benchmark[&#39;summary&#39;].loc[&#39;value&#39;, &#39;Values&#39;])))
-print(&#39;So the battery saved us:       &#39;+ str(round(out[&#39;summary&#39;].loc[&#39;value&#39;, &#39;Values&#39;] - out_benchmark[&#39;summary&#39;].loc[&#39;value&#39;, &#39;Values&#39;])))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Overall costs with battery:    &#39;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="o">-</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;Values&#39;</span><span class="p">])))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Overall costs without battery: &#39;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="o">-</span><span class="n">out_benchmark</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;Values&#39;</span><span class="p">])))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;So the battery saved us:       &#39;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;Values&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">out_benchmark</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;Values&#39;</span><span class="p">])))</span>
 </pre></div>
 </div>
 </div>
@@ -319,9 +319,9 @@ So the battery saved us:       19519
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Quantities (MWh) with battery:\n.................................... \n&#39;+str(round(out[&#39;dispatch&#39;].sum())))
-print()
-print(&#39;Quantities (MWh) without battery:\n.................................... \n&#39;+str(round(out_benchmark[&#39;dispatch&#39;].sum())))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Quantities (MWh) with battery:</span><span class="se">\n</span><span class="s1">.................................... </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())))</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Quantities (MWh) without battery:</span><span class="se">\n</span><span class="s1">.................................... </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">out_benchmark</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())))</span>
 </pre></div>
 </div>
 </div>
@@ -360,10 +360,10 @@ dtype: float64
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Costs (EUR) with battery:\n.................................... \n&#39;+str(round(out[&#39;DCF&#39;].sum())))
-print(&#39;Total:  &#39;+ str(out[&#39;DCF&#39;].sum().sum().round())+&#39;\n&#39;)
-print(&#39;Costs (EUR) without battery:\n.................................... \n&#39;+str(round(out_benchmark[&#39;DCF&#39;].sum())))
-print(&#39;Total:  &#39;+ str(out_benchmark[&#39;DCF&#39;].sum().sum().round())+&#39;\n&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Costs (EUR) with battery:</span><span class="se">\n</span><span class="s1">.................................... </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;DCF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Total:  &#39;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;DCF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">())</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Costs (EUR) without battery:</span><span class="se">\n</span><span class="s1">.................................... </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">out_benchmark</span><span class="p">[</span><span class="s1">&#39;DCF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Total:  &#39;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">out_benchmark</span><span class="p">[</span><span class="s1">&#39;DCF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">())</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -409,8 +409,8 @@ Total:  -49494.0
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Grid fixed costs (EUR) with battery:\n.................................................. \n&#39;+str(out[&#39;special&#39;].round(3))+&#39;\n&#39;)
-print(&#39;Grid fixed costs (EUR) without battery:\n.................................................. \n&#39;+str(out_benchmark[&#39;special&#39;].round(3)))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Grid fixed costs (EUR) with battery:</span><span class="se">\n</span><span class="s1">.................................................. </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;special&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Grid fixed costs (EUR) without battery:</span><span class="se">\n</span><span class="s1">.................................................. </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">out_benchmark</span><span class="p">[</span><span class="s1">&#39;special&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
@@ -438,8 +438,8 @@ Grid fixed costs (EUR) without battery:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portf_start = eao.portfolio.Portfolio([supply, consumption, grid_feedin, grid_consumption, feedin])
-out_start   = eao.optimize(portf=portf_start, timegrid=timegrid, data=input_ts)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">portf_start</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">supply</span><span class="p">,</span> <span class="n">consumption</span><span class="p">,</span> <span class="n">grid_feedin</span><span class="p">,</span> <span class="n">grid_consumption</span><span class="p">,</span> <span class="n">feedin</span><span class="p">])</span>
+<span class="n">out_start</span>   <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="o">=</span><span class="n">portf_start</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">=</span><span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">input_ts</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -451,11 +451,11 @@ out_start   = eao.optimize(portf=portf_start, timegrid=timegrid, data=input_ts)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## bookkeeping - looking at cost components in different scenarios. Attention - costs are negative numbers
-start  = -out_start[&#39;summary&#39;].loc[&#39;value&#39;, &#39;Values&#39;] # no assets
-with_pv = -out_benchmark[&#39;summary&#39;].loc[&#39;value&#39;, &#39;Values&#39;]  # PV, no battery
-saving_supply = -((out_benchmark[&#39;DCF&#39;][&#39;supply&#39;].sum() + out_benchmark[&#39;DCF&#39;][&#39;feedin&#39;].sum())- (out[&#39;DCF&#39;][&#39;supply&#39;].sum() + out[&#39;DCF&#39;][&#39;feedin&#39;].sum()))
-saving_grid   = -(out_benchmark[&#39;DCF&#39;][&#39;grid_in&#39;].sum() - out[&#39;DCF&#39;][&#39;grid_in&#39;].sum())
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## bookkeeping - looking at cost components in different scenarios. Attention - costs are negative numbers</span>
+<span class="n">start</span>  <span class="o">=</span> <span class="o">-</span><span class="n">out_start</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;Values&#39;</span><span class="p">]</span> <span class="c1"># no assets</span>
+<span class="n">with_pv</span> <span class="o">=</span> <span class="o">-</span><span class="n">out_benchmark</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;Values&#39;</span><span class="p">]</span>  <span class="c1"># PV, no battery</span>
+<span class="n">saving_supply</span> <span class="o">=</span> <span class="o">-</span><span class="p">((</span><span class="n">out_benchmark</span><span class="p">[</span><span class="s1">&#39;DCF&#39;</span><span class="p">][</span><span class="s1">&#39;supply&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">out_benchmark</span><span class="p">[</span><span class="s1">&#39;DCF&#39;</span><span class="p">][</span><span class="s1">&#39;feedin&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">-</span> <span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;DCF&#39;</span><span class="p">][</span><span class="s1">&#39;supply&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;DCF&#39;</span><span class="p">][</span><span class="s1">&#39;feedin&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<span class="n">saving_grid</span>   <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">out_benchmark</span><span class="p">[</span><span class="s1">&#39;DCF&#39;</span><span class="p">][</span><span class="s1">&#39;grid_in&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;DCF&#39;</span><span class="p">][</span><span class="s1">&#39;grid_in&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>
@@ -463,32 +463,32 @@ saving_grid   = -(out_benchmark[&#39;DCF&#39;][&#39;grid_in&#39;].sum() - out[&#
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## create a waterfall chart. Thanks for the great module provided by the waterfall_ax team! Very handy
-from waterfall_ax import WaterfallChart
-import warnings
-warnings.filterwarnings(&#39;ignore&#39;)
-import matplotlib.pyplot as plt
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## create a waterfall chart. Thanks for the great module provided by the waterfall_ax team! Very handy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">waterfall_ax</span><span class="w"> </span><span class="kn">import</span> <span class="n">WaterfallChart</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-# Cumulative values
-step_names = [&#39;Start: grid supply only&#39;, &#39;savings PV&#39;,          &#39;battery: savings supply&#39;,&#39;and grid fees&#39;]
-step_values = [start,                     with_pv,               with_pv-saving_supply,    with_pv-saving_supply-saving_grid]
-last_step_label = &#39;Total&#39;
-color_kwargs = {
-    &#39;c_bar_pos&#39;: &#39;lightgreen&#39;,
-    &#39;c_bar_neg&#39;: &#39;orange&#39;,
-    &#39;c_bar_start&#39;: &#39;grey&#39;,
-    &#39;c_bar_end&#39;: &#39;grey&#39;,
-    &#39;c_text_pos&#39;: &#39;black&#39;,
-    &#39;c_text_neg&#39;: &#39;black&#39;,
-    &#39;c_text_start&#39;: &#39;black&#39;,
-    &#39;c_text_end&#39;: &#39;black&#39;
-}
-# Plot
-waterfall = WaterfallChart(step_values, step_names=step_names, last_step_label=last_step_label)
-wf_ax = waterfall.plot_waterfall(title=&#39;Reducing power costs with own PV and battery&#39;, color_kwargs=color_kwargs)
-plt.ylabel(&#39;yearly costs in EUR&#39;)
-wf_ax.get_yaxis().set_visible(True)
-plt.show()
+<span class="c1"># Cumulative values</span>
+<span class="n">step_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Start: grid supply only&#39;</span><span class="p">,</span> <span class="s1">&#39;savings PV&#39;</span><span class="p">,</span>          <span class="s1">&#39;battery: savings supply&#39;</span><span class="p">,</span><span class="s1">&#39;and grid fees&#39;</span><span class="p">]</span>
+<span class="n">step_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">start</span><span class="p">,</span>                     <span class="n">with_pv</span><span class="p">,</span>               <span class="n">with_pv</span><span class="o">-</span><span class="n">saving_supply</span><span class="p">,</span>    <span class="n">with_pv</span><span class="o">-</span><span class="n">saving_supply</span><span class="o">-</span><span class="n">saving_grid</span><span class="p">]</span>
+<span class="n">last_step_label</span> <span class="o">=</span> <span class="s1">&#39;Total&#39;</span>
+<span class="n">color_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;c_bar_pos&#39;</span><span class="p">:</span> <span class="s1">&#39;lightgreen&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;c_bar_neg&#39;</span><span class="p">:</span> <span class="s1">&#39;orange&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;c_bar_start&#39;</span><span class="p">:</span> <span class="s1">&#39;grey&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;c_bar_end&#39;</span><span class="p">:</span> <span class="s1">&#39;grey&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;c_text_pos&#39;</span><span class="p">:</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;c_text_neg&#39;</span><span class="p">:</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;c_text_start&#39;</span><span class="p">:</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;c_text_end&#39;</span><span class="p">:</span> <span class="s1">&#39;black&#39;</span>
+<span class="p">}</span>
+<span class="c1"># Plot</span>
+<span class="n">waterfall</span> <span class="o">=</span> <span class="n">WaterfallChart</span><span class="p">(</span><span class="n">step_values</span><span class="p">,</span> <span class="n">step_names</span><span class="o">=</span><span class="n">step_names</span><span class="p">,</span> <span class="n">last_step_label</span><span class="o">=</span><span class="n">last_step_label</span><span class="p">)</span>
+<span class="n">wf_ax</span> <span class="o">=</span> <span class="n">waterfall</span><span class="o">.</span><span class="n">plot_waterfall</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Reducing power costs with own PV and battery&#39;</span><span class="p">,</span> <span class="n">color_kwargs</span><span class="o">=</span><span class="n">color_kwargs</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;yearly costs in EUR&#39;</span><span class="p">)</span>
+<span class="n">wf_ax</span><span class="o">.</span><span class="n">get_yaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

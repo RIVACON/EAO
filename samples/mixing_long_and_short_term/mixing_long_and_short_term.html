@@ -122,22 +122,22 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
-import pandas as pd
-import datetime as dt
-# in case eao is not installed
-import os
-import sys
-# in case eao is not installed, set path
-myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
-sys.path.append(myDir)
-addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
-sys.path.append(addDir)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
+<span class="c1"># in case eao is not installed</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="c1"># in case eao is not installed, set path</span>
+<span class="n">myDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">myDir</span><span class="p">)</span>
+<span class="n">addDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../../../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addDir</span><span class="p">)</span>
 
-import eaopack as eao
+<span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
 
-import matplotlib.pyplot as plt
-%matplotlib inline
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
 </pre></div>
 </div>
 </div>
@@ -155,31 +155,31 @@ import matplotlib.pyplot as plt
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>start = dt.date(2021,1,1)
-end   = dt.date(2021,12,31)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">end</span>   <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">31</span><span class="p">)</span>
 
-# the basic setup
-node = eao.assets.Node(&#39;node&#39;)
-timegrid = eao.assets.Timegrid(start, end, freq = &#39;d&#39;)
-market = eao.assets.SimpleContract(name = &#39;market&#39;, price = &#39;price&#39;, nodes = node ,
-                min_cap= -1000., max_cap=1000., start = start, end = end)
-# daily flex
-st = eao.assets.Storage(&#39;ST storage&#39;, nodes = node, \
-        start=start, end=end, size=10, \
-        cap_in=2/24, cap_out=2/24, start_level=5, end_level=5, \
-        block_size= &#39;W&#39;)
-# weekly flex
-lt = eao.assets.Storage(&#39;LT storage&#39;, nodes = node, \
-        start=start, end=end, size=500, \
-        cap_in=2/24, cap_out=2/24, start_level=100, end_level=100, \
-        freq = &#39;14d&#39;)
+<span class="c1"># the basic setup</span>
+<span class="n">node</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">)</span>
+<span class="n">timegrid</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Timegrid</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>
+<span class="n">market</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;market&#39;</span><span class="p">,</span> <span class="n">price</span> <span class="o">=</span> <span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">node</span> <span class="p">,</span>
+                <span class="n">min_cap</span><span class="o">=</span> <span class="o">-</span><span class="mf">1000.</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span><span class="mf">1000.</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">end</span><span class="p">)</span>
+<span class="c1"># daily flex</span>
+<span class="n">st</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Storage</span><span class="p">(</span><span class="s1">&#39;ST storage&#39;</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">node</span><span class="p">,</span> \
+        <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> \
+        <span class="n">cap_in</span><span class="o">=</span><span class="mi">2</span><span class="o">/</span><span class="mi">24</span><span class="p">,</span> <span class="n">cap_out</span><span class="o">=</span><span class="mi">2</span><span class="o">/</span><span class="mi">24</span><span class="p">,</span> <span class="n">start_level</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">end_level</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> \
+        <span class="n">block_size</span><span class="o">=</span> <span class="s1">&#39;W&#39;</span><span class="p">)</span>
+<span class="c1"># weekly flex</span>
+<span class="n">lt</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Storage</span><span class="p">(</span><span class="s1">&#39;LT storage&#39;</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">node</span><span class="p">,</span> \
+        <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> \
+        <span class="n">cap_in</span><span class="o">=</span><span class="mi">2</span><span class="o">/</span><span class="mi">24</span><span class="p">,</span> <span class="n">cap_out</span><span class="o">=</span><span class="mi">2</span><span class="o">/</span><span class="mi">24</span><span class="p">,</span> <span class="n">start_level</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">end_level</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> \
+        <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;14d&#39;</span><span class="p">)</span>
 
-# price with seasonal and daily pattern
-prices ={&#39;price&#39;: 10*np.sin(np.linspace(0,2*np.pi, timegrid.T)) \
-                + 2*np.sin(np.linspace(0,7*12*np.pi, timegrid.T)) \
-                + 2*np.sin(np.linspace(0,7**24*2*np.pi, timegrid.T))}
+<span class="c1"># price with seasonal and daily pattern</span>
+<span class="n">prices</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;price&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">))</span> \
+                <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">7</span><span class="o">*</span><span class="mi">12</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">))</span> \
+                <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">7</span><span class="o">**</span><span class="mi">24</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">))}</span>
 
-portf = eao.portfolio.Portfolio([market, st, lt])
+<span class="n">portf</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">market</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">lt</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -188,7 +188,7 @@ portf = eao.portfolio.Portfolio([market, st, lt])
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>eao.network_graphs.create_graph(portf = portf, title = &#39;Simple portfolio example&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">portf</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Simple portfolio example&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -207,9 +207,9 @@ portf = eao.portfolio.Portfolio([market, st, lt])
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>op    = portf.setup_optim_problem(prices, timegrid)
-res = op.optimize()
-out = eao.io.extract_output(portf, op, res, prices)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">op</span>    <span class="o">=</span> <span class="n">portf</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">prices</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">extract_output</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">prices</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -220,12 +220,12 @@ out = eao.io.extract_output(portf, op, res, prices)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1,2, tight_layout = True, figsize=(12,4))
-out[&#39;dispatch&#39;][[&#39;ST storage&#39;, &#39;LT storage&#39;]].plot(ax = ax[0], style = &#39;-&#39;)
-out[&#39;prices&#39;][&#39;input price: price&#39;].plot(ax = ax[1], style = &#39;-&#39;)
-ax[0].set_title(&#39;power&#39;)
-ax[1].set_title(&#39;power price&#39;)
-plt.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">tight_layout</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][[</span><span class="s1">&#39;ST storage&#39;</span><span class="p">,</span> <span class="s1">&#39;LT storage&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
+<span class="n">out</span><span class="p">[</span><span class="s1">&#39;prices&#39;</span><span class="p">][</span><span class="s1">&#39;input price: price&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;power&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;power price&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <br/></pre></div>
 </div>
 </div>

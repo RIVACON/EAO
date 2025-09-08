@@ -127,17 +127,17 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
-import pandas as pd
-import datetime as dt
-import os, sys
-from IPython.display import display, HTML
-# in case eao is not installed, set path
-myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
-sys.path.append(myDir)
-addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
-sys.path.append(addDir)
-import eaopack as eao
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">HTML</span>
+<span class="c1"># in case eao is not installed, set path</span>
+<span class="n">myDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">myDir</span><span class="p">)</span>
+<span class="n">addDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../../../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addDir</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
 </pre></div>
 </div>
 </div>
@@ -149,9 +149,9 @@ import eaopack as eao
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>Start = dt.date(2021,1,1)
-End   = dt.date(2021,1,10)
-timegrid = eao.assets.Timegrid(Start, End, freq = &#39;h&#39;, main_time_unit = &#39;h&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Start</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">End</span>   <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">timegrid</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Timegrid</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="n">main_time_unit</span> <span class="o">=</span> <span class="s1">&#39;h&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -167,8 +167,8 @@ timegrid = eao.assets.Timegrid(Start, End, freq = &#39;h&#39;, main_time_unit = 
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>green_sources = eao.assets.Node(&#39;green sources&#39;, commodity= &#39;power&#39;)
-grey_sources  = eao.assets.Node(&#39;grey sources&#39;, commodity= &#39;power&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">green_sources</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;green sources&#39;</span><span class="p">,</span> <span class="n">commodity</span><span class="o">=</span> <span class="s1">&#39;power&#39;</span><span class="p">)</span>
+<span class="n">grey_sources</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;grey sources&#39;</span><span class="p">,</span> <span class="n">commodity</span><span class="o">=</span> <span class="s1">&#39;power&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -185,8 +185,8 @@ grey_sources  = eao.assets.Node(&#39;grey sources&#39;, commodity= &#39;power&#3
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>min_fraction_green = 0.8
-sales_fix_price    = 130
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">min_fraction_green</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">sales_fix_price</span>    <span class="o">=</span> <span class="mi">130</span>
 </pre></div>
 </div>
 </div>
@@ -197,14 +197,14 @@ sales_fix_price    = 130
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>node_load = eao.assets.Node(&#39;node load&#39;, commodity= &#39;power&#39;)
-load_profile = {&#39;start&#39; : timegrid.timepoints.to_list(),\
-                &#39;values&#39;:  - 5*abs(np.sin(np.pi/22 * timegrid.timepoints.hour.values)     \
-                              + np.sin(0.1 + np.pi/10 * timegrid.timepoints.hour.values)\
-                              + np.sin(0.2 + np.pi/3 * timegrid.timepoints.hour.values) )}
-load         = eao.assets.Contract(name = &#39;load&#39;, min_cap= load_profile, max_cap=load_profile, extra_costs=-sales_fix_price ,nodes = node_load)
-volume_sold  = -load_profile[&#39;values&#39;].sum()
-max_load     = -load_profile[&#39;values&#39;].min()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node_load</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;node load&#39;</span><span class="p">,</span> <span class="n">commodity</span><span class="o">=</span> <span class="s1">&#39;power&#39;</span><span class="p">)</span>
+<span class="n">load_profile</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span> <span class="p">:</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">timepoints</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>\
+                <span class="s1">&#39;values&#39;</span><span class="p">:</span>  <span class="o">-</span> <span class="mi">5</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">22</span> <span class="o">*</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">timepoints</span><span class="o">.</span><span class="n">hour</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>     \
+                              <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">0.1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">10</span> <span class="o">*</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">timepoints</span><span class="o">.</span><span class="n">hour</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>\
+                              <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">0.2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">3</span> <span class="o">*</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">timepoints</span><span class="o">.</span><span class="n">hour</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="p">)}</span>
+<span class="n">load</span>         <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Contract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="n">load_profile</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span><span class="n">load_profile</span><span class="p">,</span> <span class="n">extra_costs</span><span class="o">=-</span><span class="n">sales_fix_price</span> <span class="p">,</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">node_load</span><span class="p">)</span>
+<span class="n">volume_sold</span>  <span class="o">=</span> <span class="o">-</span><span class="n">load_profile</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">max_load</span>     <span class="o">=</span> <span class="o">-</span><span class="n">load_profile</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -216,9 +216,9 @@ max_load     = -load_profile[&#39;values&#39;].min()
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>min_green = {&#39;start&#39;:Start, &#39;end&#39;:End, &#39;values&#39; : volume_sold * min_fraction_green }
-link_green = eao.assets.ExtendedTransport(name = &#39;green link&#39;, min_take = min_green,  min_cap = 0, max_cap = max_load, nodes = [green_sources, node_load])
-link_grey  = eao.assets.Transport(name = &#39;grey link&#39;,   min_cap = 0, max_cap = 20, nodes = [grey_sources, node_load])
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">min_green</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="n">Start</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span><span class="n">End</span><span class="p">,</span> <span class="s1">&#39;values&#39;</span> <span class="p">:</span> <span class="n">volume_sold</span> <span class="o">*</span> <span class="n">min_fraction_green</span> <span class="p">}</span>
+<span class="n">link_green</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">ExtendedTransport</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;green link&#39;</span><span class="p">,</span> <span class="n">min_take</span> <span class="o">=</span> <span class="n">min_green</span><span class="p">,</span>  <span class="n">min_cap</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max_cap</span> <span class="o">=</span> <span class="n">max_load</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">green_sources</span><span class="p">,</span> <span class="n">node_load</span><span class="p">])</span>
+<span class="n">link_grey</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Transport</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;grey link&#39;</span><span class="p">,</span>   <span class="n">min_cap</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max_cap</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">grey_sources</span><span class="p">,</span> <span class="n">node_load</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -230,8 +230,8 @@ link_grey  = eao.assets.Transport(name = &#39;grey link&#39;,   min_cap = 0, max
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>downstream_portfolio = eao.portfolio.Portfolio([load, link_green, link_grey])
-downstream_contract  = eao.portfolio.StructuredAsset(name = &#39;downstream&#39;, nodes = [green_sources, grey_sources], portfolio = downstream_portfolio)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">downstream_portfolio</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">load</span><span class="p">,</span> <span class="n">link_green</span><span class="p">,</span> <span class="n">link_grey</span><span class="p">])</span>
+<span class="n">downstream_contract</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">StructuredAsset</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;downstream&#39;</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">green_sources</span><span class="p">,</span> <span class="n">grey_sources</span><span class="p">],</span> <span class="n">portfolio</span> <span class="o">=</span> <span class="n">downstream_portfolio</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -240,8 +240,8 @@ downstream_contract  = eao.portfolio.StructuredAsset(name = &#39;downstream&#39;
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>#eao.network_graphs.create_graph(portf = downstream_portfolio, file_name=&#39;test.eps&#39;, title = &#39;Downstream contract structure&#39;)
-eao.network_graphs.create_graph(portf = downstream_portfolio,title = &#39;Downstream contract structure&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#eao.network_graphs.create_graph(portf = downstream_portfolio, file_name=&#39;test.eps&#39;, title = &#39;Downstream contract structure&#39;)</span>
+<span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">downstream_portfolio</span><span class="p">,</span><span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Downstream contract structure&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -261,13 +261,13 @@ eao.network_graphs.create_graph(portf = downstream_portfolio,title = &#39;Downst
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>PPA_fix_price = 75. # unit: €/MWh
-PV_gen = {&#39;start&#39;: timegrid.timepoints.to_list(),
-          &#39;values&#39;:5*np.maximum(0,-np.cos(2*np.pi/24 * timegrid.timepoints.hour.values))}
-PV         = eao.assets.Contract(name = &#39;PV&#39;, min_cap= PV_gen, max_cap= PV_gen, extra_costs = PPA_fix_price ,nodes = green_sources)
-wind_gen = {&#39;start&#39;: timegrid.timepoints.to_list(),\
-            &#39;values&#39;: 5.*np.random.rand(timegrid.T)}
-wind        = eao.assets.Contract(name = &#39;wind&#39;, min_cap= wind_gen, max_cap= wind_gen, extra_costs = PPA_fix_price, nodes = green_sources)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PPA_fix_price</span> <span class="o">=</span> <span class="mf">75.</span> <span class="c1"># unit: €/MWh</span>
+<span class="n">PV_gen</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">timepoints</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+          <span class="s1">&#39;values&#39;</span><span class="p">:</span><span class="mi">5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">24</span> <span class="o">*</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">timepoints</span><span class="o">.</span><span class="n">hour</span><span class="o">.</span><span class="n">values</span><span class="p">))}</span>
+<span class="n">PV</span>         <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Contract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;PV&#39;</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="n">PV_gen</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span> <span class="n">PV_gen</span><span class="p">,</span> <span class="n">extra_costs</span> <span class="o">=</span> <span class="n">PPA_fix_price</span> <span class="p">,</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">green_sources</span><span class="p">)</span>
+<span class="n">wind_gen</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">timepoints</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>\
+            <span class="s1">&#39;values&#39;</span><span class="p">:</span> <span class="mf">5.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">)}</span>
+<span class="n">wind</span>        <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Contract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;wind&#39;</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="n">wind_gen</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span> <span class="n">wind_gen</span><span class="p">,</span> <span class="n">extra_costs</span> <span class="o">=</span> <span class="n">PPA_fix_price</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">green_sources</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -280,7 +280,7 @@ wind        = eao.assets.Contract(name = &#39;wind&#39;, min_cap= wind_gen, max_
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>storage = eao.assets.Storage(name = &#39;battery&#39;, nodes = green_sources, cap_in= 1*max_load, cap_out=1*max_load, size = 4*max_load, cost_in=0.5,cost_out=0.5, eff_in=0.9, block_size=&#39;d&#39;, start_level = 2*max_load, end_level = 2*max_load)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">storage</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Storage</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;battery&#39;</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">green_sources</span><span class="p">,</span> <span class="n">cap_in</span><span class="o">=</span> <span class="mi">1</span><span class="o">*</span><span class="n">max_load</span><span class="p">,</span> <span class="n">cap_out</span><span class="o">=</span><span class="mi">1</span><span class="o">*</span><span class="n">max_load</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">4</span><span class="o">*</span><span class="n">max_load</span><span class="p">,</span> <span class="n">cost_in</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">cost_out</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">eff_in</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="n">start_level</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">max_load</span><span class="p">,</span> <span class="n">end_level</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">max_load</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -292,10 +292,10 @@ wind        = eao.assets.Contract(name = &#39;wind&#39;, min_cap= wind_gen, max_
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>prices = {&#39;spot market&#39;: 50+12.*(np.sin(np.linspace(0.,100., timegrid.T)))}
-prices[&#39;green market&#39;] = prices[&#39;spot market&#39;] + 20.
-spot_market = eao.assets.SimpleContract(name = &#39;spot market&#39;, price = &#39;spot market&#39;,  min_cap = -100, max_cap = 100, nodes= grey_sources)
-green_sales = eao.assets.SimpleContract(name = &#39;green sales&#39;, price = &#39;green market&#39;, min_cap = -100, max_cap = 0,   nodes= green_sources)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">prices</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;spot market&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="o">+</span><span class="mf">12.</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">100.</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">)))}</span>
+<span class="n">prices</span><span class="p">[</span><span class="s1">&#39;green market&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prices</span><span class="p">[</span><span class="s1">&#39;spot market&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">20.</span>
+<span class="n">spot_market</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;spot market&#39;</span><span class="p">,</span> <span class="n">price</span> <span class="o">=</span> <span class="s1">&#39;spot market&#39;</span><span class="p">,</span>  <span class="n">min_cap</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_cap</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span> <span class="n">grey_sources</span><span class="p">)</span>
+<span class="n">green_sales</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;green sales&#39;</span><span class="p">,</span> <span class="n">price</span> <span class="o">=</span> <span class="s1">&#39;green market&#39;</span><span class="p">,</span> <span class="n">min_cap</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_cap</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>   <span class="n">nodes</span><span class="o">=</span> <span class="n">green_sources</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -310,11 +310,11 @@ green_sales = eao.assets.SimpleContract(name = &#39;green sales&#39;, price = &#
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portfolio_separate = eao.portfolio.Portfolio([ load,link_grey,link_green,   spot_market,  wind, PV,green_sales, storage])
-op_separate = portfolio_separate.setup_optim_problem(prices = prices, timegrid=timegrid)
-res_separate = op_separate.optimize()
-eao.network_graphs.create_graph(portf = portfolio_separate,title = &#39;Complete portfolio with separate assets&#39;)
-#eao.network_graphs.create_graph(portf = portfolio_separate,title = &#39;&#39;, file_name = &#39;full_portfolio.pdf&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">portfolio_separate</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span> <span class="n">load</span><span class="p">,</span><span class="n">link_grey</span><span class="p">,</span><span class="n">link_green</span><span class="p">,</span>   <span class="n">spot_market</span><span class="p">,</span>  <span class="n">wind</span><span class="p">,</span> <span class="n">PV</span><span class="p">,</span><span class="n">green_sales</span><span class="p">,</span> <span class="n">storage</span><span class="p">])</span>
+<span class="n">op_separate</span> <span class="o">=</span> <span class="n">portfolio_separate</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">prices</span> <span class="o">=</span> <span class="n">prices</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">=</span><span class="n">timegrid</span><span class="p">)</span>
+<span class="n">res_separate</span> <span class="o">=</span> <span class="n">op_separate</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+<span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">portfolio_separate</span><span class="p">,</span><span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Complete portfolio with separate assets&#39;</span><span class="p">)</span>
+<span class="c1">#eao.network_graphs.create_graph(portf = portfolio_separate,title = &#39;&#39;, file_name = &#39;full_portfolio.pdf&#39;)</span>
 </pre></div>
 </div>
 </div>
@@ -336,10 +336,10 @@ eao.network_graphs.create_graph(portf = portfolio_separate,title = &#39;Complete
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portfolio_struct = eao.portfolio.Portfolio([downstream_contract, wind, PV, spot_market, green_sales, storage])
-op_struct = portfolio_struct.setup_optim_problem(prices = prices, timegrid=timegrid)
-res_struct = op_struct.optimize()
-eao.network_graphs.create_graph(portf = portfolio_struct,title = &#39;Complete portfolio with downstream contract&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">portfolio_struct</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">downstream_contract</span><span class="p">,</span> <span class="n">wind</span><span class="p">,</span> <span class="n">PV</span><span class="p">,</span> <span class="n">spot_market</span><span class="p">,</span> <span class="n">green_sales</span><span class="p">,</span> <span class="n">storage</span><span class="p">])</span>
+<span class="n">op_struct</span> <span class="o">=</span> <span class="n">portfolio_struct</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">prices</span> <span class="o">=</span> <span class="n">prices</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">=</span><span class="n">timegrid</span><span class="p">)</span>
+<span class="n">res_struct</span> <span class="o">=</span> <span class="n">op_struct</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+<span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">portfolio_struct</span><span class="p">,</span><span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Complete portfolio with downstream contract&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -357,7 +357,7 @@ eao.network_graphs.create_graph(portf = portfolio_struct,title = &#39;Complete p
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>output = eao.io.extract_output(portfolio_struct, op_struct, res_struct , prices)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">output</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">extract_output</span><span class="p">(</span><span class="n">portfolio_struct</span><span class="p">,</span> <span class="n">op_struct</span><span class="p">,</span> <span class="n">res_struct</span> <span class="p">,</span> <span class="n">prices</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -366,7 +366,7 @@ eao.network_graphs.create_graph(portf = portfolio_struct,title = &#39;Complete p
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(output[&#39;summary&#39;])
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -388,8 +388,8 @@ value      57820.038998
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>eao.io.output_to_file(output,  os.path.join(os.getcwd(), &#39;results.xlsx&#39;))
-display(output[&#39;dispatch&#39;][6:18].round(1))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">output_to_file</span><span class="p">(</span><span class="n">output</span><span class="p">,</span>  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;results.xlsx&#39;</span><span class="p">))</span>
+<span class="n">display</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][</span><span class="mi">6</span><span class="p">:</span><span class="mi">18</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -553,14 +553,14 @@ display(output[&#39;dispatch&#39;][6:18].round(1))
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
-%matplotlib inline
-# take out complexity of the chart
-output[&#39;dispatch&#39;][&#39;downstream&#39;] = output[&#39;dispatch&#39;][&#39;downstream (green sources)&#39;] +  output[&#39;dispatch&#39;][&#39;downstream (grey sources)&#39;]
-output[&#39;dispatch&#39;].drop([&#39;downstream (green sources)&#39;, &#39;downstream (grey sources)&#39;], axis=1, inplace = True)
-ax = output[&#39;dispatch&#39;].plot(kind=&#39;line&#39;)
-plt.axis(&#39;off&#39;)
-plt.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="c1"># take out complexity of the chart</span>
+<span class="n">output</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][</span><span class="s1">&#39;downstream&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][</span><span class="s1">&#39;downstream (green sources)&#39;</span><span class="p">]</span> <span class="o">+</span>  <span class="n">output</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][</span><span class="s1">&#39;downstream (grey sources)&#39;</span><span class="p">]</span>
+<span class="n">output</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;downstream (green sources)&#39;</span><span class="p">,</span> <span class="s1">&#39;downstream (grey sources)&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;line&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <br/></pre></div>
 </div>
 </div>

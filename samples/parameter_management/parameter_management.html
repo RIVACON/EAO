@@ -111,23 +111,23 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
-import pandas as pd
-import datetime as dt
-pd.set_option(&quot;mode.chained_assignment&quot;, None)
-# in case eao is not installed
-import os
-import sys
-# in case eao is not installed, set path
-myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
-sys.path.append(myDir)
-addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
-sys.path.append(addDir)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;mode.chained_assignment&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="c1"># in case eao is not installed</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="c1"># in case eao is not installed, set path</span>
+<span class="n">myDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">myDir</span><span class="p">)</span>
+<span class="n">addDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../../../..&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addDir</span><span class="p">)</span>
 
-import eaopack as eao
+<span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
 
-import matplotlib.pyplot as plt
-%matplotlib inline
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
 </pre></div>
 </div>
 </div>
@@ -139,9 +139,9 @@ import matplotlib.pyplot as plt
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>timegrid = eao.serialization.load_from_json(file_name=&#39;timegrid.json&#39;)
-portf    = eao.serialization.load_from_json(file_name=&#39;portfolio_simple_start.json&#39;)
-eao.network_graphs.create_graph(portf)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">timegrid</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">serialization</span><span class="o">.</span><span class="n">load_from_json</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;timegrid.json&#39;</span><span class="p">)</span>
+<span class="n">portf</span>    <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">serialization</span><span class="o">.</span><span class="n">load_from_json</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;portfolio_simple_start.json&#39;</span><span class="p">)</span>
+<span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -167,9 +167,9 @@ eao.network_graphs.create_graph(portf)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>[params, param_dict] = eao.io.get_params_tree(portf)
-for p in params:
-    print(p)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">params</span><span class="p">,</span> <span class="n">param_dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">get_params_tree</span><span class="p">(</span><span class="n">portf</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -310,7 +310,7 @@ __class__
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>param_dict[&#39;assets&#39;][4]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;assets&#39;</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span>
 <br/></pre></div>
 </div>
 </div>
@@ -358,7 +358,7 @@ __class__
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(eao.io.get_param(portf, [&#39;assets&#39;, 4, &#39;start_level&#39;]))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;assets&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;start_level&#39;</span><span class="p">]))</span>
 </pre></div>
 </div>
 </div>
@@ -375,7 +375,7 @@ __class__
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(eao.io.get_param(portf.get_asset(&#39;sales b&#39;), [&#39;price&#39;]))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="n">portf</span><span class="o">.</span><span class="n">get_asset</span><span class="p">(</span><span class="s1">&#39;sales b&#39;</span><span class="p">),</span> <span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]))</span>
 </pre></div>
 </div>
 </div>
@@ -392,8 +392,8 @@ price sales b
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portf.get_asset(&#39;storage&#39;).start_level = 4
-print(portf.get_asset(&#39;storage&#39;).start_level)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">portf</span><span class="o">.</span><span class="n">get_asset</span><span class="p">(</span><span class="s1">&#39;storage&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">start_level</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">portf</span><span class="o">.</span><span class="n">get_asset</span><span class="p">(</span><span class="s1">&#39;storage&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">start_level</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -410,8 +410,8 @@ print(portf.get_asset(&#39;storage&#39;).start_level)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>portf = eao.io.set_param(portf,[&#39;assets&#39;, 4, &#39;start_level&#39;], 6 )
-print(portf.get_asset(&#39;storage&#39;).start_level)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">portf</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">set_param</span><span class="p">(</span><span class="n">portf</span><span class="p">,[</span><span class="s1">&#39;assets&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;start_level&#39;</span><span class="p">],</span> <span class="mi">6</span> <span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">portf</span><span class="o">.</span><span class="n">get_asset</span><span class="p">(</span><span class="s1">&#39;storage&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">start_level</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -429,11 +429,11 @@ print(portf.get_asset(&#39;storage&#39;).start_level)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    portf = eao.io.set_param(portf, [&#39;assets&#39;, 4, &#39;size&#39;], 1.)
-except Exception as error:
-    print(&#39;Not possible&#39;)
-    pass
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">portf</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">set_param</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;assets&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">],</span> <span class="mf">1.</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Not possible&#39;</span><span class="p">)</span>
+    <span class="k">pass</span>
 <br/></pre></div>
 </div>
 </div>
@@ -452,10 +452,10 @@ Not possible
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># sample prices
-prices = {&#39;price sourcing&#39;: 5.*np.sin(np.linspace(0.,6., timegrid.T)),
-         &#39;price sales a&#39; : np.ones(timegrid.T)*2.,
-         &#39;price sales b&#39; : 5.+5.*np.sin(np.linspace(0.,6., timegrid.T))  }
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># sample prices</span>
+<span class="n">prices</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;price sourcing&#39;</span><span class="p">:</span> <span class="mf">5.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">6.</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">)),</span>
+         <span class="s1">&#39;price sales a&#39;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">*</span><span class="mf">2.</span><span class="p">,</span>
+         <span class="s1">&#39;price sales b&#39;</span> <span class="p">:</span> <span class="mf">5.</span><span class="o">+</span><span class="mf">5.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">6.</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>  <span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -464,8 +464,8 @@ prices = {&#39;price sourcing&#39;: 5.*np.sin(np.linspace(0.,6., timegrid.T)),
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(eao.io.get_param(portf, [&#39;assets&#39;, 4, &#39;size&#39;]))
-print(eao.io.get_param(portf, [&#39;assets&#39;, 4, &#39;nodes&#39;, 0,&#39;unit&#39;,&#39;volume&#39;]))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;assets&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;assets&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;nodes&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="s1">&#39;unit&#39;</span><span class="p">,</span><span class="s1">&#39;volume&#39;</span><span class="p">]))</span>
 </pre></div>
 </div>
 </div>
@@ -482,15 +482,15 @@ MWh
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>storage_sizes = range(10, 150, 5)
-values = [] # collect results
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">storage_sizes</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">values</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># collect results</span>
 
-for my_size in storage_sizes:
-    portf = eao.io.set_param(portf, [&#39;assets&#39;, 4, &#39;size&#39;], my_size )
-    optim_problem  = portf.setup_optim_problem(timegrid = timegrid, prices=prices)
-    result         = optim_problem.optimize()
-    values.append(result.value)
-# output = eao.io.extract_output(portf, optim_problem, result)
+<span class="k">for</span> <span class="n">my_size</span> <span class="ow">in</span> <span class="n">storage_sizes</span><span class="p">:</span>
+    <span class="n">portf</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">set_param</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;assets&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">],</span> <span class="n">my_size</span> <span class="p">)</span>
+    <span class="n">optim_problem</span>  <span class="o">=</span> <span class="n">portf</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">timegrid</span> <span class="o">=</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">prices</span><span class="o">=</span><span class="n">prices</span><span class="p">)</span>
+    <span class="n">result</span>         <span class="o">=</span> <span class="n">optim_problem</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+    <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="c1"># output = eao.io.extract_output(portf, optim_problem, result)</span>
 </pre></div>
 </div>
 </div>
@@ -498,12 +498,12 @@ for my_size in storage_sizes:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plt.figure(figsize = (12,3))
-plt.bar(storage_sizes, values, width = 4)
-plt.ylim((6000, 7000))
-plt.xlabel(&#39;storage size&#39;)
-plt.ylabel(&#39;total portfolio value&#39;)
-plt.show()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">storage_sizes</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">((</span><span class="mi">6000</span><span class="p">,</span> <span class="mi">7000</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;storage size&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;total portfolio value&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
