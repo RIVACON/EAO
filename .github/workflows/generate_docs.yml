@@ -1,0 +1,62 @@
+name: Generate the documentation
+
+on:
+  push:
+    branches:
+      - main
+      - feature/experimental_bp
+      - develop
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          miniconda-version: "latest"
+          python-version: "3.12"
+          activate-environment: eao_env
+          environment-file: environment.yml
+          use-only-actions-cli: true
+
+      - name: Run tests with pytest-cov
+        id: run_tests_and_coverage
+        continue-on-error: true
+        run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate eao_env
+          conda install pandoc
+          pip install sphinx nbsphinx sphinx_rtd_theme
+
+
+      - name: Generate the documentation
+        run: sphinx-build -b html doc/source/ doc/build
+
+      - name: Upload it into gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "actions-user"
+          git config --global user.email "actions@github.com"          
+          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/RIVACON/EAO.git --branch gh-pages --single-branch gh-pages
+          cp -r doc/build/* gh-pages/
+          cd gh-pages
+          touch .nojekyll
+          echo date > test_tocheck.txt
+          git add .
+          git commit -m "Update documentation" -a || true
+          git push
+          
+#      - name: Push changes
+#        uses: ad-m/github-push-action@master
+#        with:
+#          branch: gh-pages
+#          directory: gh-pages
+#          github_token: ${{ secrets.GITHUB_TOKEN }}

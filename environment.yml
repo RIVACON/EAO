@@ -12,7 +12,7 @@ channels:
 dependencies:
   - python==3.12
   - pip
-  - pandoc  # Required to build documentation
+#  - pandoc  # Required to build documentation
   - pytest
   - pytest-cov
   - pip:
