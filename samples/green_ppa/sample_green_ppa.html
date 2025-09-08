@@ -117,7 +117,7 @@
              
   <section id="Sample-for-optimizing-a-portfolio-that-supplies-a-load-minimum-share-of-green-energy">
 <h1>Sample for optimizing a portfolio that supplies a load minimum share of green energy<a class="headerlink" href="#Sample-for-optimizing-a-portfolio-that-supplies-a-load-minimum-share-of-green-energy" title="Link to this heading"></a></h1>
-<p>In this sample, we define a more realistic example from the power sector: We define a complex sales contract, with an hourly load profile and the obligation to provide at least 80% of the power from green sources. In the portfolio we link it to a wind and a PV PPA along with a battery that allows us to flatten out green production to be abme to meet the target share of green energy.</p>
+<p>In this sample, we define a more realistic example from the power sector: We define a complex sales contract, with an hourly load profile and the obligation to provide at least 80% of the power from green sources. In the portfolio we link it to a wind and a PV PPA along with a battery that allows us to flatten out green production to be able to meet the target share of green energy.</p>
 </section>
 <section id="Some-prerequisites">
 <h1>Some prerequisites<a class="headerlink" href="#Some-prerequisites" title="Link to this heading"></a></h1>
@@ -161,7 +161,7 @@ timegrid = eao.assets.Timegrid(Start, End, freq = &#39;h&#39;, main_time_unit = 
 <h1>Define the portfolio<a class="headerlink" href="#Define-the-portfolio" title="Link to this heading"></a></h1>
 <section id="The-nodes-as-the-starting-point">
 <h2>The nodes as the starting point<a class="headerlink" href="#The-nodes-as-the-starting-point" title="Link to this heading"></a></h2>
-<p>A node reflects a virtual trading point that all assets are connected to. In case of a setup with transport limitations, several nodes may be used. A node always comes with a commodity that is traded at it. Here it’s power. Note that commodity and unit serve for documentation only</p>
+<p>A node reflects a virtual trading point that all assets are connected to. In case of a setup with transport limitations, several nodes may be used. A node always comes with a commodity that is traded at it. Here it’s power. Note that commodity and unit serve for documentation only.</p>
 <p>In order to clearly separate “green power” from “grey power” we define two nodes</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:

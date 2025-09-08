@@ -73,7 +73,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "As we can see. the portfolio is a simple setup with a sourcing possibility and two sales contracts at two locations. For flexibility there is a storage (which we will manipulate in the following)\n",
+    "As we can see. the portfolio is a simple setup with a sourcing possibility and two sales contracts at two locations. For flexibility there is a storage (which we will manipulate in the following).\n",
     "\n",
     "## Looking at parameters and setting them to new values\n",
     "As the next step we look at the parameters that define the portfolio. To this end, EAO provides three routines:\n",
@@ -228,7 +228,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Looking at the parameter tree, note that we extracted the whole tree of parameters in the portfolio. Each entry is a list, that points downwards into the nested object (portfolio --> asset, --> ...)\n",
+    "Looking at the parameter tree, note that we extracted the whole tree of parameters in the portfolio. Each entry is a list, that points downwards into the nested object (portfolio --> asset, --> ...).\n",
     "\n",
     "To access the parameter, we can use any of those entries. Let us concentrate on the storage (asset no. 4):"
    ]
