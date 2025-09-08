@@ -23,9 +23,7 @@
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Split Optimization" href="../split_optimization/split_optimization.html" />
-    <link rel="prev" title="Marginal costs - basic concept and example" href="../marginal_costs/marginal_costs.html" /> 
+    <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,37 +47,9 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../eao.html">EAO package</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../samples.html">Samples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../samples.html#simple-start-optimizing-power-consumption-with-battery-pv">Simple start: Optimizing power consumption with battery &amp; PV</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../samples.html#green-ppa-and-structured-downstream-contract">Green PPA and structured downstream contract</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../samples.html#illustration-small-power-and-heat-network-in-german">Illustration: Small power and heat network (in German)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../samples.html#id1">Green PPA and structured downstream contract</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../samples.html#marginal-costs-in-portfolio-optimization">Marginal costs in portfolio optimization</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../../samples.html#multi-commodity-optimization">Multi commodity optimization</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Cross commodity portfolios</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Some-prerequisites">Some prerequisites</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Basics">Basics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Define-the-nodes-for-heat-and-power">Define the nodes for heat and power</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#The-overall-portfolio">The overall portfolio</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#Perform-the-optimization">Perform the optimization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Create-charts-and-interpret-the-results">Create charts and interpret the results</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Interpretation">Interpretation</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../samples.html#split-optimization-to-speed-up-large-problems">Split optimization (to speed up large problems)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../samples.html#combined-heat-and-power">Combined Heat and Power</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../samples.html#battery-optimization-against-an-order-book">Battery optimization against an order book</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../samples.html#stochastic-linear-programs">Stochastic Linear Programs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../samples.html#robust-optimization">Robust optimization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../samples.html#parameter-handling">Parameter handling</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../../samples.html">Samples</a></li>
 </ul>
 
         </div>
@@ -96,10 +66,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../../samples.html">Samples</a></li>
       <li class="breadcrumb-item active">Cross commodity portfolios</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/samples/cross_commodity/cross_commodity_sample.ipynb.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/samples/large_problems/large_problems.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -123,6 +92,15 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
 import pandas as pd
 import datetime as dt
+from copy import deepcopy
+# in case eao is not installed
+import  os
+import sys
+# in case eao is not installed, set path
+myDir = os.path.join(os.getcwd(), &#39;../..&#39;)
+sys.path.append(myDir)
+addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)
+sys.path.append(addDir)
 
 import eaopack as eao
 
@@ -207,7 +185,7 @@ portf.set_timegrid(eao.assets.Timegrid(Start, End, freq = &#39;h&#39;))
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/samples_cross_commodity_cross_commodity_sample_9_0.png" src="../../_images/samples_cross_commodity_cross_commodity_sample_9_0.png" />
+<img alt="../../_images/samples_large_problems_large_problems_9_0.png" src="../../_images/samples_large_problems_large_problems_9_0.png" />
 </div>
 </div>
 </section>
@@ -246,7 +224,7 @@ for mycol in allcols:
 fig, ax = plt.subplots(1,3, tight_layout = True, figsize=(12,4))
 out[&#39;dispatch&#39;][heat].plot(ax = ax[0], style = &#39;-&#39;)
 out[&#39;dispatch&#39;][power].plot(ax = ax[1], style = &#39;-&#39;)
-out[&#39;prices&#39;][&#39;input data: price&#39;].plot(ax = ax[2], style = &#39;-&#39;)
+out[&#39;prices&#39;][&#39;input price: price&#39;].plot(ax = ax[2], style = &#39;-&#39;)
 ax[0].set_title(&#39;heat&#39;)
 ax[1].set_title(&#39;power&#39;)
 ax[2].set_title(&#39;power price&#39;)
@@ -258,20 +236,12 @@ plt.show()
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/samples_cross_commodity_cross_commodity_sample_13_0.png" src="../../_images/samples_cross_commodity_cross_commodity_sample_13_0.png" />
+<img alt="../../_images/samples_large_problems_large_problems_13_0.png" src="../../_images/samples_large_problems_large_problems_13_0.png" />
 </div>
 </div>
 <section id="Interpretation">
 <h2>Interpretation<a class="headerlink" href="#Interpretation" title="Link to this heading"></a></h2>
 <p>Heat demand must be met in all times. Depending on prices, either CHP or power-2-heat will be utilized to meet heat demand. The heat storage is utilized to arbitrage between the best hours (mainly with regards to prices on the power market)</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
 </section>
 </section>
 

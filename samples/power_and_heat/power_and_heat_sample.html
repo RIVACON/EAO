@@ -74,11 +74,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#id1">Green PPA and structured downstream contract</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#marginal-costs-in-portfolio-optimization">Marginal costs in portfolio optimization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#multi-commodity-optimization">Multi commodity optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#split-optimization-to-speed-up-large-problems">Split optimization (to speed up large problems)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#combined-heat-and-power">Combined Heat and Power</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#battery-optimization-against-an-order-book">Battery optimization against an order book</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#stochastic-linear-programs">Stochastic Linear Programs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#robust-optimization">Robust optimization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../samples.html#split-optimization">Split optimization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#parameter-handling">Parameter handling</a></li>
 </ul>
 </li>
@@ -129,7 +129,8 @@
 #####################################################
 import pandas as pd
 import datetime as dt
-import plotly.express as px
+import matplotlib.pyplot as plt
+%matplotlib inline
 </pre></div>
 </div>
 </div>
@@ -635,49 +636,30 @@ out[&#39;prices&#39;].transpose().iloc[:,0:2].round(2)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df = out[&#39;dispatch&#39;].reset_index()
-df = pd.merge(df, out[&#39;prices&#39;], left_on=&#39;index&#39;, right_index=True, how=&#39;left&#39;)
-fig = px.line(df, x=&quot;index&quot;, y=[&quot;P2H (waerme_nord)&quot;,
-                                &quot;KWK (waerme_sued)&quot;,
-                                &quot;speicher (waerme_nord)&quot;,
-                                &quot;bedarf_nord (waerme_nord)&quot;,
-                                &quot;bedarf_sued (waerme_sued)&quot;,
-                                &quot;input data: strompreis&quot;],
-                                title=&#39;Wärme Fahrplan&#39;)
-fig.show()
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df = pd.merge(out[&#39;dispatch&#39;], out[&#39;prices&#39;], left_index=True, right_index=True, how=&#39;left&#39;)
+
+heat = [&#39;P2H (waerme_nord)&#39;,
+        &#39;KWK (waerme_sued)&#39;,
+        &#39;speicher (waerme_nord)&#39;]
+power = [&#39;P2H (strom)&#39;,
+         &#39;KWK (strom)&#39;]
+
+fig, ax = plt.subplots(1,3, tight_layout = True, figsize=(12,4))
+df[heat].plot(ax = ax[0], style = &#39;-&#39;)
+df[power].plot(ax = ax[1], style = &#39;-&#39;)
+df[&#39;input data: strompreis&#39;].plot(ax = ax[2], style = &#39;-&#39;)
+ax[0].set_title(&#39;Wärme&#39;)
+ax[1].set_title(&#39;Strom&#39;)
+ax[2].set_title(&#39;Strompreis&#39;)
+plt.show()
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="admonition warning">
-<p>Data type cannot be displayed: application/vnd.plotly.v1+json</p>
-</div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>df = out[&#39;dispatch&#39;].reset_index()
-df = pd.merge(df, out[&#39;prices&#39;], left_on=&#39;index&#39;, right_index=True, how=&#39;left&#39;)
-fig = px.line(df, x=&quot;index&quot;, y=[&quot;P2H (strom)&quot;,
-                                &quot;KWK (strom)&quot;,
-                                &quot;input data: strompreis&quot;],
-                                title=&#39;Strom Fahrplan&#39;)
-fig.show()
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="admonition warning">
-<p>Data type cannot be displayed: application/vnd.plotly.v1+json</p>
-</div>
+<img alt="../../_images/samples_power_and_heat_power_and_heat_sample_24_0.png" src="../../_images/samples_power_and_heat_power_and_heat_sample_24_0.png" />
 </div>
 </div>
 </section>

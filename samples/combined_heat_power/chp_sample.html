@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Discrete supply decisions - example battery in continuous intraday markets" href="../order_book/order_book_battery.html" />
-    <link rel="prev" title="Cross commodity portfolios" href="../cross_commodity/cross_commodity_sample.html" /> 
+    <link rel="prev" title="Mixing long-term and short-term optimization targets" href="../mixing_long_and_short_term/mixing_long_and_short_term.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -58,6 +58,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#id1">Green PPA and structured downstream contract</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#marginal-costs-in-portfolio-optimization">Marginal costs in portfolio optimization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#multi-commodity-optimization">Multi commodity optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#split-optimization-to-speed-up-large-problems">Split optimization (to speed up large problems)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../samples.html#combined-heat-and-power">Combined Heat and Power</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Combined Heat and Power</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Technical-Details">Technical Details</a></li>
@@ -69,7 +70,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#battery-optimization-against-an-order-book">Battery optimization against an order book</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#stochastic-linear-programs">Stochastic Linear Programs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#robust-optimization">Robust optimization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../samples.html#split-optimization">Split optimization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#parameter-handling">Parameter handling</a></li>
 </ul>
 </li>
@@ -182,8 +182,7 @@ s_t + d_t &\leq& 1
 \end{align*}</span> for <span class="math notranslate nohighlight">\(t \in \left\{0,\dots, T-1\right\}\)</span>.</p></li>
 <li><p><strong>Minimum runtime</strong>: Ensure that the asset follows the minimum runtime <span class="math notranslate nohighlight">\(m_{run}\)</span> and is on during the start and shutdown ramp, i.e. <span class="math">\begin{align*}a_t \geq s_{t-i}\end{align*}</span> for <span class="math notranslate nohighlight">\(t \in \left\{1,\dots, T-1\right\}\)</span> and <span class="math notranslate nohighlight">\(i \in \left\{1, \dots, m_{run}+k_{start}+k_{shutdown}-1\right\}\)</span>. If <span class="math notranslate nohighlight">\(k_{on}&gt;0\)</span> and <span class="math notranslate nohighlight">\(m_{run}+k_{start}+k_{shutdown} &gt; k_{on}\)</span>, we need the additional condition <span class="math">\begin{align*}a_i \geq 1,\end{align*}</span> for all
 <span class="math notranslate nohighlight">\(i \in \left\{0, \dots, m_{run}+k_{start}+k_{shutdown} -k_{on}-1\right\}\)</span>.</p></li>
-<li><p><strong>Minimum downtime</strong>: If the asset turns off, it has to stay off for the minimum downtime <span class="math notranslate nohighlight">\(m_{down}\)</span>, i.e. <span class="math">\begin{align*}a_t \leq 1 - a_{t-i-1} + a_{t-i}\end{align*}</span> for <span class="math notranslate nohighlight">\(t \in \left\{1,\dots, T-1\right\}\)</span> and <span class="math notranslate nohighlight">\(i \in \left\{1, \dots, m_{down}-1\right\}\)</span>. If <span class="math notranslate nohighlight">\(k_{off}&gt;0\)</span> and <span class="math notranslate nohighlight">\(m_{down} &gt; k_{off}\)</span>, we need the additional condition <span class="math">\begin{align*}a_i \leq 0,\end{align*}</span> for all
-<span class="math notranslate nohighlight">\(i \in \left\{0, \dots, m_{down} -k_{off}-1\right\}\)</span>.</p></li>
+<li><p><strong>Minimum downtime</strong>: If the asset turns off, it has to stay off for the minimum downtime <span class="math notranslate nohighlight">\(m_{down}\)</span>, i.e. <span class="math">\begin{align*}a_t \leq 1 - a_{t-i-1} + a_{t-i}\end{align*}</span> for <span class="math notranslate nohighlight">\(t \in \left\{1,\dots, T-1\right\}\)</span> and <span class="math notranslate nohighlight">\(i \in \left\{1, \dots, m_{down}-1\right\}\)</span>. If <span class="math notranslate nohighlight">\(k_{off}&gt;0\)</span> and <span class="math notranslate nohighlight">\(m_{down} &gt; k_{off}\)</span>, we need the additional condition <span class="math">\begin{align*}a_i \leq 0,\end{align*}</span> for all <span class="math notranslate nohighlight">\(i \in \left\{0, \dots, m_{down} -k_{off}-1\right\}\)</span>.</p></li>
 <li><p><strong>Maximum share heat</strong>: Bound the heat dispatch by a percentage of the power dispatch, i.e. <span class="math">\begin{align*}w_t \leq \beta x_t,\end{align*}</span> for <span class="math notranslate nohighlight">\(t \in \left\{0, \dots, T-1\right\}\)</span>.</p></li>
 </ul>
 </section>
