@@ -24,3 +24,5 @@ dependencies:
     - pyscipopt <= 5.2.1
     - networkx <= 3.3
     - matplotlib <= 3.9.2  
+    - waterfall_ax
+    - cvxopt

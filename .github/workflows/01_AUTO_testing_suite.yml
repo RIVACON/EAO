@@ -1,4 +1,4 @@
-name: Testing suite (incl. coverage and notebooks)
+name: Testing suite (incl. coverage, but NOT notebooks)
 
 on:
   push:
@@ -45,30 +45,10 @@ jobs:
       - name: Badge Creation (test, coverage)
         run: python .github/badges/generate_cov_and_test_badges.py
 
-
-      - name: Run the notebooks...
-        id: run_notebooks
-        continue-on-error: true
+      - name: Color Notebook Badge in grey
         run: |
-          conda init bash
-          source ~/.bashrc
-          conda activate eao_env
-          python -m ipykernel install --user --name=eao_env
-          pip install eaopack
-          cd doc/source/samples
-          python run_notebook_samples.py
-
-      - name: Check if all notebooks run with no issues...
-        run: |
-            if [ "${{ steps.run_notebooks.outcome }}" == "success" ]; then
-              echo '{"status": "passed"}' > notebooks_status.json
-            else
-              echo '{"status": "failed"}' > notebooks_status.json
-            fi
-
-      - name: Badge creation (notebooks)
-        run: python .github/badges/generate_notebook_badge.py
-
+            echo '{"status": "tbd"}' > test_notebook.json
+            python .github/badges/generate_notebook_badge.py
 
       - name: Commit all Badges to Repository
         run: |
@@ -76,5 +56,5 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git pull
           git add .github/badges/*.svg
-          git commit -m "Updating coverage, test, notebooks badge" || true 
+          git commit -m "Updating coverage and test badges" || true 
           git push

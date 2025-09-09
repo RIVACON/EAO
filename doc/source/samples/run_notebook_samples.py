@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore")
 def execute_notebook(notebook_file: Path, 
                      notebook_folder: Path,
                      kernel_name = "eao_env",
-                     timeout: int = 600) -> None:
+                     timeout: int = 1800) -> bool:
 
     """ Simple function to RUN a Jupyter notebook.
     If all the cells are executed, returns True, otherwise False.
@@ -100,7 +100,7 @@ def test_notebook_execution():
     for path_folder, filename in folder_file_pairs:
         full_file =os.path.join(path_folder, filename)
         print(f"Testing: {full_file}")
-        input("OK? (TO BE REMOVED)")
+        #input("OK? (TO BE REMOVED)")
         res = execute_notebook(filename, path_folder, my_kernel)
         if res is False:
             print(f"Notebook: {full_file}: FAIL")

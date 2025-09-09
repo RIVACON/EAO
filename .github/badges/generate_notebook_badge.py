@@ -14,6 +14,8 @@ def generate_notebook_badge(status):
     color = "red"
     if status == "passed":
         color = "green"
+    elif status == "tbd":
+        color = "grey"
 
     badge_content = f"""
 <svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" role="img" aria-label="notebooks: {status}">
