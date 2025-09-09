@@ -53,6 +53,7 @@ jobs:
           conda init bash
           source ~/.bashrc
           conda activate eao_env
+          python -m ipykernel install --user --name=eao_env
           pip install eaopack
           cd doc/source/samples
           python run_notebook_samples.py
