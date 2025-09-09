@@ -1,9 +1,7 @@
 name: Check the execution of all notebooks. Manual start.
 
 on:
-  push:
-    branches:
-      - not-a-branch
+  workflow_dispatch:
 
 jobs:
   run-tests:
