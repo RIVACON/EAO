@@ -50,4 +50,3 @@ jobs:
           git add .
           git commit -m "Update documentation" -a || true
           git push
-          github_token: ${{ secrets.GITHUB_TOKEN }}
