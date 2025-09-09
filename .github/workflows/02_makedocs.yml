@@ -26,7 +26,6 @@ jobs:
           use-only-actions-cli: true
 
       - name: Initialize conda and build the docs
-        continue-on-error: true
         run: |
           conda init bash
           source ~/.bashrc
