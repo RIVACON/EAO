@@ -47,7 +47,7 @@ jobs:
 
       - name: Color Notebook Badge in grey
         run: |
-            echo '{"status": "tbd"}' > test_notebook.json
+            echo '{"status": "tbd"}' > notebooks_status.json
             python .github/badges/generate_notebook_badge.py
 
       - name: Commit all Badges to Repository
