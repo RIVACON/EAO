@@ -115,12 +115,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="n">myDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../..&#39;</span><span class="p">)</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">myDir</span><span class="p">)</span>
-<span class="n">addDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../../../..&#39;</span><span class="p">)</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addDir</span><span class="p">)</span>
+<span class="c1">#import sys</span>
+<span class="c1">#import os</span>
+<span class="c1">#myDir = os.path.join(os.getcwd(), &#39;../..&#39;)</span>
+<span class="c1">#sys.path.append(myDir)</span>
+<span class="c1">#addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)</span>
+<span class="c1">#sys.path.append(addDir)</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
 </pre></div>
 </div>
@@ -221,25 +221,20 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\Users\Anwender\miniconda3\envs\my_env\Lib\site-packages\eaopack\portfolio.py:244: FutureWarning: &#39;w&#39; is deprecated and will be removed in a future version, please use &#39;W&#39; instead.
+  interval_timepoints = pd.date_range(start=timegrid.start, end=timegrid.end, freq=interval_size,
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
-...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
-...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
-...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
-...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
-...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
-...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
-...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
-...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
-...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
-...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
-...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
-...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
-...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
 
 </pre></div></div>
 </div>
@@ -270,7 +265,7 @@ Value: 23393.663322608252
 </section>
 <section id="Full-Optimization">
 <h2>Full Optimization<a class="headerlink" href="#Full-Optimization" title="Link to this heading"></a></h2>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
@@ -278,14 +273,6 @@ Value: 23393.663322608252
 <span class="n">res_full</span> <span class="o">=</span> <span class="n">op_full</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;GLPK_MI&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-...MIP problem configured. Beware of potentially long optimization and other issues inherent to MIP
-</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:

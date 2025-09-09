@@ -128,18 +128,17 @@ curve (or better, naturally).</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
 <span class="c1"># in case eao is not installed</span>
-<span class="kn">import</span><span class="w">  </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="c1">#import  os</span>
+<span class="c1">#import sys</span>
 <span class="c1"># in case eao is not installed, set path</span>
-<span class="n">myDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../..&#39;</span><span class="p">)</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">myDir</span><span class="p">)</span>
-<span class="n">addDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../../../..&#39;</span><span class="p">)</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addDir</span><span class="p">)</span>
+<span class="c1">#myDir = os.path.join(os.getcwd(), &#39;../..&#39;)</span>
+<span class="c1">#sys.path.append(myDir)</span>
+<span class="c1">#addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)</span>
+<span class="c1">#sys.path.append(addDir)</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="o">%</span><span class="k">matplotlib</span> inline
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">6924</span><span class="p">)</span>
 </pre></div>
 </div>

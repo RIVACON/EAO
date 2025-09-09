@@ -115,7 +115,7 @@
 <section id="Basic-definitions">
 <h2>Basic definitions<a class="headerlink" href="#Basic-definitions" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -123,20 +123,18 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
 
 <span class="c1"># in case eao is not installed</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="c1">#import os</span>
+<span class="c1">#import sys</span>
 <span class="c1"># in case eao is not installed, set path</span>
-<span class="n">myDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../..&#39;</span><span class="p">)</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">myDir</span><span class="p">)</span>
-<span class="n">addDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../../../..&#39;</span><span class="p">)</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addDir</span><span class="p">)</span>
+<span class="c1">#myDir = os.path.join(os.getcwd(), &#39;../..&#39;)</span>
+<span class="c1">#sys.path.append(myDir)</span>
+<span class="c1">#addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)</span>
+<span class="c1">#sys.path.append(addDir)</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">eaopack.assets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Timegrid</span><span class="p">,</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">Storage</span><span class="p">,</span> <span class="n">SimpleContract</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">eaopack.portfolio</span><span class="w"> </span><span class="kn">import</span> <span class="n">Portfolio</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="o">%</span><span class="k">matplotlib</span> inline
 </pre></div>
 </div>
 </div>
@@ -235,7 +233,7 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/samples_marginal_costs_marginal_costs_12_0.svg" src="../../_images/samples_marginal_costs_marginal_costs_12_0.svg" />
+<img alt="../../_images/samples_marginal_costs_marginal_costs_12_0.png" src="../../_images/samples_marginal_costs_marginal_costs_12_0.png" />
 </div>
 </div>
 <p>Left figure: Dispatch of the single assets. The generation units 1-5 are dispatched in the order of their production costs. At lower loads we need only gen_1, while at higher loads we need all of them.</p>
