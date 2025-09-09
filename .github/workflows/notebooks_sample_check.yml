@@ -3,9 +3,7 @@ name: Check all notebooks
 on:
   push:
     branches:
-      - main
-      - feature/experimental_bp
-      - develop
+      - not-a-branch
 
 jobs:
   run-tests:

@@ -1,4 +1,4 @@
-name: Test Coverage with Conda
+name: Testing suite (incl. coverage and notebooks)
 
 on:
   push:
@@ -25,7 +25,7 @@ jobs:
           environment-file: environment.yml
           use-only-actions-cli: true
 
-      - name: Run tests with pytest-cov
+      - name: Run tests and coverage...
         id: run_tests_and_coverage
         continue-on-error: true
         run: |
@@ -34,7 +34,7 @@ jobs:
           conda activate eao_env
           pytest --cov=. --cov-report=json:coverage.json
 
-      - name: Set Test Status
+      - name: Check if all tests are successful...
         run: |
             if [ "${{ steps.run_tests_and_coverage.outcome }}" == "success" ]; then
               echo '{"status": "passed"}' > test_status.json
@@ -42,15 +42,38 @@ jobs:
               echo '{"status": "failed"}' > test_status.json
             fi
 
-      - name: Create Test Coverage Badge
+      - name: Badge Creation: Test, Coverage
         run: python .github/badges/generate_cov_and_test_badges.py
 
 
-      - name: Commit Badge to Repository
+      - name: Run the notebooks...
+        id: run_notebooks
+        continue-on-error: true
+        run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate eao_env
+          pip install eaopack
+          cd doc/source/samples
+          python run_notebook_samples.py
+
+      - name: Check if all notebooks run with no issues...
+        run: |
+            if [ "${{ steps.run_notebooks.outcome }}" == "success" ]; then
+              echo '{"status": "passed"}' > notebooks_status.json
+            else
+              echo '{"status": "failed"}' > notebooks_status.json
+            fi
+
+      - name: Badge creation: Notebooks
+        run: python .github/badges/generate_notebook_badge.py
+
+
+      - name: Commit all Badges to Repository
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git pull
-          git add .github/badges/coverage-badge.svg .github/badges/tests-badge.svg
-          git commit -m "Updating coverage badge" || true 
+          git add .github/badges/*.svg
+          git commit -m "Updating coverage, test, notebooks badge" || true 
           git push

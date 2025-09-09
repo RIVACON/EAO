@@ -16,8 +16,8 @@ def generate_notebook_badge(status):
         color = "green"
 
     badge_content = f"""
-<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" role="img" aria-label="Notebooks: {status}">
-  <title>Notebooks: {status}</title>
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" role="img" aria-label="notebooks: {status}">
+  <title>notebooks: {status}</title>
   <linearGradient id="s" x2="0" y2="100%">
     <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
     <stop offset="1" stop-opacity=".1"/>
@@ -31,8 +31,8 @@ def generate_notebook_badge(status):
     <rect width="130" height="20" fill="url(#s)"/>
   </g>
   <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="11px">
-    <text aria-hidden="true" x="32.5" y="15" fill="#010101" fill-opacity=".3">Notebooks</text>
-    <text x="32.5" y="14">Notebooks</text>
+    <text aria-hidden="true" x="32.5" y="15" fill="#010101" fill-opacity=".3">notebooks</text>
+    <text x="32.5" y="14">notebooks</text>
     <text aria-hidden="true" x="97.5" y="15" fill="#010101" fill-opacity=".3">{status}</text>
     <text x="97.5" y="14">{status}</text>
   </g>
