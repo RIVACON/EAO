@@ -42,7 +42,7 @@ jobs:
               echo '{"status": "failed"}' > test_status.json
             fi
 
-      - name: Badge Creation: Test, Coverage
+      - name: Badge Creation (test, coverage)
         run: python .github/badges/generate_cov_and_test_badges.py
 
 
@@ -65,7 +65,7 @@ jobs:
               echo '{"status": "failed"}' > notebooks_status.json
             fi
 
-      - name: Badge creation: Notebooks
+      - name: Badge creation (notebooks)
         run: python .github/badges/generate_notebook_badge.py
 
 
