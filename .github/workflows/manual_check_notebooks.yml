@@ -1,8 +1,10 @@
 name: Run all notebooks [manual]
 
 on:
-  workflow_dispatch:
-
+  push:
+    branches:
+      - main
+      
 jobs:
   run-tests:
     runs-on: ubuntu-latest
