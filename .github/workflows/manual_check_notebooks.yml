@@ -2,7 +2,6 @@ name: Check the execution of all notebooks. Manual start.
 
 on:
   workflow_dispatch:
-  pull_request:
 
 jobs:
   run-tests:
@@ -11,12 +10,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # Checkout on the starting branch in case of pull request
-      - name: Checkout
-        if: github.event_name == 'pull_request'
-        run: |
-          git checkout $GITHUB_HEAD_REF
 
       - name: Setup Conda
         uses: conda-incubator/setup-miniconda@v3
