@@ -1,5 +1,8 @@
-
-[![CI](https://github.com/RIVACON/EAO/actions/workflows/unittests_doc.yml/badge.svg)](https://github.com/RIVACON/EAO/actions/workflows/unittests_doc.yml)
+![Test Success](.github/badges/tests-badge.svg)
+![Sample Notebooks](.github/badges/notebook-badge.svg)
+![Test Coverage](.github/badges/coverage-badge.svg)
+[![documentation](https://img.shields.io/badge/-documentation-blue.svg)](https://rivacon.github.io/EAO/)
+[![RIVACON](https://img.shields.io/badge/powered%20by-RIVACON-lightgrey.svg)](https://www.rivacon.com/en/)
 
 # The Energy Asset Optimization (EAO) package
 
@@ -12,12 +15,14 @@ The EAO package is a modular Python framework, designed to enable practitioners 
 
 We found that the approach is useful for modeling very different problem settings, such as decentral and renewable power generation, green power supply and PPAs and sector coupling in ad-hoc analysis, market modeling or daily operation.
 
-You can find the documentation along with several sample notebooks here:
-[`EAO documentation`](https://RIVACON.github.io/EAO)
+Further information:
+ - documentation along with several sample notebooks: [`EAO documentation`](https://RIVACON.github.io/EAO) 
+ - extensive technical report: [`Report`](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3842822)
 
-And an extensive technical report here:
-[`Report`](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3842822)
+Please feel free to contact us if you have questions or if you are interested in using EAO: [`Contact`](https://rivacon.com/kontakt/)
 
-To install:
-pip install eaopack
+To install: pip install eaopack
+
+----------------------------------------------------------------------
+[`Impressum`](https://rivacon.com/impressum/)   
 

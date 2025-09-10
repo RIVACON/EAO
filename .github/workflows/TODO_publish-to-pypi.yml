@@ -2,7 +2,8 @@ name: Publish Package to PyPI
 
 # do not run automatically until git workflow (developing on 'develop' branch) has been established
 # on: push
-on: workflow_dispatch
+on:
+  workflow_dispatch:
 
 jobs:
   build-n-publish:

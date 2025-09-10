@@ -1,21 +1,28 @@
 # generate from notebook: !conda env export > environment.yml
-name: python
+
+# REMARK: file manually modified to accomodate some latest updates.
+# If this file is supposed to be automatically generated, then the generator
+# correctness must be checked to ensure the same output is produced.
+name: eao_env
 
 channels:
     - conda-forge
     - defaults
 
 dependencies:
-  - python
+  - python==3.12.9
   - pip
+  - jupyter
+  - pytest
+  - pytest-cov
   - pip:
-    - matplotlib
-    - numpy
-    - pandas
-    - scipy
-    - networkx
-    - sphinx
-    - cvxpy
+    - numpy <= 2.1.3
+    - pandas <= 2.2.3
+    - scipy <= 1.14.1
+    - openpyxl <= 3.1.5
+    - cvxpy <= 1.6
+    - pyscipopt <= 5.2.1
+    - networkx <= 3.3
+    - matplotlib <= 3.9.2  
+    - waterfall_ax
     - cvxopt
-    - openpyxl
-    - nbsphinx

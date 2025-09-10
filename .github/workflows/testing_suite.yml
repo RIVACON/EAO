@@ -1,0 +1,60 @@
+name: Testing suite (incl. coverage, but NOT notebooks)
+
+on:
+  push:
+    branches:
+      - main
+      - feature/experimental_bp
+      - develop
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          miniconda-version: "latest"
+          python-version: "3.12"
+          activate-environment: eao_env
+          environment-file: environment.yml
+          use-only-actions-cli: true
+
+      - name: Run tests and coverage...
+        id: run_tests_and_coverage
+        continue-on-error: true
+        run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate eao_env
+          pytest --cov=. --cov-report=json:coverage.json
+
+      - name: Check if all tests are successful...
+        run: |
+            if [ "${{ steps.run_tests_and_coverage.outcome }}" == "success" ]; then
+              echo '{"status": "passed"}' > test_status.json
+            else
+              echo '{"status": "failed"}' > test_status.json
+            fi
+
+      - name: Badge Creation (test, coverage)
+        run: python .github/badges/generate_cov_and_test_badges.py
+
+      - name: Color Notebook Badge in grey
+        run: |
+            echo '{"status": "tbd"}' > notebooks_status.json
+            python .github/badges/generate_notebook_badge.py
+
+      - name: Commit all Badges to Repository
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git pull
+          git add .github/badges/*.svg
+          git commit -m "Updating coverage and test badges" || true 
+          git push

@@ -1,0 +1,54 @@
+name: Check the execution of all notebooks. Manual start.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          miniconda-version: "latest"
+          python-version: "3.12"
+          activate-environment: eao_env
+          environment-file: environment.yml
+          use-only-actions-cli: true
+
+      - name: Run the notebooks...
+        id: run_notebooks
+        continue-on-error: true
+        run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate eao_env
+          python -m ipykernel install --user --name=eao_env
+          pip install eaopack
+          python doc/source/samples/run_notebook_samples.py
+
+      - name: Check if all notebooks run with no issues...
+        run: |
+            if [ "${{ steps.run_notebooks.outcome }}" == "success" ]; then
+              echo '{"status": "passed"}' > notebooks_status.json
+            else
+              echo '{"status": "failed"}' > notebooks_status.json
+            fi
+
+      - name: Badge creation (notebooks)
+        run: python .github/badges/generate_notebook_badge.py
+
+
+      - name: Commit Badge to Repository
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git pull
+          git add .github/badges/notebook-badge.svg
+          git commit -m "Updating notebook badge" || true 
+          git push
