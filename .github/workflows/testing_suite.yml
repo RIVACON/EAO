@@ -1,4 +1,4 @@
-name: Testing suite [auto, push develop]
+name: Testing suite [auto, push in develop]
 
 on:
   push:
