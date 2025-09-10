@@ -117,15 +117,13 @@
 <section id="Basics">
 <h2>Basics<a class="headerlink" href="#Basics" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 </pre></div>
 </div>
@@ -137,7 +135,7 @@
 <li><p>Nodes. In this example, we need to define a node for power and node for heat, since a node may only be used for one commodity. Accordingly we set different physical units for the nodes</p></li>
 </ol>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unit_power</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">volume</span> <span class="o">=</span> <span class="s1">&#39;MWh(el)&#39;</span><span class="p">,</span> <span class="n">flow</span> <span class="o">=</span> <span class="s1">&#39;MW(el)&#39;</span><span class="p">)</span>
@@ -159,7 +157,7 @@
 <li><p>a power market where power may be bought or sold</p></li>
 </ul>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="c1">## create battery</span>
@@ -195,7 +193,7 @@
 <h2>The overall portfolio<a class="headerlink" href="#The-overall-portfolio" title="Link to this heading"></a></h2>
 <p>The below network chart shows the setup of the portfolio. Note how our assets link both markets / commodities</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">portf</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Simple portfolio example&#39;</span><span class="p">)</span>
@@ -215,7 +213,7 @@
 <h1>Perform the optimization<a class="headerlink" href="#Perform-the-optimization" title="Link to this heading"></a></h1>
 <p>Let’s load some illustrative power price data and perform the optimization</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">prices</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;2020_price_sample.csv&#39;</span><span class="p">)</span>
@@ -231,7 +229,7 @@
 <section id="Create-charts-and-interpret-the-results">
 <h1>Create charts and interpret the results<a class="headerlink" href="#Create-charts-and-interpret-the-results" title="Link to this heading"></a></h1>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">allcols</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span>
