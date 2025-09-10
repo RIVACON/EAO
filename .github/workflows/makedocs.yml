@@ -1,10 +1,10 @@
-name: Documentation (gh-pages)
+name: Documentation (gh-pages) [auto, develop push]
 
 on:
   push:
     branches:
-      - main
-      - feature/experimental_bp
+#      - main
+#      - feature/experimental_bp
       - develop
 
 jobs:

@@ -1,4 +1,4 @@
-name: Check the execution of all notebooks. Manual start.
+name: Run all notebooks [manual]
 
 on:
   workflow_dispatch:
