@@ -12,6 +12,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Checkout on the starting branch in case of pull request
+      - name: Checkout
+        if: github.event_name == 'pull_request'
+        run: |
+          git checkout $GITHUB_HEAD_REF
+
       - name: Setup Conda
         uses: conda-incubator/setup-miniconda@v3
         with:
@@ -31,8 +37,7 @@ jobs:
           conda activate eao_env
           python -m ipykernel install --user --name=eao_env
           pip install eaopack
-          cd doc/source/samples
-          python run_notebook_samples.py
+          python doc/source/samples/run_notebook_samples.py
 
       - name: Check if all notebooks run with no issues...
         run: |
