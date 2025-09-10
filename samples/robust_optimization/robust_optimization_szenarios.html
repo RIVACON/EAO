@@ -120,7 +120,7 @@
 <section id="Some-prerequisites">
 <h1>Some prerequisites<a class="headerlink" href="#Some-prerequisites" title="Link to this heading"></a></h1>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -128,11 +128,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">HTML</span>
-<span class="c1"># in case eao is not installed, set path</span>
-<span class="n">myDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-<span class="c1">#sys.path.append(os.path.join(myDir, &#39;../..&#39;))</span>
-<span class="c1">#addDir = os.path.join(os.getcwd(), &#39;../../../..&#39;)</span>
-<span class="c1">#sys.path.append(addDir)</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
 </pre></div>
 </div>
@@ -141,14 +136,13 @@
 <h2>Load data from JSON<a class="headerlink" href="#Load-data-from-JSON" title="Link to this heading"></a></h2>
 <p>For simplicity we use a predefined (simple) portfolio. Note that eao provides a simple (de-)serialization from and to JSON files. This allows you to define and store simgle assets or portfolios</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># define file names for this sample</span>
 <span class="c1">## input data</span>
-<span class="n">sample_file</span>   <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">myDir</span><span class="p">,</span> <span class="s1">&#39;portfolio_robust_optimization.json&#39;</span><span class="p">)</span>
-<span class="n">timegrid_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">myDir</span><span class="p">,</span> <span class="s1">&#39;timegrid.json&#39;</span><span class="p">)</span>
-
+<span class="n">sample_file</span>   <span class="o">=</span> <span class="s1">&#39;portfolio_robust_optimization.json&#39;</span>
+<span class="n">timegrid_file</span> <span class="o">=</span> <span class="s1">&#39;timegrid.json&#39;</span>
 <span class="n">portf</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">serialization</span><span class="o">.</span><span class="n">load_from_json</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span> <span class="n">sample_file</span><span class="p">)</span>
 <span class="n">timegrid</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">serialization</span><span class="o">.</span><span class="n">load_from_json</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">timegrid_file</span><span class="p">)</span>
 <span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">portf</span><span class="p">,</span><span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Simple sample portfolio&#39;</span><span class="p">)</span>
@@ -168,7 +162,7 @@
 <h1>Define price samples<a class="headerlink" href="#Define-price-samples" title="Link to this heading"></a></h1>
 <p>Each contract comes with its own price. In this example we keep two price series fixed (for fix price sales contracts) and sample the floating price (sourcing). Note that the storage is the main element that requires robust optimization. In a deterministic case, it is steered hard to a specific price vector. In the robust case it takes into account prices are uncertain.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">price_samples</span> <span class="o">=</span> <span class="p">[]</span>
@@ -198,7 +192,7 @@
 <section id="(1)-deterministic-optimization-on-the-mean-price">
 <h2>(1) deterministic optimization on the mean price<a class="headerlink" href="#(1)-deterministic-optimization-on-the-mean-price" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">op_mean</span>  <span class="o">=</span> <span class="n">portf</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">mean_prices</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">)</span>
@@ -211,7 +205,7 @@
 <h2>(2) robust optimization on the whole set of prices<a class="headerlink" href="#(2)-robust-optimization-on-the-whole-set-of-prices" title="Link to this heading"></a></h2>
 <p>In the implementation we re-use the optimization problem with all its restrictions and add the samples. For this purpose, the price samples need to be translated to specific cost arrays for each asset in the portfolio.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cost_samples</span> <span class="o">=</span> <span class="n">portf</span><span class="o">.</span><span class="n">create_cost_samples</span><span class="p">(</span><span class="n">price_samples</span> <span class="o">=</span> <span class="n">price_samples</span><span class="p">,</span> <span class="n">timegrid</span> <span class="o">=</span> <span class="n">timegrid</span><span class="p">)</span>
@@ -227,7 +221,7 @@
 <h2>Portfolio value<a class="headerlink" href="#Portfolio-value" title="Link to this heading"></a></h2>
 <p>Looking at the plain portfolio value, it is not surprising, that the robust optimization achieves less value on the mean price, than the optimization that is optimized directly on the mean</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Portfolio value against mean prices:&#39;</span><span class="p">)</span>
@@ -248,7 +242,7 @@ Portfolio value against mean prices:
 </div>
 <p>Now let us look at the performance of the optimized portfolios against price samples.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">values_mean</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">price_samples</span><span class="p">))</span>
@@ -273,7 +267,7 @@ Minimum portfolio value on original samples:
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -308,7 +302,7 @@ Minimum portfolio value on original samples:
 <h2>Detailed view<a class="headerlink" href="#Detailed-view" title="Link to this heading"></a></h2>
 <p>Let us look at prices and the dispatch</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">out_mean</span>   <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">extract_output</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">op_mean</span><span class="p">,</span> <span class="n">res_mean</span> <span class="p">,</span> <span class="n">mean_prices</span><span class="p">)</span>
@@ -317,7 +311,7 @@ Minimum portfolio value on original samples:
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">sharey</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">sharex</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">tight_layout</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
