@@ -76,10 +76,10 @@ def find_all_notebooks():
                         pairs.append((path_folder, file))
         else:
             print(f"File {path_folder} not a folder: SKIP")
-    print(f"Pairs found:")
-    for p in pairs:
-        print(f"{p[0]} + {p[1]}")
-    print(f"Total of {len(pairs)} notebooks to check.")
+#    print(f"Pairs found:")
+#    for p in pairs:
+#        print(f"{p[0]} + {p[1]}")
+#    print(f"Total of {len(pairs)} notebooks to check.")
     return pairs
 
 
