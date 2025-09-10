@@ -21,7 +21,7 @@ We found that the approach is useful for modeling very different problem setting
 generation, green power supply and PPAs and sector coupling in ad-hoc analysis, market modeling or daily operation.
 
 You can find the code along with some sample notebooks here:
-`GitHub repository <https://github.com/EnergyAssetOptimization/EAO>`_
+`GitHub repository <https://github.com/RIVACON/EAO>`_
 
 And an extensive technical report here:
 `Report <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3842822>`_
