@@ -1,4 +1,4 @@
-name: Publish Package to PyPI
+name: Publish Package to PyPI [manual]
 
 # do not run automatically until git workflow (developing on 'develop' branch) has been established
 # on: push

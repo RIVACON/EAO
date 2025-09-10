@@ -1,10 +1,10 @@
-name: Testing suite (incl. coverage, but NOT notebooks)
+name: Testing suite [auto, push in develop]
 
 on:
   push:
     branches:
-      - main
-      - feature/experimental_bp
+#      - main
+#      - feature/experimental_bp
       - develop
 
 jobs:
