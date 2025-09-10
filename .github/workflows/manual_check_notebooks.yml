@@ -1,9 +1,7 @@
 name: Run all notebooks [manual]
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
       
 jobs:
   run-tests:
