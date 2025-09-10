@@ -9,9 +9,6 @@ Simple start: Optimizing power consumption with battery & PV
    samples/grid and battery/battery_own_consumption
 
 
-Green PPA and structured downstream contract
---------------------------------------------
-
 Illustration: Small power and heat network (in German)
 ------------------
 
