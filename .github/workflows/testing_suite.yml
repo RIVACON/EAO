@@ -3,7 +3,11 @@ name: Testing suite [auto, push in develop or main]
 on:
   push:
     branches:
-      - main
+#   Tests should be all run in develop, and only after passing
+#   pulled to main, to avoid badge conflicts: new badge would indeed
+#   be generated, and the attempt tu push them will fail since
+#   on main we only accept pull requests, causing errors.
+#      - main
       - develop
   workflow_dispatch:
 
