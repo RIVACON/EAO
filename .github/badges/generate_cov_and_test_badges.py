@@ -7,6 +7,10 @@ where the output files will also be located.
 """
 import json
 import os
+import datetime
+
+comment = "Generated at time: "
+comment = comment + str(datetime.datetime.now().isoformat())
 
 folder = os.path.join(".github", "badges")
 
@@ -38,6 +42,7 @@ def generate_coverage_badge(coverage_percentage):
         <text aria-hidden="true" x="87.5" y="15" fill="#010101" fill-opacity=".3">{coverage_percentage}%</text>
         <text x="87.5" y="14">{coverage_percentage}%</text>
     </g>
+    '{comment}'
 </svg>
 """
     with open(os.path.join(folder, 'coverage-badge.svg'), 'w') as f:
@@ -69,6 +74,7 @@ def generate_tests_badge(status):
             <text aria-hidden="true" x="67.5" y="15" fill="#010101" fill-opacity=".3">{status}</text>
             <text x="67.5" y="14">{status}</text>
     </g>
+    '{comment}'
 </svg>
 """
     with open(os.path.join(folder, 'tests-badge.svg'), 'w') as f:

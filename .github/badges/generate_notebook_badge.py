@@ -7,6 +7,11 @@ where the output files will also be located.
 """
 import json
 import os
+import datetime
+
+comment = "Generated at time: "
+comment = comment + str(datetime.datetime.now().isoformat())
+
 
 folder = os.path.join(".github", "badges")
 
@@ -14,7 +19,7 @@ def generate_notebook_badge(status):
     color = "red"
     if status == "passed":
         color = "green"
-    elif status == "tbd":
+    elif status == "run_action!":
         color = "grey"
 
     badge_content = f"""
@@ -37,9 +42,11 @@ def generate_notebook_badge(status):
     <text x="32.5" y="14">notebooks</text>
     <text aria-hidden="true" x="97.5" y="15" fill="#010101" fill-opacity=".3">{status}</text>
     <text x="97.5" y="14">{status}</text>
-  </g>
-</svg>
-"""
+  </g>\n"""
+ 
+    badge_content = badge_content + f"'{comment}'\n" 
+    badge_content = badge_content + "</svg>"
+
     with open(os.path.join(folder, 'notebook-badge.svg'), 'w') as f:
         f.write(badge_content)
 
