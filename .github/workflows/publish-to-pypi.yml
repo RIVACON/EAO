@@ -33,9 +33,9 @@ jobs:
         .
 
     - name: Publish to PyPI
-      uses: pypa/gh-action-pypi-publish@master
+#      uses: pypa/gh-action-pypi-publish@master
 #     The website suggests using:
-#     uses: pypa/gh-action-pypi-publish@release/v1
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
