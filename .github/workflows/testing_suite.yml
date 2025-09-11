@@ -49,10 +49,10 @@ jobs:
       - name: Badge Creation (test, coverage)
         run: python .github/badges/generate_cov_and_test_badges.py
 
-      - name: Color Notebook Badge in grey
-        run: |
-            echo '{"status": "run_action!"}' > notebooks_status.json
-            python .github/badges/generate_notebook_badge.py
+#      - name: Color Notebook Badge in grey
+#        run: |
+#            echo '{"status": "run_action!"}' > notebooks_status.json
+#            python .github/badges/generate_notebook_badge.py
 
       - name: Commit all Badges to Repository
         run: |
@@ -60,6 +60,6 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git pull
           git add .github/badges/coverage-badge.svg
-          git add .github/badges/notebook-badge.svg
-          git commit -m "Badges: updating coverage and test, resetting notebook" || true 
+          git add .gihub/badges/test-badge.svg
+          git commit -m "Badges: updating coverage and test" || true 
           git push
