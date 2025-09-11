@@ -47,7 +47,7 @@ jobs:
 
       - name: Color Notebook Badge in grey
         run: |
-            echo '{"status": "tbd"}' > notebooks_status.json
+            echo '{"status": "run_action!"}' > notebooks_status.json
             python .github/badges/generate_notebook_badge.py
 
       - name: Commit all Badges to Repository
@@ -55,6 +55,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git pull
-          git add .github/badges/*.svg
-          git commit -m "Updating coverage and test badges" || true 
+          git add .github/badges/coverage-badge.svg
+          git add .github/badges/notebook-badge.svg
+          git commit -m "Badges: updating coverage and test, resetting notebook" || true 
           git push
