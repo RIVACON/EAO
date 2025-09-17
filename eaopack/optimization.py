@@ -192,6 +192,18 @@ class OptimProblem:
         self.mapping.drop(columns = ['dur','per','sub_per'], inplace = True)
         self.mapping.set_index('new_idx', inplace = True)
 
+    @property
+    def is_MIP(self) -> bool:
+        """ return flag, whether op is LP or MIP
+            - None if not set up yet
+            - True if MIP (there are binary/integer variables)
+            - False if no binary/integer variables """
+        if self.mapping is None: flag = None
+        elif 'bool' in self.mapping.columns:
+            flag = any(self.mapping['bool'])
+        else: flag = False
+        return flag
+
 
     def optimize(self, target        = 'value',
                        samples       = None,

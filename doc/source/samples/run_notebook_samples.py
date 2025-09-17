@@ -7,6 +7,9 @@ import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor, CellExecutionError
 warnings.filterwarnings("ignore")
 
+### do not evaluate black list of notebooks (e.g. with long run-time)
+blacklist = ['large_problems.ipynb']
+
 
 def execute_notebook(notebook_file: Path, 
                      notebook_folder: Path,
@@ -70,16 +73,17 @@ def find_all_notebooks():
             for file in os.listdir(path_folder):
                 if len(str(file)) > 6:
                     if str(file)[-6:] == ".ipynb":
-                        print(f"\t{file}")
-                        print(f"{path_folder}, {file}")
                         # Append to the pair list
-                        pairs.append((path_folder, file))
+                        ### do not evaluate black list of notebooks (with long run-time)
+                        if file not in blacklist:
+                            print(f"\t{file}")
+                            print(f"{path_folder}, {file}")
+                            pairs.append((path_folder, file))
+                        else:
+                            print(f"ignored \t{file}")
+
         else:
             print(f"File {path_folder} not a folder: SKIP")
-#    print(f"Pairs found:")
-#    for p in pairs:
-#        print(f"{p[0]} + {p[1]}")
-#    print(f"Total of {len(pairs)} notebooks to check.")
     return pairs
 
 
@@ -115,6 +119,7 @@ def test_notebook_execution():
 #---
 
 if __name__ == "__main__":
+    folder_file_pairs = find_all_notebooks()
     res = test_notebook_execution()
     print(res)
     if res:

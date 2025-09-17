@@ -130,6 +130,36 @@ class OptimizationTests(unittest.TestCase):
         resC = opC.optimize()                           
         self.assertAlmostEqual(sum(abs((resA.x[I] - resC.x[I]))), 0., 5)  
 
+    def test_flag_MIP(self):
+        """ Unit test. simple optim prob - check "is MIP" flag
+        """
+        node = eao.assets.Node('testNode')
+        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,1,2), freq = 'h')
+        a = eao.assets.Storage('STORAGE', node, 
+                               size=5,
+                               cap_in=1,
+                               cap_out=1, 
+                               start_level=0, 
+                               end_level=0, 
+                               price='price',
+                               eff_in=.8, 
+                               eff_out=0.9,
+                               no_simult_in_out = True)
+        price = np.ones([timegrid.T])
+        price[:10] = 0
+        price[8] = 5
+        price[3:5] = 0
+        price[18:20] = 20
+
+        prices ={ 'price': price}
+        op = a.setup_optim_problem(prices, timegrid=timegrid)
+        ### check flag - with no_simult_in_out= True should be MIP
+        self.assertTrue(op.is_MIP)
+        ### check flag - with no_simult_in_out= False should be LP
+        a.no_simult_in_out = False
+        op = a.setup_optim_problem(prices, timegrid=timegrid)
+        self.assertTrue(not op.is_MIP)
+
 class SplitOptimizationTests(unittest.TestCase):
     def test_same_same(self):
         node1 = eao.assets.Node('node_1')

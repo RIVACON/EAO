@@ -235,6 +235,35 @@ class OptimizeShortcutTests(unittest.TestCase):
         out = eao.optimize(portf=portf, data=prices, timegrid=timegrid, split_interval_size='d')
         out = eao.optimize(portf=portf, data=prices, timegrid=timegrid, split_interval_size='d', make_soft_problem=True)
         return
+    
+    def test_not_enough_data(self):
+        """ Unit test: cast data into timegrid - check error catching etc """
+
+        tg_data = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,4,1), freq = '15min')
+        # random data
+        data = pd.DataFrame(
+            np.random.randn(len(tg_data.timepoints), 3),
+            index=tg_data.timepoints,
+            columns=['a', 'b', 'c'])
+        # other timegrids ...
+        # (1) ssame tg
+        tg = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,4,1), freq = '15min')
+        df = tg.prices_to_grid(data)
+        self.assertTrue((data == df).values.all())
+        # (2) smaller tg
+        tg = eao.assets.Timegrid(dt.date(2021,2,1), dt.date(2021,3,1), freq = '15min')
+        df = tg.prices_to_grid(data)
+        ddata = data.loc['2021-02-01 00:00':'2021-02-28 23:45', :]
+        self.assertTrue((ddata == df).values.all())
+        # (3a) larger tg - throw error! - start
+        tg = eao.assets.Timegrid(dt.date(2021,2,1), dt.date(2021,5,1), freq = '15min')
+        with self.assertRaises(Exception):
+            df = tg.prices_to_grid(data)
+        # (3b) larger tg - throw error! - end
+        tg = eao.assets.Timegrid(dt.date(2020,12,31), dt.date(2021,3,1), freq = '15min')
+        with self.assertRaises(Exception):
+            df = tg.prices_to_grid(data)            
+
 
 if __name__ == "__main__" :
     unittest.main()

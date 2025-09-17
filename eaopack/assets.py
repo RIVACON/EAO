@@ -1271,7 +1271,7 @@ class CHPAsset(Contract):
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
             conversion_factor_power_heat (float, dict, str): Conversion efficiency from heat to power. Defaults to 1.
             max_share_heat (float, dict, str): Defines upper bound for the heat dispatch as a percentage of the power dispatch. Defaults to 1.
-            ramp (float): Maximum increase/decrease of virtual dispatch (power + conversion_factor_power_heat * heat) in one timestep. Defaults to 1.
+            ramp (float): Maximum increase/decrease of virtual dispatch (power + conversion_factor_power_heat * heat) in one main time unit). Defaults to None.
             start_costs (float): Costs for starting. Defaults to 0.
             running_costs (float): Costs when on. Defaults to 0.
             min_runtime (int): Minimum runtime in timegrids main_time_unit. (start ramp time and shutdown ramp time do not count towards the min runtime.) Defaults to 0.
@@ -2614,7 +2614,7 @@ class Plant(CHPAsset):
                                             str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
-            ramp (float): Maximum increase/decrease of virtual dispatch (power + conversion_factor_power_heat * heat) in one timestep. Defaults to 1.
+            ramp (float): Maximum increase/decrease of virtual dispatch (power + conversion_factor_power_heat * heat) in one main time unit. Defaults to None.
             start_costs (float): Costs for starting. Defaults to 0.
             running_costs (float): Costs when on. Defaults to 0.
             min_runtime (int): Minimum runtime in timegrids main_time_unit. (start ramp time and shutdown ramp time do not count towards the min runtime.) Defaults to 0.

@@ -1103,8 +1103,9 @@ class Plant(unittest.TestCase):
         # load test data
         import os
         myfile = os.path.join(os.path.join(os.path.dirname(__file__)),'plant_test_data.csv')
-        df = pd.read_csv(myfile)
+        df = pd.read_csv(myfile)       
         df.set_index('date', inplace = True)
+        df.index = pd.to_datetime(df.index, format='%m/%d/%y %I:%M %p')
         df = timegrid.prices_to_grid(df)
         # simple case, no min run time
         a = eao.assets.Plant(name='PP',
