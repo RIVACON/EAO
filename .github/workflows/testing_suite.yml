@@ -27,7 +27,6 @@ jobs:
           python-version: "3.12"
           activate-environment: eao_env
           environment-file: environment.yml
-          use-only-actions-cli: true
 
       - name: Run tests and coverage...
         id: run_tests_and_coverage
