@@ -4,7 +4,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Sample for optimizing a portfolio that supplies a load minimum share of green energy\n",
+    "## Optimally supplying a minimum share of green energy\n",
     "In this sample, we define a more realistic example from the power sector: We define a complex sales contract, with an hourly load profile and the obligation to provide at least 80% of the power from green sources. In the portfolio we link it to a wind and a PV PPA along with a battery that allows us to flatten out green production to be able to meet the target share of green energy."
    ]
   },

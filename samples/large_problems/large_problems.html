@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Large problems: main strategies &mdash; EAO  documentation</title>
+  <title>Large problems: Recipes and EAO strategy &mdash; EAO  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -24,7 +24,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Sample for optimizing a portfolio that supplies a load minimum share of green energy" href="../green_ppa/sample_green_ppa.html" />
+    <link rel="next" title="Optimally supplying a minimum share of green energy" href="../green_ppa/sample_green_ppa.html" />
     <link rel="prev" title="Einfaches Beispiel “Strom und Wärme”" href="../power_and_heat/power_and_heat_sample.html" /> 
 </head>
 
@@ -54,11 +54,17 @@
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#simple-start-optimizing-power-consumption-with-battery-pv">Simple start: Optimizing power consumption with battery &amp; PV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../samples.html#illustration-small-power-and-heat-network-in-german">Illustration: Small power and heat network (in German)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../samples.html#handling-large-problems">Handling large problems</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Large problems: main strategies</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Large problems: Recipes and EAO strategy</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Basics---setting-things-up">Basics - setting things up</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Large-problems---focus-on-memory">Large problems - focus on memory</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Seemingly-%22large%22-problem,-that-actually-isn't">Seemingly “large” problem, that actually isn’t</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Storage:-The-most-problematic-asset-when-it-comes-to-memory">Storage: The most problematic asset when it comes to memory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Solvers">Solvers</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Run-time---divide-&amp;-conquer-and-LPs-vs.-MIPs">Run-time - divide &amp; conquer and LPs vs. MIPs</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Long-simulations---splitting-in-chunks">Long simulations - splitting in chunks</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Making-the-MIP-an-LP">Making the MIP an LP</a></li>
 </ul>
@@ -95,7 +101,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../samples.html">Samples</a></li>
-      <li class="breadcrumb-item active">Large problems: main strategies</li>
+      <li class="breadcrumb-item active">Large problems: Recipes and EAO strategy</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/samples/large_problems/large_problems.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -105,8 +111,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="Large-problems:-main-strategies">
-<h1>Large problems: main strategies<a class="headerlink" href="#Large-problems:-main-strategies" title="Link to this heading"></a></h1>
+  <section id="Large-problems:-Recipes-and-EAO-strategy">
+<h1>Large problems: Recipes and EAO strategy<a class="headerlink" href="#Large-problems:-Recipes-and-EAO-strategy" title="Link to this heading"></a></h1>
 <p>In this notebook we explore large problems (in terms of memory or run-time). We explain the main drivers for size &amp; complexity and describe simplifications we found useful.</p>
 <p>EAO generates mathematical problems (LP or MIP) out of given assets or portfolios - then passing them to solvers (such as Gurobi, CPLEX or free solvers such as SCPI or HighS). In that sense it is very similar to other commercial or open source approaches.</p>
 <p>No matter what solver (or asset optimization framework) is used, once we model complex assets and/or large time spans, problems may hit memory or run-time limits. <strong>EAO’s strategy is not to hide away simplifications</strong> but to keep the exact formulation of the problem. We leave it to the user, deciding where she can live with simplifications.</p>
@@ -114,7 +120,7 @@
 <section id="Basics---setting-things-up">
 <h2>Basics - setting things up<a class="headerlink" href="#Basics---setting-things-up" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -123,6 +129,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tracemalloc</span> <span class="c1">### trace memory usage</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 
 <span class="c1">### load input data (price samples)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s2">&quot;data2024.xlsx&quot;</span><span class="p">)</span>
@@ -131,7 +138,7 @@
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## keeping track of peak memory</span>
@@ -148,10 +155,10 @@
 </pre></div>
 </div>
 </div>
+</section>
+</section>
 <section id="Large-problems---focus-on-memory">
-<h3>Large problems - focus on memory<a class="headerlink" href="#Large-problems---focus-on-memory" title="Link to this heading"></a></h3>
-</section>
-</section>
+<h1>Large problems - focus on memory<a class="headerlink" href="#Large-problems---focus-on-memory" title="Link to this heading"></a></h1>
 <section id="Seemingly-%22large%22-problem,-that-actually-isn't">
 <h2>Seemingly “large” problem, that actually isn’t<a class="headerlink" href="#Seemingly-%22large%22-problem,-that-actually-isn't" title="Link to this heading"></a></h2>
 <p>We start with setting up a typical “large” problem:</p>
@@ -162,7 +169,7 @@
 <li><p>fixed demand to be covered</p></li>
 </ul>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">### setup</span>
@@ -177,7 +184,7 @@
 <p><strong>Recommendation: Always to choose the lowest resolution/ frequency that captures your problem</strong>. Trivial example: modelling a year on hourly level leads to 8.760 time steps, on daily level 365. A big difference! It may be worthwhile to compare hourly, 15min or daily optimization to decide what is enough. May save computation or waiting times.</p>
 <p>Let us generate the portfolio. We use a simplistic way of generating generators with random capacity and generation costs - note that we start tracking memory usage</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tracemalloc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="c1">## start memory tracking</span>
@@ -227,7 +234,7 @@ Peak memory usage:  2 MB
 <li><p>solving the problem (potentially requiring much time)</p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tracemalloc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="c1">## start memory tracking</span>
@@ -243,7 +250,7 @@ Peak memory usage:  2 MB
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Peak memory usage:  177 MB
+Peak memory usage:  149 MB
 </pre></div></div>
 </div>
 <p>We observe that solving this setup does not constitute an issue in terms of memory used or time required.</p>
@@ -254,7 +261,7 @@ Peak memory usage:  177 MB
 </ul>
 <p>Here, a few lines of code that allow us to check the nature of the optimization problem. Note that the above call “out = eao.optimize(portf, timegrid, data)” is a shortcut. We take it apart into the single steps to obtain the (1) optimization problem (2) do the optimization and (3) to extract the results in neat dataframes:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># (1) generate optim. problem</span>
@@ -283,7 +290,7 @@ Is problem a MIP? False
 <h2>Storage: The most problematic asset when it comes to memory<a class="headerlink" href="#Storage:-The-most-problematic-asset-when-it-comes-to-memory" title="Link to this heading"></a></h2>
 <p>Let us add a storage to the portfolio. It’s just one asset more, but we will see that a storage requires much memory when the optimzation problem is set up</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="c1"># storage</span>
@@ -299,7 +306,7 @@ Is problem a MIP? False
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tracemalloc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="c1">## start memory tracking</span>
@@ -327,7 +334,7 @@ Peak memory usage:  3,534 MB
 <p>So we have two restrictions for each time step, involving all previous time steps. A densely populated matrix</p>
 <p><strong>But wait: There’s a very simple way around</strong>: Is it realistic to assume the dispatch (e.g.) on Jan 1 affects (e.g.) my decision on Dec 31? In reality we can securely assume that a short-term storage is dispatched on a daily or weekly basis. This should even reflect trading reality better, than optimizing against the full time span. In the following we try it, using the parameter <strong>block_size</strong>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">battery</span><span class="o">.</span><span class="n">block_size</span> <span class="o">=</span> <span class="s1">&#39;W&#39;</span> <span class="c1"># weekly optimization. In each block, the battery goes back to start_level</span>
@@ -349,23 +356,23 @@ Peak memory usage:  158 MB
 </pre></div></div>
 </div>
 <p><strong>Recommendation:</strong> Always utilize the block_size and set it to a low value. We found that daily (“d”) is often a good choice for batteries or heat storage. Most available optimization tools utilize such simplification “under the hood”. However, we believe it should be up to the user to decide whether or when to use it.</p>
-<p><strong>Long-term storage:</strong> An alternative for long-term storage such as seasonal storages for gas or large hydro storages: We can define different intrinsic frequencies for single assets. See a separate sample: <a class="reference external" href="https://rivacon.github.io/EAO/samples/mixing_long_and_short_term/mixing_long_and_short_term.html">https://rivacon.github.io/EAO/samples/mixing_long_and_short_term/mixing_long_and_short_term.html</a></p>
+<p><strong>Long-term storage:</strong> An alternative for long-term storage such as seasonal storages for gas or large hydro storages: We can define different intrinsic frequencies for single assets. For a specific sample check out <a class="reference external" href="https://rivacon.github.io/EAO/samples/mixing_long_and_short_term/mixing_long_and_short_term.html">https://rivacon.github.io/EAO/samples/mixing_long_and_short_term/mixing_long_and_short_term.html</a></p>
 </section>
 <section id="Solvers">
 <h2>Solvers<a class="headerlink" href="#Solvers" title="Link to this heading"></a></h2>
 <p>For MIPs, solvers typically implement complex iterations using heuristics - and widely differ in efficiency. In EAO, for MIPs, we set the standard to the open source solver SCIP. For LPs we let CVXPY decide If you have a license for Gurobi or CPLEX, it may be worthwhile to switch. Simply set the parameter “solver = …” when calling the optimization (see samples below).</p>
 <p><strong>We are using CVXPY as interface to solvers</strong>. See <a class="reference external" href="https://www.cvxpy.org/tutorial/solvers/index.html">https://www.cvxpy.org/tutorial/solvers/index.html</a> for available solvers. You may need to install solvers to your environment.</p>
-<section id="Run-time---LPs-vs.-MIPs">
-<h3>Run-time - LPs vs. MIPs<a class="headerlink" href="#Run-time---LPs-vs.-MIPs" title="Link to this heading"></a></h3>
+</section>
+</section>
+<section id="Run-time---divide-&amp;-conquer-and-LPs-vs.-MIPs">
+<h1>Run-time - divide &amp; conquer and LPs vs. MIPs<a class="headerlink" href="#Run-time---divide-&-conquer-and-LPs-vs.-MIPs" title="Link to this heading"></a></h1>
 <p>Let us now focus on run-time. While the size of a problem (roughly number of assets <span class="math notranslate nohighlight">\(\times\)</span> number of time steps, storage block size) determines the problem size, its complexity is not necessarily linked to it.</p>
-<p>The main lever for complexity is the question whether we’re dealing with a <strong>mixed integer problem (MIP) or a linear problem (LP)</strong>:</p>
+<p>A main lever for complexity is the question whether we’re dealing with a <strong>mixed integer problem (MIP) or a linear problem (LP)</strong>:</p>
 <ul class="simple">
 <li><p>An LP only contains continuous variables. An LP is convex, with guaranteed convergence and efficient solution algorithms.</p></li>
 <li><p>A MIP contains “switch” variables such as start-up decisions. MIPs are not necessarily convex, no convergence guaranteed. Run-time may be long, even for smaller problems.</p></li>
 </ul>
-<p>Unfortunately there’s no easy way out and it turns out to be difficult knowing in advance, which problem is hard and which is not. In the coming sections we explore how to deal with MIPs and how we may avoid them.</p>
-</section>
-</section>
+<p>Unfortunately there’s no easy way out and it turns out to be difficult knowing in advance, which problem is hard and which is not. In the coming sections we explore how to deal with complex problems.</p>
 <section id="Long-simulations---splitting-in-chunks">
 <h2>Long simulations - splitting in chunks<a class="headerlink" href="#Long-simulations---splitting-in-chunks" title="Link to this heading"></a></h2>
 <p>Solving MIPs over long time frames is often not possible in one go (due to long run-time or memory usage). However, solving them in chunks of, say, weeks or days, is mostly doable. Particularly in power or gas setups, there is also no reason to believe that decisions early the year will influence decisions late in the year (e.g. starting a plant in January will hardly have an effect on whether the plant is running in December).</p>
@@ -373,7 +380,7 @@ Peak memory usage:  158 MB
 <p>Attention in cases where we are using restrictions across a longer time frame - such as “minimum take”. In this case, split-optimization will also divide down this restriction. E.g. a minimum take of 12 GWh across the year will give rise to 12 chunks of 1 GWh minimum take per month. In those case consider manual break-down or going for an LP (see below).</p>
 <p>Let us define a sample portfolio: The main asset is the power plant (we’re adding two of them with different parameters), where we use some of the more complex restrictions. Those are mainly start up costs and specific ramps for starting and shutting down as well as minimum down time. We add a battery with a maximum number of cycles per day to add complexity.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Start</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
@@ -383,7 +390,7 @@ Peak memory usage:  158 MB
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># define timegrid</span>
@@ -428,7 +435,7 @@ Peak memory usage:  158 MB
                                  <span class="n">end_level</span>   <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="c1"># MWh</span>
                                  <span class="n">max_cycles_freq</span> <span class="o">=</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span>
                                  <span class="n">max_cycles_no</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-                                 <span class="n">no_simult_in_out</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>   <span class="c1"># creates MIP of true! If false, simultaneous</span>
+                                 <span class="n">no_simult_in_out</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>   <span class="c1"># creates MIP if true! If false, simultaneous</span>
                                                             <span class="c1"># charge/discharge for negative prices possible</span>
                                  <span class="n">block_size</span>       <span class="o">=</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>    <span class="c1"># daily optimization</span>
 <span class="n">portf</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">power_market</span><span class="p">,</span> <span class="n">plant_1</span><span class="p">,</span> <span class="n">plant_2</span><span class="p">,</span> <span class="n">battery</span><span class="p">])</span>
@@ -437,10 +444,14 @@ Peak memory usage:  158 MB
 </div>
 <p>Let’s try different variants: Optimization in one piece, split into weeks, relaxed to LP as well as different solvers.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Run-time: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">minutes</span><span class="p">)</span><span class="si">}</span><span class="s2"> min </span><span class="si">{</span><span class="n">seconds</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> sec&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total dispatch plant (no splitting using SCIP as EAO default solver): </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][[</span><span class="s1">&#39;plant_1&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;plant_2&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">,.0f</span><span class="si">}</span><span class="s2"> MWh&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -450,16 +461,21 @@ Peak memory usage:  158 MB
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+Run-time: 10 min 14 sec
 Total dispatch plant (no splitting using SCIP as EAO default solver): 210,996 MWh
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">solver</span> <span class="o">=</span> <span class="s1">&#39;HIGHS&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">solver</span> <span class="o">=</span> <span class="s1">&#39;HIGHS&#39;</span><span class="p">)</span>
+<span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Run-time: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">minutes</span><span class="p">)</span><span class="si">}</span><span class="s2"> min </span><span class="si">{</span><span class="n">seconds</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> sec&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total dispatch plant (no splitting using HighS as solver): </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][[</span><span class="s1">&#39;plant_1&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;plant_2&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">,.0f</span><span class="si">}</span><span class="s2"> MWh&quot;</span><span class="p">)</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -467,6 +483,7 @@ Total dispatch plant (no splitting using SCIP as EAO default solver): 210,996 MW
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+Run-time: 11 min 56 sec
 Total dispatch plant (no splitting using HighS as solver): 210,896 MWh
 </pre></div></div>
 </div>
@@ -474,10 +491,14 @@ Total dispatch plant (no splitting using HighS as solver): 210,896 MWh
 <p>Particularly if you have a license for CPLEX, Gurobi or another commercial solver, it’s worth trying it. Performance may be much better.</p>
 <p>Now the run in weekly chunks:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">split_interval_size</span><span class="o">=</span><span class="s1">&#39;W&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">split_interval_size</span><span class="o">=</span><span class="s1">&#39;W&#39;</span><span class="p">)</span>
+<span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Run-time: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">minutes</span><span class="p">)</span><span class="si">}</span><span class="s2"> min </span><span class="si">{</span><span class="n">seconds</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> sec&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total dispatch plant (with splitting): </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][[</span><span class="s1">&#39;plant_1&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;plant_2&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">,.0f</span><span class="si">}</span><span class="s2"> MWh&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -487,6 +508,7 @@ Total dispatch plant (no splitting using HighS as solver): 210,896 MWh
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+Run-time: 2 min 24 sec
 Total dispatch plant (with splitting): 208,496 MWh
 </pre></div></div>
 </div>
@@ -501,10 +523,14 @@ Total dispatch plant (with splitting): 208,496 MWh
 <p>However, also for some use-cased, we believe this can be a valid approximation, particularly in long-term valuation.</p>
 <p>Let us test, using the parameter make_soft_problem:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">make_soft_problem</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">make_soft_problem</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Run-time: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">minutes</span><span class="p">)</span><span class="si">}</span><span class="s2"> min </span><span class="si">{</span><span class="n">seconds</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> sec&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total dispatch plant (softened problem using default solver): </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][[</span><span class="s1">&#39;plant_1&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;plant_2&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">,.0f</span><span class="si">}</span><span class="s2"> MWh&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -514,10 +540,11 @@ Total dispatch plant (with splitting): 208,496 MWh
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+Run-time: 9 min 3 sec
 Total dispatch plant (softened problem using default solver): 297,740 MWh
 </pre></div></div>
 </div>
-<p>In our simple illustration, we see a limited impact run-time - yet in real-life problems differences may be much higher. The approximation appears ok, at least in terms of overall plant dispatch.</p>
+<p>In our simple illustration, we see a limited impact run-time - yet in real-life problems differences may be much higher. The approximation appears somewhat ok, at least in terms of overall plant dispatch.</p>
 <p><strong>Recommendation:</strong> Use make_soft_problem with care. When a problem does not converge or when it is not feasible (it easily happens that restrictions cannot be met due to errors in the setup), start trying the soft version. When using for a productive purposes, do thorough tests. Start-up processes, for example, will not be modelled correctly.</p>
 </section>
 </section>
