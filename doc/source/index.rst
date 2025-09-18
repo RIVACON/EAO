@@ -26,6 +26,8 @@ You can find the code along with some sample notebooks here:
 And an extensive technical report here:
 `Report <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3842822>`_
 
+We are using CVXPY as an interface to LP / MIP solvers. See `CVXPY on GitHub <https://github.com/cvxpy/cvxpy>`. You can find details on supported solvers here: `CVXPY solvers <https://www.cvxpy.org/tutorial/solvers>`. The list includes open sources solvers such as HighS and SCIP as well as commercial solvers such as Gurobi or CLPEX.
+
 .. toctree::
    :maxdepth: 3
    :caption: Contents:

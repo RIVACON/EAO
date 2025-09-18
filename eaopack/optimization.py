@@ -7,7 +7,9 @@ import scipy.sparse as sp
 from eaopack.basic_classes import Timegrid
 
 class Results:
-    def __init__(self, value:float, x: np.array, duals: dict):
+    def __init__(self, value: Union[float, None],
+                       x:     Union[np.array, None],
+                       duals: Union[dict, None]):
         """ collection of optimization results
 
         Args:
@@ -22,17 +24,17 @@ class Results:
 class OptimProblem:
 
     def __init__(self, 
-                 c: np.array, 
-                 l:np.array, 
-                 u:np.array, 
-                 A:np.array = None, 
-                 b:np.array = None, 
-                 cType:str = None ,
-                 mapping:pd.DataFrame = None,
-                 timegrid:Timegrid = None,  # needed if periodic
-                 periodic_period_length:str = None,
-                 periodic_duration:str = None,
-                 map_nodal_restr:list = None 
+                 c: np.ndarray, 
+                 l: np.ndarray, 
+                 u: np.ndarray, 
+                 A: Union[np.ndarray, None]                = None, 
+                 b: Union[np.ndarray, None]                = None, 
+                 cType:Union[str, None]                    = None,
+                 mapping: Union[pd.DataFrame, None]        = None,
+                 timegrid:Union[Timegrid, None]            = None,  # needed if periodic
+                 periodic_period_length:Union[str, None]   = None,
+                 periodic_duration:Union[str, None]        = None,
+                 map_nodal_restr:Union[list, None]         = None 
                  ):
         """ Formulated optimization problem. LP problem.
 
@@ -192,13 +194,25 @@ class OptimProblem:
         self.mapping.drop(columns = ['dur','per','sub_per'], inplace = True)
         self.mapping.set_index('new_idx', inplace = True)
 
+    @property
+    def is_MIP(self) -> Union[bool, None]:
+        """ return flag, whether op is LP or MIP
+            - None if not set up yet
+            - True if MIP (there are binary/integer variables)
+            - False if no binary/integer variables """
+        if self.mapping is None: flag = None
+        elif 'bool' in self.mapping.columns:
+            flag = any(self.mapping['bool'])
+        else: flag = False
+        return flag
+
 
     def optimize(self, target        = 'value',
                        samples       = None,
                        interface:str = 'cvxpy', 
                        solver        = None,  
                        make_soft_problem=False,
-                       solver_params=None)->Results:
+                       solver_params=None) -> Union[Results, str]:
         """ optimize the optimization problem
 
         Args:
@@ -209,14 +223,15 @@ class OptimProblem:
             interface (str, optional): Chosen interface architecture. Defaults to 'cvxpy'. "ortools" also possible.
             solver (str, optional): Solver for interface. Defaults to None, in which case SCIP is utilized (currently best experience)
                                     choose "CVXPY" to let CVXPY decide (with interface "cvxpy")
+                                    Note: CVXPY is used as interface to solvers. See details on solvers here:  https://www.cvxpy.org/tutorial/solvers/index.html
             make_soft_problem (bool, optional): If true, relax the boolean variables and allow float values instead. Defaults to False
         """
         assert np.all(self.l <= self.u), 'Error. Lower bounds must be smaller or equal to upper bounds'
         map = self.mapping.copy()  # abbreviation
 
+        # relaxing MIP to LP simply by forcing all boolean variables to be continuous
         if make_soft_problem:
             map['bool'] = False
-
         isMIP = False
         if 'bool' in map:
             my_bools = map.loc[(~map.index.duplicated(keep='first')) & (map['bool'])].index.values.tolist()
@@ -231,12 +246,13 @@ class OptimProblem:
 
         if interface == 'cvxpy':
             import cvxpy as CVX
-            ########### default solver
-            if solver is None: solver = "SCIP"  # setting SCIP as default solver - currently best experience
+            ########### default solver. For MIPs setting SCIP as default solver - currently best experience
+            if solver is None:
+                if isMIP: solver = "SCIP"  
             elif solver.upper() == "CVXPY":
                 solver = None # let CVXPY decide
 
-            # reformulate boolean var list - backwards compatibility
+            # reformulate boolean var list - backwards compatibility due to change in CVXPY
             if isMIP:
                 if (CVX.__version__>='1.6'): my_bools = (my_bools,)
                 else: my_bools = [(bb,) for bb in my_bools]

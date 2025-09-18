@@ -291,7 +291,12 @@ def set_param(obj, path, value):
         raise ValueError('Error. Object could not be created. Parameter issue? Object: '+n+' | parameter '+str(path))
     return res
 
-def optimize(portf:Portfolio, timegrid:Timegrid, data = None, split_interval_size = None, solver = None, make_soft_problem = False) -> Dict:
+def optimize(portf:Portfolio, 
+             timegrid:Timegrid, 
+             data: Union[dict, pd.DataFrame, pd.Series, None] = None, 
+             split_interval_size: Union[str, None] =  None, 
+             solver: Union[str, None] = None, 
+             make_soft_problem: bool = False) -> Dict:
     """ Optimization shortcut: Cast data into timegrid, do the optimization and extract the results in one go
 
     Args:
@@ -303,6 +308,7 @@ def optimize(portf:Portfolio, timegrid:Timegrid, data = None, split_interval_siz
                                              Pandas convention 'd', 'h', 'W', ...
                                              (none for no split)
         solver (str, optional): Solver to be used. Defaults to None (uses default solver)
+                                Note: CVXPY is used as interface to solvers. See details on solvers here:  https://www.cvxpy.org/tutorial/solvers/index.html
         make_soft_problem (bool, optional): Make a soft problem (relax booleans in MIP to create LP) --> speedup. Defaults to False.
 
     Returns: Output dictionary with keys (if optimization feasible):

@@ -78,7 +78,9 @@ class Asset:
         self.timegrid.set_restricted_grid(self.start, self.end, self.freq) # restricted timegrid for asset lifetime and own freq
 
     @abc.abstractmethod
-    def setup_optim_problem(self, prices: dict, timegrid:Timegrid = None, costs_only:bool = False) ->OptimProblem:
+    def setup_optim_problem(self, prices: Union[dict, pd.DataFrame, pd.Series,None], 
+                            timegrid:     Union[Timegrid, None] = None, 
+                            costs_only:   bool = False) -> OptimProblem:
         """ set up optimization problem for the asset
 
         Args:
@@ -227,30 +229,30 @@ class Storage(Asset):
     def __init__(self,
                 name    : str,
                 nodes   : Node  = Node(name = 'default_node'),
-                start   : dt.datetime = None,
-                end     : dt.datetime = None,
+                start   : Union[dt.datetime, pd.Timestamp, None] = None,
+                end     : Union[dt.datetime, pd.Timestamp, None] = None,
                 wacc    : float = 0.,
-                size    : float = None,
-                cap_in  : float = None,
-                cap_out : float = None,
+                size    : Union[None, float] = None,
+                cap_in  : Union[None, float] = None,
+                cap_out : Union[None, float] = None,
                 start_level: float = 0.,
-                end_level  : float = 0.,
-                cost_out: float = 0.,
-                cost_in : float = 0.,
+                end_level:   float = 0.,
+                cost_out:    float = 0.,
+                cost_in :    float = 0.,
                 cost_store : float = 0.,
-                block_size : str = None,
-                eff_in  : float = 1.,
-                eff_out  : float = 1.,                
-                inflow  : float = 0.,
-                no_simult_in_out: bool = False,
-                max_store_duration : float = None,
-                price: str=None,
-                freq: str = None,
-                max_cycles_no: float = None,
+                block_size : Union[None, str] = None,
+                eff_in  :    float = 1.,
+                eff_out  :   float = 1.,                
+                inflow  :    float = 0.,
+                no_simult_in_out:    bool = False,
+                max_store_duration : Union[None, float] = None,
+                price: Union[None, str]=None,
+                freq: Union[None, str] = None,
+                max_cycles_no: Union[None, float] = None,
                 max_cycles_freq: str = 'd' ,
-                profile: pd.Series = None,
-                periodicity: str = None,
-                periodicity_duration: str = None                 ):
+                profile: Union[None, pd.Series] = None,
+                periodicity: Union[None, str] = None,
+                periodicity_duration: Union[None, str] = None                 ):
         """ Specific storage asset. A storage has the basic capability to
             (1) take in a commodity within a limited flow rate (capacity)
             (2) store a maximum volume of a commodity (size)
@@ -1271,7 +1273,7 @@ class CHPAsset(Contract):
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
             conversion_factor_power_heat (float, dict, str): Conversion efficiency from heat to power. Defaults to 1.
             max_share_heat (float, dict, str): Defines upper bound for the heat dispatch as a percentage of the power dispatch. Defaults to 1.
-            ramp (float): Maximum increase/decrease of virtual dispatch (power + conversion_factor_power_heat * heat) in one timestep. Defaults to 1.
+            ramp (float): Maximum increase/decrease of virtual dispatch (power + conversion_factor_power_heat * heat) in one main time unit). Defaults to None.
             start_costs (float): Costs for starting. Defaults to 0.
             running_costs (float): Costs when on. Defaults to 0.
             min_runtime (int): Minimum runtime in timegrids main_time_unit. (start ramp time and shutdown ramp time do not count towards the min runtime.) Defaults to 0.
@@ -2614,7 +2616,7 @@ class Plant(CHPAsset):
                                             str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
-            ramp (float): Maximum increase/decrease of virtual dispatch (power + conversion_factor_power_heat * heat) in one timestep. Defaults to 1.
+            ramp (float): Maximum increase/decrease of virtual dispatch (power + conversion_factor_power_heat * heat) in one main time unit. Defaults to None.
             start_costs (float): Costs for starting. Defaults to 0.
             running_costs (float): Costs when on. Defaults to 0.
             min_runtime (int): Minimum runtime in timegrids main_time_unit. (start ramp time and shutdown ramp time do not count towards the min runtime.) Defaults to 0.
