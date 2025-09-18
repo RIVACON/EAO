@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cross commodity portfolios &mdash; EAO  documentation</title>
+  <title>Large problems: main strategies &mdash; EAO  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -23,7 +23,9 @@
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Sample for optimizing a portfolio that supplies a load minimum share of green energy" href="../green_ppa/sample_green_ppa.html" />
+    <link rel="prev" title="Einfaches Beispiel “Strom und Wärme”" href="../power_and_heat/power_and_heat_sample.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,9 +49,35 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../samples.html">Samples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#simple-start-optimizing-power-consumption-with-battery-pv">Simple start: Optimizing power consumption with battery &amp; PV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#illustration-small-power-and-heat-network-in-german">Illustration: Small power and heat network (in German)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../samples.html#handling-large-problems">Handling large problems</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Large problems: main strategies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Basics---setting-things-up">Basics - setting things up</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Seemingly-%22large%22-problem,-that-actually-isn't">Seemingly “large” problem, that actually isn’t</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Storage:-The-most-problematic-asset-when-it-comes-to-memory">Storage: The most problematic asset when it comes to memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Solvers">Solvers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Long-simulations---splitting-in-chunks">Long simulations - splitting in chunks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Making-the-MIP-an-LP">Making the MIP an LP</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#green-ppa-and-structured-downstream-contract">Green PPA and structured downstream contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#marginal-costs-in-portfolio-optimization">Marginal costs in portfolio optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#multi-commodity-optimization">Multi commodity optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#split-optimization-to-speed-up-large-problems">Split optimization (to speed up large problems)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#mixing-long-term-e-g-seasonal-and-short-term-storages-e-g-battery">Mixing long-term (e.g. seasonal) and short-term storages (e.g. battery)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#combined-heat-and-power">Combined Heat and Power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#battery-optimization-against-an-order-book">Battery optimization against an order book</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#stochastic-linear-programs">Stochastic Linear Programs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#robust-optimization">Robust optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../samples.html#parameter-handling">Parameter handling</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../eao.html">EAO package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../samples.html">Samples</a></li>
 </ul>
 
         </div>
@@ -66,7 +94,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Cross commodity portfolios</li>
+          <li class="breadcrumb-item"><a href="../../samples.html">Samples</a></li>
+      <li class="breadcrumb-item active">Large problems: main strategies</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/samples/large_problems/large_problems.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -76,15 +105,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="Cross-commodity-portfolios">
-<h1>Cross commodity portfolios<a class="headerlink" href="#Cross-commodity-portfolios" title="Link to this heading"></a></h1>
-<p>In this sample we illustrate how to define a portfolio that optimizes across different commodities. Here we take the example of heat and power, where a combined heat and power asset produces heat and power at the same time.</p>
-<p>A (local) heat demand is fixed and power can be marketed in the power market. An additional power-to-heat asset enables us to convert power to heat</p>
-</section>
-<section id="Some-prerequisites">
-<h1>Some prerequisites<a class="headerlink" href="#Some-prerequisites" title="Link to this heading"></a></h1>
-<section id="Basics">
-<h2>Basics<a class="headerlink" href="#Basics" title="Link to this heading"></a></h2>
+  <section id="Large-problems:-main-strategies">
+<h1>Large problems: main strategies<a class="headerlink" href="#Large-problems:-main-strategies" title="Link to this heading"></a></h1>
+<p>In this notebook we explore large problems (in terms of memory or run-time). We explain the main drivers for size &amp; complexity and describe simplifications we found useful.</p>
+<p>EAO generates mathematical problems (LP or MIP) out of given assets or portfolios - then passing them to solvers (such as Gurobi, CPLEX or free solvers such as SCPI or HighS). In that sense it is very similar to other commercial or open source approaches.</p>
+<p>No matter what solver (or asset optimization framework) is used, once we model complex assets and/or large time spans, problems may hit memory or run-time limits. <strong>EAO’s strategy is not to hide away simplifications</strong> but to keep the exact formulation of the problem. We leave it to the user, deciding where she can live with simplifications.</p>
+<p>In the following we give a <strong>recipe, which levers to pull</strong> to keep problems solvable.</p>
+<section id="Basics---setting-things-up">
+<h2>Basics - setting things up<a class="headerlink" href="#Basics---setting-things-up" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -93,142 +121,94 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="c1"># in case eao is not installed</span>
-<span class="kn">import</span><span class="w">  </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<span class="c1"># in case eao is not installed, set path</span>
-<span class="n">myDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../..&#39;</span><span class="p">)</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">myDir</span><span class="p">)</span>
-<span class="n">addDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;../../../..&#39;</span><span class="p">)</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addDir</span><span class="p">)</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tracemalloc</span> <span class="c1">### trace memory usage</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="c1">### load input data (price samples)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s2">&quot;data2024.xlsx&quot;</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;datum&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-</section>
-<section id="Define-the-nodes-for-heat-and-power">
-<h2>Define the nodes for heat and power<a class="headerlink" href="#Define-the-nodes-for-heat-and-power" title="Link to this heading"></a></h2>
-<ol class="arabic simple">
-<li><p>Nodes. In this example, we need to define a node for power and node for heat, since a node may only be used for one commodity. Accordingly we set different physical units for the nodes</p></li>
-</ol>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unit_power</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">volume</span> <span class="o">=</span> <span class="s1">&#39;MWh(el)&#39;</span><span class="p">,</span> <span class="n">flow</span> <span class="o">=</span> <span class="s1">&#39;MW(el)&#39;</span><span class="p">)</span>
-<span class="n">node_power</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;power&#39;</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">unit_power</span><span class="p">)</span>
-<span class="n">unit_heat</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">volume</span> <span class="o">=</span> <span class="s1">&#39;MWh(th)&#39;</span><span class="p">,</span> <span class="n">flow</span> <span class="o">=</span> <span class="s1">&#39;MW(th)&#39;</span><span class="p">)</span>
-<span class="n">node_heat</span>     <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;heat&#39;</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">unit_heat</span><span class="p">)</span>
-<br/></pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## keeping track of peak memory</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">psutil</span> <span class="c1"># import Python psutil module</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">memory_usage</span><span class="p">():</span>
+    <span class="n">process</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">Process</span><span class="p">()</span>
+    <span class="n">usage</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">memory_info</span><span class="p">()</span><span class="o">.</span><span class="n">rss</span>
+    <span class="c1"># Using memory_info() to check consumption</span>
+    <span class="k">return</span> <span class="n">usage</span> <span class="c1"># Returning the memory in bytes</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">memory_used</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">tracemalloc</span><span class="o">.</span><span class="n">get_traced_memory</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mf">1024.</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
 </div>
 </div>
-<ol class="arabic simple" start="2">
-<li><p>Assets</p></li>
-</ol>
-<p>In this example we define several assets for illustration:</p>
+<section id="Large-problems---focus-on-memory">
+<h3>Large problems - focus on memory<a class="headerlink" href="#Large-problems---focus-on-memory" title="Link to this heading"></a></h3>
+</section>
+</section>
+<section id="Seemingly-%22large%22-problem,-that-actually-isn't">
+<h2>Seemingly “large” problem, that actually isn’t<a class="headerlink" href="#Seemingly-%22large%22-problem,-that-actually-isn't" title="Link to this heading"></a></h2>
+<p>We start with setting up a typical “large” problem:</p>
 <ul class="simple">
-<li><p>a heat demand with a fixed profile. The heat demand must be met</p></li>
-<li><p>a heat storage</p></li>
-<li><p>a Combined heat and power (CHP) generator, that simultaneously generates heat and power</p></li>
-<li><p>a power-to-heat converter (e.g. heat pump)</p></li>
-<li><p>a power market where power may be bought or sold</p></li>
+<li><p>Let us optimize across one year - hourly resolution (for demo purpose - arguments also hold for longer periods)</p></li>
+<li><p>20 generation assets in the portfolio (we will start with very simple assets - that means no ramping restrictions or startups)</p></li>
+<li><p>plus (later on) a storage</p></li>
+<li><p>fixed demand to be covered</p></li>
 </ul>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="c1">## create battery</span>
-<span class="n">storage</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Storage</span><span class="p">(</span><span class="n">name</span>       <span class="o">=</span> <span class="s1">&#39;heat_storage&#39;</span><span class="p">,</span>
-                            <span class="n">nodes</span>       <span class="o">=</span> <span class="n">node_heat</span><span class="p">,</span>
-                            <span class="n">cap_out</span>     <span class="o">=</span> <span class="mf">.5</span><span class="p">,</span>
-                            <span class="n">cap_in</span>      <span class="o">=</span> <span class="mf">.5</span><span class="p">,</span>
-                            <span class="n">size</span>        <span class="o">=</span> <span class="mf">3.</span><span class="p">,</span>
-                            <span class="n">start_level</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span>
-                            <span class="n">end_level</span>   <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span>
-                            <span class="n">eff_in</span>      <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
-                            <span class="n">block_size</span>  <span class="o">=</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>     <span class="c1"># optimization for each day independently</span>
-
-<span class="n">power2heat</span>   <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">MultiCommodityContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;power-2-heat&#39;</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max_cap</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_power</span><span class="p">,</span> <span class="n">node_heat</span><span class="p">],</span> <span class="n">factors_commodities</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-<span class="n">power_gen</span>    <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">MultiCommodityContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;CHP&#39;</span><span class="p">,</span> <span class="n">extra_costs</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_power</span><span class="p">,</span> <span class="n">node_heat</span><span class="p">],</span> <span class="n">factors_commodities</span><span class="o">=</span><span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">])</span>
-<span class="n">market</span>       <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;power_market&#39;</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">node_power</span><span class="p">)</span>
-
-<span class="n">Start</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">End</span>   <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;h&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
-
-<span class="n">heat_curve</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span>  <span class="p">:</span> <span class="n">dates</span><span class="p">,</span>
-                <span class="s1">&#39;values&#39;</span> <span class="p">:</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)))}</span>
-<span class="n">heat_demand</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Contract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;heat_demand&#39;</span><span class="p">,</span>  <span class="n">extra_costs</span> <span class="o">=</span> <span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="n">heat_curve</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span><span class="n">heat_curve</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">node_heat</span><span class="p">)</span>
-<span class="n">portf</span>        <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">storage</span><span class="p">,</span> <span class="n">power2heat</span><span class="p">,</span> <span class="n">power_gen</span><span class="p">,</span> <span class="n">market</span><span class="p">,</span> <span class="n">heat_demand</span><span class="p">])</span>
-<span class="n">portf</span><span class="o">.</span><span class="n">set_timegrid</span><span class="p">(</span><span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Timegrid</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;h&#39;</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">### setup</span>
+<span class="n">number_of_generating_assets</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">Start</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">End</span>   <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># one year (end, i.e. 01/01:2025 00:00) is not included)</span>
+<span class="n">resolution</span> <span class="o">=</span> <span class="s1">&#39;h&#39;</span>  <span class="c1"># hourly resolution</span>
 </pre></div>
 </div>
 </div>
-<p>Note that the power-to-heat converter as well as the CHP plant live on both, heat and power, nodes. In our definition of the CHP, one dispatch unit translates to 0.8 MWh(el) and 2.2 MWh(th). If the CHP burns gas, we could easily add gas as the third commodity to link all markets</p>
-</section>
-<section id="The-overall-portfolio">
-<h2>The overall portfolio<a class="headerlink" href="#The-overall-portfolio" title="Link to this heading"></a></h2>
-<p>The below network chart shows the setup of the portfolio. Note how our assets link both markets / commodities</p>
+<p>Note that we can easily steer the number of time steps modeled using the resolution (or frequency). For power, prices mostly live an a scale of 15min, 30min or hours and the resolution is needed. For gas or other commodities, days, weeks or months are enough.</p>
+<p><strong>Recommendation: Always to choose the lowest resolution/ frequency that captures your problem</strong>. Trivial example: modelling a year on hourly level leads to 8.760 time steps, on daily level 365. A big difference! It may be worthwhile to compare hourly, 15min or daily optimization to decide what is enough. May save computation or waiting times.</p>
+<p>Let us generate the portfolio. We use a simplistic way of generating generators with random capacity and generation costs - note that we start tracking memory usage</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">portf</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Simple portfolio example&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/samples_large_problems_large_problems_9_0.png" src="../../_images/samples_large_problems_large_problems_9_0.png" />
-</div>
-</div>
-</section>
-</section>
-<section id="Perform-the-optimization">
-<h1>Perform the optimization<a class="headerlink" href="#Perform-the-optimization" title="Link to this heading"></a></h1>
-<p>Let’s load some illustrative power price data and perform the optimization</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">prices</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;2020_price_sample.csv&#39;</span><span class="p">)</span>
-<span class="c1"># cast to timegrid (in this case not necessary, but may be if input granularity does not correspond to timegrid in optimization)</span>
-<span class="n">prices</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;price&#39;</span><span class="p">:</span> <span class="n">portf</span><span class="o">.</span><span class="n">timegrid</span><span class="o">.</span><span class="n">values_to_grid</span><span class="p">({</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">prices</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="s1">&#39;values&#39;</span><span class="p">:</span> <span class="n">prices</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">})}</span>
-<span class="n">op</span>     <span class="o">=</span> <span class="n">portf</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span>
-<span class="n">res</span>    <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
-<span class="n">out</span>    <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">extract_output</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">prices</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</section>
-<section id="Create-charts-and-interpret-the-results">
-<h1>Create charts and interpret the results<a class="headerlink" href="#Create-charts-and-interpret-the-results" title="Link to this heading"></a></h1>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">allcols</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span>
-<span class="n">heat</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">power</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">mycol</span> <span class="ow">in</span> <span class="n">allcols</span><span class="p">:</span>
-    <span class="k">if</span> <span class="s1">&#39;(heat)&#39;</span> <span class="ow">in</span> <span class="n">mycol</span><span class="p">:</span>
-        <span class="n">heat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mycol</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">power</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mycol</span><span class="p">)</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">tight_layout</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
-<span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][</span><span class="n">heat</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
-<span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][</span><span class="n">power</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
-<span class="n">out</span><span class="p">[</span><span class="s1">&#39;prices&#39;</span><span class="p">][</span><span class="s1">&#39;input price: price&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;heat&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;power&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;power price&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tracemalloc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="c1">## start memory tracking</span>
+<span class="c1"># overall structure</span>
+<span class="n">node_power</span>  <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;power&#39;</span><span class="p">)</span>
+
+<span class="c1"># demand</span>
+<span class="n">demand</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span>    <span class="o">=</span> <span class="s1">&#39;demand&#39;</span><span class="p">,</span>
+                                   <span class="n">nodes</span>   <span class="o">=</span> <span class="n">node_power</span><span class="p">,</span>
+                                   <span class="n">min_cap</span> <span class="o">=</span> <span class="s2">&quot;demand_curve&quot;</span><span class="p">,</span>
+                                   <span class="n">max_cap</span> <span class="o">=</span> <span class="s2">&quot;demand_curve&quot;</span><span class="p">)</span>
+
+<span class="n">all_assets</span> <span class="o">=</span> <span class="p">[</span><span class="n">demand</span><span class="p">]</span> <span class="c1"># collect for portfolio</span>
+<span class="c1"># supply - various assets</span>
+<span class="c1">## using random generation costs</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_generating_assets</span><span class="p">):</span>
+    <span class="n">gen</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span>    <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;gen_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                                    <span class="n">nodes</span>   <span class="o">=</span> <span class="n">node_power</span><span class="p">,</span>
+                                    <span class="n">min_cap</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                                    <span class="n">max_cap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
+                                    <span class="n">price</span>   <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;price_gen_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span>
+                                    <span class="p">)</span>
+    <span class="n">all_assets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">gen</span><span class="p">))</span>
+    <span class="c1"># add random prices to input data</span>
+    <span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;price_gen_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="n">portf</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">(</span><span class="n">assets</span> <span class="o">=</span> <span class="n">all_assets</span><span class="p">)</span>
+<span class="n">timegrid</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">Timegrid</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">resolution</span><span class="p">)</span>
+<span class="c1"># stopping memory tracking</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Peak memory usage: &quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">memory_used</span><span class="p">()</span><span class="si">:</span><span class="s1">,.0f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s2">&quot;MB&quot;</span><span class="p">)</span>
+<span class="n">tracemalloc</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 <br/></pre></div>
 </div>
 </div>
@@ -236,12 +216,309 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/samples_large_problems_large_problems_13_0.png" src="../../_images/samples_large_problems_large_problems_13_0.png" />
+<div class="highlight"><pre>
+Peak memory usage:  2 MB
+</pre></div></div>
+</div>
+<p>Setting up the portfolio does not require much memory. Basically little has happened but storing parameters in the objects.</p>
+<p>Now: We do the optimization. EAO will</p>
+<ul class="simple">
+<li><p>Create the LP/MIP (potentially needing much memory)</p></li>
+<li><p>solving the problem (potentially requiring much time)</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tracemalloc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="c1">## start memory tracking</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="c1"># stopping memory tracking</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Peak memory usage: &quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">memory_used</span><span class="p">()</span><span class="si">:</span><span class="s1">,.0f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s2">&quot;MB&quot;</span><span class="p">)</span>
+<span class="n">tracemalloc</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
 </div>
 </div>
-<section id="Interpretation">
-<h2>Interpretation<a class="headerlink" href="#Interpretation" title="Link to this heading"></a></h2>
-<p>Heat demand must be met in all times. Depending on prices, either CHP or power-2-heat will be utilized to meet heat demand. The heat storage is utilized to arbitrage between the best hours (mainly with regards to prices on the power market)</p>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Peak memory usage:  177 MB
+</pre></div></div>
+</div>
+<p>We observe that solving this setup does not constitute an issue in terms of memory used or time required.</p>
+<p>Why is that?</p>
+<ul class="simple">
+<li><p>We used relatively simple assets with few restrictions. Therefore <strong>little memory</strong> is used despite a relatively large number of assets and many time steps</p></li>
+<li><p>Relatively <strong>quick to solve</strong>. The problem is an LP (no binary variables e.g. for start ups). Such problems can typically solved efficiently</p></li>
+</ul>
+<p>Here, a few lines of code that allow us to check the nature of the optimization problem. Note that the above call “out = eao.optimize(portf, timegrid, data)” is a shortcut. We take it apart into the single steps to obtain the (1) optimization problem (2) do the optimization and (3) to extract the results in neat dataframes:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># (1) generate optim. problem</span>
+<span class="n">opt</span> <span class="o">=</span> <span class="n">portf</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">)</span>
+<span class="c1">### get info on problem type:</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Is problem a MIP? </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">is_MIP</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1">#### to show the remaining steps for sake of completeness (not needed here)</span>
+<span class="c1"># (2) optimize</span>
+<span class="c1"># res = opt.optimize() ### commented out to save us some time</span>
+<span class="c1"># (3) extract result into neat dataframes - also portfolio and optim problem needed)</span>
+<span class="c1">#out = eao.io.extract_output(portf, opt, res)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Is problem a MIP? False
+</pre></div></div>
+</div>
+<p>… so: no MIP and pretty easy to solve. Let’s remember for later how to do the check</p>
+</section>
+<section id="Storage:-The-most-problematic-asset-when-it-comes-to-memory">
+<h2>Storage: The most problematic asset when it comes to memory<a class="headerlink" href="#Storage:-The-most-problematic-asset-when-it-comes-to-memory" title="Link to this heading"></a></h2>
+<p>Let us add a storage to the portfolio. It’s just one asset more, but we will see that a storage requires much memory when the optimzation problem is set up</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="c1"># storage</span>
+<span class="n">battery</span>     <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Storage</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;battery&#39;</span><span class="p">,</span>
+                                 <span class="n">nodes</span><span class="o">=</span>      <span class="n">node_power</span><span class="p">,</span>
+                                 <span class="n">cap_out</span>     <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                                 <span class="n">cap_in</span>      <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                                 <span class="n">size</span>        <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                                 <span class="n">eff_in</span>      <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
+                                 <span class="n">no_simult_in_out</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>    <span class="c1"># creates MIP of true! To be analyzed later</span>
+                                 <span class="n">block_size</span>       <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>     <span class="c1"># optimization over whole time horizon. To be analyzed later</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tracemalloc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="c1">## start memory tracking</span>
+<span class="n">battery</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">prices</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">=</span><span class="n">eao</span><span class="o">.</span><span class="n">Timegrid</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">resolution</span><span class="p">))</span>
+<span class="c1"># stopping memory tracking</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Peak memory usage: &quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">memory_used</span><span class="p">()</span><span class="si">:</span><span class="s1">,.0f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s2">&quot;MB&quot;</span><span class="p">)</span>
+<span class="n">tracemalloc</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Peak memory usage:  3,534 MB
+</pre></div></div>
+</div>
+<p>Much memory is needed - even to generate the LP part of the storage only!</p>
+<p>To provide some detail on the “why”:</p>
+<ul class="simple">
+<li><p>in each point in time (every hour!) the storage is at least empty and at most full</p></li>
+<li><p>that means, the sum of all previous dispatches must be &gt;= 0 and &lt;= storage size</p></li>
+</ul>
+<p>So we have two restrictions for each time step, involving all previous time steps. A densely populated matrix</p>
+<p><strong>But wait: There’s a very simple way around</strong>: Is it realistic to assume the dispatch (e.g.) on Jan 1 affects (e.g.) my decision on Dec 31? In reality we can securely assume that a short-term storage is dispatched on a daily or weekly basis. This should even reflect trading reality better, than optimizing against the full time span. In the following we try it, using the parameter <strong>block_size</strong>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">battery</span><span class="o">.</span><span class="n">block_size</span> <span class="o">=</span> <span class="s1">&#39;W&#39;</span> <span class="c1"># weekly optimization. In each block, the battery goes back to start_level</span>
+
+<span class="n">tracemalloc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="c1">## start memory tracking</span>
+<span class="n">battery</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">prices</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">=</span><span class="n">eao</span><span class="o">.</span><span class="n">Timegrid</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">resolution</span><span class="p">))</span>
+<span class="c1"># stopping memory tracking</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Peak memory usage: &quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">memory_used</span><span class="p">()</span><span class="si">:</span><span class="s1">,.0f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s2">&quot;MB&quot;</span><span class="p">)</span>
+<span class="n">tracemalloc</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Peak memory usage:  158 MB
+</pre></div></div>
+</div>
+<p><strong>Recommendation:</strong> Always utilize the block_size and set it to a low value. We found that daily (“d”) is often a good choice for batteries or heat storage. Most available optimization tools utilize such simplification “under the hood”. However, we believe it should be up to the user to decide whether or when to use it.</p>
+<p><strong>Long-term storage:</strong> An alternative for long-term storage such as seasonal storages for gas or large hydro storages: We can define different intrinsic frequencies for single assets. See a separate sample: <a class="reference external" href="https://rivacon.github.io/EAO/samples/mixing_long_and_short_term/mixing_long_and_short_term.html">https://rivacon.github.io/EAO/samples/mixing_long_and_short_term/mixing_long_and_short_term.html</a></p>
+</section>
+<section id="Solvers">
+<h2>Solvers<a class="headerlink" href="#Solvers" title="Link to this heading"></a></h2>
+<p>For MIPs, solvers typically implement complex iterations using heuristics - and widely differ in efficiency. In EAO, for MIPs, we set the standard to the open source solver SCIP. For LPs we let CVXPY decide If you have a license for Gurobi or CPLEX, it may be worthwhile to switch. Simply set the parameter “solver = …” when calling the optimization (see samples below).</p>
+<p><strong>We are using CVXPY as interface to solvers</strong>. See <a class="reference external" href="https://www.cvxpy.org/tutorial/solvers/index.html">https://www.cvxpy.org/tutorial/solvers/index.html</a> for available solvers. You may need to install solvers to your environment.</p>
+<section id="Run-time---LPs-vs.-MIPs">
+<h3>Run-time - LPs vs. MIPs<a class="headerlink" href="#Run-time---LPs-vs.-MIPs" title="Link to this heading"></a></h3>
+<p>Let us now focus on run-time. While the size of a problem (roughly number of assets <span class="math notranslate nohighlight">\(\times\)</span> number of time steps, storage block size) determines the problem size, its complexity is not necessarily linked to it.</p>
+<p>The main lever for complexity is the question whether we’re dealing with a <strong>mixed integer problem (MIP) or a linear problem (LP)</strong>:</p>
+<ul class="simple">
+<li><p>An LP only contains continuous variables. An LP is convex, with guaranteed convergence and efficient solution algorithms.</p></li>
+<li><p>A MIP contains “switch” variables such as start-up decisions. MIPs are not necessarily convex, no convergence guaranteed. Run-time may be long, even for smaller problems.</p></li>
+</ul>
+<p>Unfortunately there’s no easy way out and it turns out to be difficult knowing in advance, which problem is hard and which is not. In the coming sections we explore how to deal with MIPs and how we may avoid them.</p>
+</section>
+</section>
+<section id="Long-simulations---splitting-in-chunks">
+<h2>Long simulations - splitting in chunks<a class="headerlink" href="#Long-simulations---splitting-in-chunks" title="Link to this heading"></a></h2>
+<p>Solving MIPs over long time frames is often not possible in one go (due to long run-time or memory usage). However, solving them in chunks of, say, weeks or days, is mostly doable. Particularly in power or gas setups, there is also no reason to believe that decisions early the year will influence decisions late in the year (e.g. starting a plant in January will hardly have an effect on whether the plant is running in December).</p>
+<p>Splitting a problem into chunks manually would be cumbersome. Therefore we introduce “split_optimization” in EAO. This will cut the problem into chunks of user-defined length (e.g. weeks) and set together results automatically.</p>
+<p>Attention in cases where we are using restrictions across a longer time frame - such as “minimum take”. In this case, split-optimization will also divide down this restriction. E.g. a minimum take of 12 GWh across the year will give rise to 12 chunks of 1 GWh minimum take per month. In those case consider manual break-down or going for an LP (see below).</p>
+<p>Let us define a sample portfolio: The main asset is the power plant (we’re adding two of them with different parameters), where we use some of the more complex restrictions. Those are mainly start up costs and specific ramps for starting and shutting down as well as minimum down time. We add a battery with a maximum number of cycles per day to add complexity.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Start</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">End</span>   <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># one month - for purpose of this demo a bit shorter</span>
+<span class="n">resolution</span> <span class="o">=</span> <span class="s1">&#39;h&#39;</span>  <span class="c1"># hourly resolution</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># define timegrid</span>
+<span class="n">timegrid</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Timegrid</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">resolution</span><span class="p">)</span>
+
+<span class="c1">### our sample here: optimized power plant</span>
+<span class="c1"># define portfolio</span>
+<span class="n">node_power</span>   <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;node_power&#39;</span><span class="p">)</span>
+<span class="n">power_market</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;market&#39;</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">node_power</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="s1">&#39;price&#39;</span><span class="p">,</span>
+                                         <span class="n">min_cap</span> <span class="o">=</span> <span class="o">-</span><span class="mi">110</span><span class="p">,</span>    <span class="c1"># we restrict grid connection so battery &amp; plant cannot</span>
+                                         <span class="n">max_cap</span> <span class="o">=</span>  <span class="mi">110</span> <span class="p">)</span>   <span class="c1"># run full load together</span>
+<span class="n">plant_1</span>      <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Plant</span><span class="p">(</span><span class="n">name</span>    <span class="o">=</span> <span class="s1">&#39;plant_1&#39;</span><span class="p">,</span>
+                                <span class="n">nodes</span>   <span class="o">=</span> <span class="n">node_power</span><span class="p">,</span>
+                                <span class="n">extra_costs</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+                                <span class="n">min_cap</span>               <span class="o">=</span> <span class="mf">20.</span><span class="p">,</span>
+                                <span class="n">max_cap</span>               <span class="o">=</span> <span class="mf">100.</span><span class="p">,</span>
+                                <span class="n">ramp</span>                  <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+                                <span class="n">start_costs</span>           <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+                                <span class="n">min_downtime</span>          <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+                                <span class="n">time_already_running</span>  <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                                <span class="n">time_already_off</span>      <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">plant_2</span>      <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Plant</span><span class="p">(</span><span class="n">name</span>    <span class="o">=</span> <span class="s1">&#39;plant_2&#39;</span><span class="p">,</span>
+                                <span class="n">nodes</span>   <span class="o">=</span> <span class="n">node_power</span><span class="p">,</span>
+                                <span class="n">extra_costs</span>           <span class="o">=</span> <span class="mi">90</span><span class="p">,</span>
+                                <span class="n">min_cap</span>               <span class="o">=</span> <span class="mf">50.</span><span class="p">,</span>
+                                <span class="n">max_cap</span>               <span class="o">=</span> <span class="mf">90.</span><span class="p">,</span>
+                                <span class="n">ramp</span>                  <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                                <span class="n">start_costs</span>           <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>
+                                <span class="n">min_downtime</span>          <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                                <span class="n">time_already_running</span>  <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                                <span class="n">time_already_off</span>      <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+
+
+<span class="n">battery</span>     <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Storage</span><span class="p">(</span><span class="n">name</span>        <span class="o">=</span> <span class="s1">&#39;battery&#39;</span><span class="p">,</span>
+                                 <span class="n">nodes</span>       <span class="o">=</span> <span class="n">node_power</span><span class="p">,</span>
+                                 <span class="n">cap_out</span>     <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>  <span class="c1"># MW</span>
+                                 <span class="n">cap_in</span>      <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>  <span class="c1"># MW</span>
+                                 <span class="n">size</span>        <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="c1"># MWh</span>
+                                 <span class="n">eff_in</span>      <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span> <span class="c1"># %</span>
+                                 <span class="n">start_level</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="c1"># MWh</span>
+                                 <span class="n">end_level</span>   <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="c1"># MWh</span>
+                                 <span class="n">max_cycles_freq</span> <span class="o">=</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span>
+                                 <span class="n">max_cycles_no</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                                 <span class="n">no_simult_in_out</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>   <span class="c1"># creates MIP of true! If false, simultaneous</span>
+                                                            <span class="c1"># charge/discharge for negative prices possible</span>
+                                 <span class="n">block_size</span>       <span class="o">=</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>    <span class="c1"># daily optimization</span>
+<span class="n">portf</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">power_market</span><span class="p">,</span> <span class="n">plant_1</span><span class="p">,</span> <span class="n">plant_2</span><span class="p">,</span> <span class="n">battery</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>Let’s try different variants: Optimization in one piece, split into weeks, relaxed to LP as well as different solvers.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total dispatch plant (no splitting using SCIP as EAO default solver): </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][[</span><span class="s1">&#39;plant_1&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;plant_2&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">,.0f</span><span class="si">}</span><span class="s2"> MWh&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Total dispatch plant (no splitting using SCIP as EAO default solver): 210,996 MWh
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">solver</span> <span class="o">=</span> <span class="s1">&#39;HIGHS&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total dispatch plant (no splitting using HighS as solver): </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][[</span><span class="s1">&#39;plant_1&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;plant_2&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">,.0f</span><span class="si">}</span><span class="s2"> MWh&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Total dispatch plant (no splitting using HighS as solver): 210,896 MWh
+</pre></div></div>
+</div>
+<p>We see little difference between SCIP and HighS (we found both to be very efficient for EAO purposes). Note that plant output is very similar, but not identical (you will hardly achieve perfect accuracy in MIPs). It’s worthwhile trying different solvers for your problems. Differences may be big.</p>
+<p>Particularly if you have a license for CPLEX, Gurobi or another commercial solver, it’s worth trying it. Performance may be much better.</p>
+<p>Now the run in weekly chunks:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">split_interval_size</span><span class="o">=</span><span class="s1">&#39;W&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total dispatch plant (with splitting): </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][[</span><span class="s1">&#39;plant_1&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;plant_2&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">,.0f</span><span class="si">}</span><span class="s2"> MWh&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Total dispatch plant (with splitting): 208,496 MWh
+</pre></div></div>
+</div>
+<p>Check out the comparison of overall generation: the split optimization leads to similar results. A close look on hourly level may, of course, show greater differences in detail. For example: running through a weekend instead of shutting down for a Sunday night.</p>
+<p>Note: In this illustration we chose examples with run-times that do not hurt too much in an interactive notebook. But note that for complex assets which require a MIP, split optimization easily makes a great difference (also between no convergence at all and quick results).</p>
+<p><strong>Recommendation:</strong> Use split optimization as far as possible for simulation across long time frames. Check your asset definitions and your analysis targets to guide you. Particularly where assets do not have long-range restrictions (such as minimum take or long-term storage), split optimization is a good choice.</p>
+</section>
+<section id="Making-the-MIP-an-LP">
+<h2>Making the MIP an LP<a class="headerlink" href="#Making-the-MIP-an-LP" title="Link to this heading"></a></h2>
+<p>A MIP is present if, for example, we have a binary decision such as whether to start oa plant that is tied to costs such as start-up costs. We utilize a boolean variables (0 = off, 1 = on) or (1 = is starting, 0 = is not starting).</p>
+<p>A drastic simplification is to allow all values [0,1], making the problem an LP. Sometimes cutting down drastically on run-time. The main use-case, though, is for testing purpose in cases where a MIP is not feasible or does not converge at all. For example, decision variables such as for start-up to a minimum load may lead to cases where a small demand cannot be fulfilled (ill formulated problem). In those cases, a relaxed problem may help to identify mistakes or workarounds.</p>
+<p>However, also for some use-cased, we believe this can be a valid approximation, particularly in long-term valuation.</p>
+<p>Let us test, using the parameter make_soft_problem:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">make_soft_problem</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total dispatch plant (softened problem using default solver): </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">][[</span><span class="s1">&#39;plant_1&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;plant_2&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">,.0f</span><span class="si">}</span><span class="s2"> MWh&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Total dispatch plant (softened problem using default solver): 297,740 MWh
+</pre></div></div>
+</div>
+<p>In our simple illustration, we see a limited impact run-time - yet in real-life problems differences may be much higher. The approximation appears ok, at least in terms of overall plant dispatch.</p>
+<p><strong>Recommendation:</strong> Use make_soft_problem with care. When a problem does not converge or when it is not feasible (it easily happens that restrictions cannot be met due to errors in the setup), start trying the soft version. When using for a productive purposes, do thorough tests. Start-up processes, for example, will not be modelled correctly.</p>
 </section>
 </section>
 
