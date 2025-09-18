@@ -2,7 +2,7 @@ Samples
 ================================
 
 Simple start: Optimizing power consumption with battery & PV
-------------------
+---------------------------------------------------------------
 
 .. toctree:: 
 
@@ -10,11 +10,19 @@ Simple start: Optimizing power consumption with battery & PV
 
 
 Illustration: Small power and heat network (in German)
-------------------
+---------------------------------------------------------
 
 .. toctree:: 
 
    samples/power_and_heat/power_and_heat_sample
+
+
+Handling large problems
+---------------------------
+
+.. toctree:: 
+
+   samples/large_problems/large_problems
 
 
 Green PPA and structured downstream contract

@@ -45,11 +45,11 @@ class Portfolio:
         """
         self.timegrid = timegrid
 
-    def setup_optim_problem(self, prices: dict = None, 
-                            timegrid:Timegrid = None, 
-                            costs_only:bool = False, 
-                            skip_nodes:list=[],
-                            fix_time_window: Dict = None) -> OptimProblem:
+    def setup_optim_problem(self, prices: Union[dict, pd.DataFrame, pd.Series, None] = None, 
+                            timegrid:     Union[Timegrid, None] = None, 
+                            costs_only:   bool = False, 
+                            skip_nodes:   list=[],
+                            fix_time_window: Union[Dict, None] = None) -> OptimProblem:
         """ Set up optimization problem for portfolio
 
         Args:
@@ -207,7 +207,7 @@ class Portfolio:
             assert 'I' in fix_time_window.keys(), 'fix_time_window must contain key "I" (time steps to fix)'
             assert 'x' in fix_time_window.keys(), 'fix_time_window must contain key "x" (values to fix)'
             if isinstance(fix_time_window['I'], (dt.date, dt.datetime)):
-                fix_time_window['I'] = (timegrid.timepoints<= pd.Timestamp(fix_time_window['I']))
+                fix_time_window['I'] = (timegrid.timepoints <= pd.Timestamp(fix_time_window['I']))
             assert (isinstance(fix_time_window['I'], (np.ndarray, list))), 'fix_time_window["I"] must be date or array'
             # in case of SLP, the problems may not be of same size (SLP is extended problem)
             # ---> then cut x to fix to size of the problem
@@ -220,11 +220,11 @@ class Portfolio:
             u[I] = fix_time_window['x'][I]
         return OptimProblem(c = c, l = l, u = u, A = A, b = b, cType = cType, mapping = mapping, map_nodal_restr = map_nodal_restr)
 
-    def setup_split_optim_problem(self, prices: dict = None,
-                                  timegrid: Timegrid = None,
-                                  interval_size: str = 'd',
-                                  skip_nodes: list = [],
-                                  fix_time_window: Dict = None):
+    def setup_split_optim_problem(self, prices:          Union[dict, None] = None,
+                                        timegrid:        Union[None, Timegrid] = None,
+                                        interval_size:   str = 'd',
+                                        skip_nodes:      list = [],
+                                        fix_time_window: Union[None, Dict] = None):
         """ Set up a split optimization problem for portfolio, i.e. split the timegrid into intervals of size
             interval_size and create a separate optimization problem for each interval
 
