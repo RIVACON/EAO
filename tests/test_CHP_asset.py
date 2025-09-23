@@ -319,23 +319,23 @@ class CHPAssetTest(unittest.TestCase):
         Check the time conversion function that is used to convert e.g. min_runtime and time_already_running in CHPAsset
         """
         old_value = 10 * 30
-        new_value = eao.assets.convert_time_unit(old_value, old_freq='h', new_freq='d')
+        new_value = eao.basic_classes.convert_time_unit(old_value, old_freq='h', new_freq='d')
         self.assertAlmostEqual(new_value - old_value / 24, 0, 5)
 
         old_value = 12 * 30
-        new_value = eao.assets.convert_time_unit(old_value, old_freq='h', new_freq='15min')
+        new_value = eao.basic_classes.convert_time_unit(old_value, old_freq='h', new_freq='15min')
         self.assertAlmostEqual(new_value - old_value * 4, 0, 5)
 
         old_value = 14 * 30
-        new_value = eao.assets.convert_time_unit(old_value, old_freq='d', new_freq='15min')
+        new_value = eao.basic_classes.convert_time_unit(old_value, old_freq='d', new_freq='15min')
         self.assertAlmostEqual(new_value - old_value * 24 * 4, 0, 5)
 
         old_value = 16 * 30
-        new_value = eao.assets.convert_time_unit(old_value, old_freq='30min', new_freq='min')
+        new_value = eao.basic_classes.convert_time_unit(old_value, old_freq='30min', new_freq='min')
         self.assertAlmostEqual(new_value - old_value * 30, 0, 5)
 
         old_value = 22 * 30
-        new_value = eao.assets.convert_time_unit(old_value, old_freq='min', new_freq='h')
+        new_value = eao.basic_classes.convert_time_unit(old_value, old_freq='min', new_freq='h')
         self.assertAlmostEqual(new_value - old_value / 60, 0, 5)
 
     def test_freq_conversion2(self):
@@ -551,7 +551,7 @@ class CHPAssetTest(unittest.TestCase):
         shutdown_variables = res.x[4 * timegrid.T:]
         # Asset follows interpolated start ramp, then immediately interpolated shutdown ramp at highest possible load while the price is
         # negative, otherwise asset is off
-        converted_time_rounded = int(np.ceil(eao.assets.convert_time_unit(value=1, old_freq=timegrid.freq, new_freq=ramp_freq)))
+        converted_time_rounded = int(np.ceil(eao.basic_classes.convert_time_unit(value=1, old_freq=timegrid.freq, new_freq=ramp_freq)))
         start_ramp_padding_size = int(np.ceil(len(start_ramp) / converted_time_rounded) * converted_time_rounded) - len(start_ramp)
         start_ramp_padded = start_ramp + [start_ramp[-1]] * start_ramp_padding_size
         start_ramp_interpolated = np.reshape(start_ramp_padded, (-1, converted_time_rounded)).mean(axis=1)
@@ -1250,6 +1250,17 @@ class Plant(unittest.TestCase):
         self.assertAlmostEqual(out['dispatch'].iloc[5,0],  10, 4) 
         self.assertAlmostEqual(out['dispatch'].iloc[6,0],  11.1, 4) 
         self.assertAlmostEqual(out['dispatch'].iloc[7,0],  12.2, 4) 
+
+
+class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
+
+    def test_check_polygon(self):
+        """ Unit test. PQ diagram given as polygon. Test whether convex and test orientation
+        """
+        # define polygon
+        poly = np.array([[0,0], [0,10], [5,8], [10,0], [5,0], [2,0]])
+
+
 ###########################################################################################################
 ###########################################################################################################
 ###########################################################################################################
