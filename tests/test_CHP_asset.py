@@ -1255,10 +1255,21 @@ class Plant(unittest.TestCase):
 class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
 
     def test_check_polygon(self):
-        """ Unit test. PQ diagram given as polygon. Test whether convex and test orientation
-        """
-        # define polygon
-        poly = np.array([[0,0], [0,10], [5,8], [10,0], [5,0], [2,0]])
+        """ Unit test. PQ diagram given as polygon. Test checker /convex/ orientation """
+        # most basic asset
+        node_power = eao.assets.Node('node_power')
+        node_heat = eao.assets.Node('node_heat')
+        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,2,1), freq = 'd')
+        a = eao.assets.CHP_PQ_diagram(name='CHP', price='rand_price', nodes = (node_power, node_heat),
+                                min_cap=5., max_cap=10.)
+
+        poly = [[0,0], [0, 100], [100, 100], [100, 0]] # sqare, clockwise
+        self.assertEqual(a._check_polygon(poly), -1)
+        poly = [[50,50], [0, 0], [50, 0]] # triangle, counter clockwise
+        self.assertEqual(a._check_polygon(poly), 1)
+        # non-convex
+        poly = [[0,0], [0, 100], [50, 50], [100, 100], [100, 0]] # sqare with dip
+        self.assertEqual(a._check_polygon(poly), 0)
 
 
 ###########################################################################################################

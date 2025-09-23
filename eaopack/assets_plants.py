@@ -1096,3 +1096,46 @@ class Plant(CHPAsset):
                                        consumption_if_on = consumption_if_on,
                                        _no_heat = True)
 
+class CHP_PQ_diagram(CHPAsset): 
+    def __init__(self,
+                 pq_polygon: Union[List[Union[List, np.ndarray]], None] = None,
+                **kwargs                 
+                 ):
+        """ CHPContract using a convex polygon to define feasible (P,Q) operating points: 
+
+        Args:
+        * CHPAsset arguments
+
+        additional:
+        pq_polygon (list of 2-element lists or arrays): 2D points [P, Q] in convex polygon - given as lists or arrays of 2 elements
+                                                        e.g. [[0,0], [1,0], [1,1], [0,1]] for a square
+                                                        Order of points is relevant! Polygon has to be convex
+
+        """
+        super().__init__(**kwargs)
+        # self.pq_polygon = pq_polygon
+
+    @staticmethod
+    def _check_polygon(points:List[Union[List, np.ndarray]]) -> int:
+        """ Check validity and orientation of polygon (is convex?)
+            How: calculate cross product of each edge with the next edge. 
+                 All positive: clock, all negative: counterclockwise, mixed: not convex
+            Args:
+                points (dict): 2D points in polygon - given as lists or arrays of 2 elements
+            Returns:
+                int: 0: not valid, 1: valid clockwise, -1: valid counterclockwise
+        """
+        def cross_product(o, a, b):
+            return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+       
+        n = len(points)
+        prev = 0
+        for i in range(n):
+            cp = cross_product(points[i], 
+                               points[(i + 1) % n], 
+                               points[(i + 2) % n])
+            if cp != 0:
+                if prev == 0: prev = cp
+                elif cp * prev < 0:
+                    return 0 # not convex
+        return np.sign(cp)
