@@ -1265,10 +1265,40 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
 
         poly = [[0,0], [0, 100], [100, 100], [100, 0]] # sqare, clockwise
         self.assertEqual(a._check_polygon(poly), 1)
-        poly = [[50,50], [0, 0], [50, 0]] # triangle, counter clockwise
+        poly = [[50.,50.], [0., 0.], [50., 0.]] # triangle, counter clockwise
         self.assertEqual(a._check_polygon(poly), -1)
         poly = [[0,0], [0, 100], [50, 50], [100, 100], [100, 0]] # sqare with dip - non convex
         self.assertEqual(a._check_polygon(poly), 0)
+        poly = [[50,50], [0, 0], [25, 0], [50, 0]] # two points on line - should be ok
+        poly = [np.array(p) for p in poly] # also test with arrays
+        self.assertEqual(a._check_polygon(poly), -1)
+
+    def test_build_polygon_asset(self):
+        """ Unit test. PQ diagram given as polygon. Test building asset """
+        # most basic asset
+        node_power = eao.assets.Node('node_power')
+        node_heat  = eao.assets.Node('node_heat')
+        timegrid   = eao.assets.Timegrid(dt.date(2024,1,1), dt.date(2024,1,2), freq = 'h')
+        data = {'price': np.sin(np.linspace(0,20*np.pi, timegrid.T)),
+                'heat' : 50*np.cos(np.linspace(0,20*np.pi, timegrid.T))}
+        # Tetraeder - similar to std. PQ
+        # power between 10 and 10, heat between 0 and 50
+        #        [P, Q]
+        poly = [[ 0., 10.], 
+                [ 0., 20.], 
+                [50., 15.],
+                [30.,  5.]]
+        # no further restriction - instantaneous reaction to prices
+        m = eao.assets.SimpleContract(name = 'market', price='price', nodes = node_power, min_cap=-1000, max_cap=1000)
+        a = eao.assets.CHP_PQ_diagram(name='poly', 
+                                      nodes = (node_power, node_heat),
+                                      min_cap=0., 
+                                      max_cap=100.,   # generous, restr only from poly!
+                                      conversion_factor_power_heat=0.2,
+                                      pq_polygon =poly)
+        portf = eao.portfolio.Portfolio([m, a])
+        out   = eao.optimize(portf, timegrid, data)
+        return
 
 
 ###########################################################################################################

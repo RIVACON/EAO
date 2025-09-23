@@ -1098,7 +1098,7 @@ class Plant(CHPAsset):
 
 class CHP_PQ_diagram(CHPAsset): 
     def __init__(self,
-                 pq_polygon: Union[List[Union[List, np.ndarray]], None] = None,
+                 pq_polygon: Union[List[Union[List[float], np.ndarray]], None] = None,
                  **kwargs                 
                  ):
         """ CHPContract using a convex polygon to define feasible (P,Q) operating points: 
@@ -1122,10 +1122,14 @@ class CHP_PQ_diagram(CHPAsset):
             # do we have max_share_heat given? That's compatiple, but not needed. Warn user
             if self.max_share_heat is not None:
                 print('Warning: max_share_heat given, but not needed when using PQ diagram. Think about removing it.')
+            # heat node given?
+            if len(self.nodes) < 2:
+                raise ValueError('Error - no heat node given, but pq_polygon given. Use Plant asset?')
+
         self.pq_polygon = pq_polygon # add anyhon - if None OptimProblem of CHPAsset is used
 
     @staticmethod
-    def _check_polygon(points:List[Union[List, np.ndarray]]) -> int:
+    def _check_polygon(points:List[Union[List[float], np.ndarray]]) -> int:
         """ Check validity and orientation of polygon (is convex?)
             How: calculate cross product of each edge with the next edge. 
                  All positive: clock, all negative: counterclockwise, mixed: not convex
@@ -1163,7 +1167,20 @@ class CHP_PQ_diagram(CHPAsset):
             OptimProblem: Optimization problem to be used by optimizer
         """
         op = super().setup_optim_problem(prices=prices, timegrid=timegrid, costs_only=costs_only)
+        if self.pq_polygon is None:
+            return op    # return as is - no polygon given
         # add polygon restriction
-        if (self.pq_polygon is not None):
-            pass
+        for i in len(self.pq_polygon):
+            # looking at the restriction given by edge p(i) and p(i+1)
+            a = self.pq_polygon[i]
+            b = self.pq_polygon[i+1]
+            if (b[0]-a[0]) != 0 # no vertical line
+                # determine line equation:  y = m*x + b
+                m_eq = (b[1]-a[1])/(b[0]-a[0]) 
+                b_eq = a[1] - m_eq*a[0]
+                # extend restrictions
+                # ...
+            else: 
+                raise NotImplementedError('Error - vertical lines in PQ diagram not implemented yet')
         return op
+    
