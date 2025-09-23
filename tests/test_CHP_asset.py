@@ -1264,11 +1264,10 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
                                 min_cap=5., max_cap=10.)
 
         poly = [[0,0], [0, 100], [100, 100], [100, 0]] # sqare, clockwise
-        self.assertEqual(a._check_polygon(poly), -1)
-        poly = [[50,50], [0, 0], [50, 0]] # triangle, counter clockwise
         self.assertEqual(a._check_polygon(poly), 1)
-        # non-convex
-        poly = [[0,0], [0, 100], [50, 50], [100, 100], [100, 0]] # sqare with dip
+        poly = [[50,50], [0, 0], [50, 0]] # triangle, counter clockwise
+        self.assertEqual(a._check_polygon(poly), -1)
+        poly = [[0,0], [0, 100], [50, 50], [100, 100], [100, 0]] # sqare with dip - non convex
         self.assertEqual(a._check_polygon(poly), 0)
 
 

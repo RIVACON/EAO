@@ -213,7 +213,7 @@ class CHPAsset(ea.Contract):
         if self.min_downtime > 1:
             assert (self.time_already_off == 0) ^ (self.time_already_running == 0), "Either time_already_off or time_already_running has to be 0, but not both. Asset: " + self.name
 
-    def setup_optim_problem(self, prices: dict, timegrid: Timegrid = None,
+    def setup_optim_problem(self, prices: dict, timegrid: Union[Timegrid, None] = None,
                             costs_only: bool = False) -> OptimProblem:
         """ Set up optimization problem for asset
 
@@ -875,7 +875,7 @@ class CHPAsset(ea.Contract):
 class CHPAsset_with_min_load_costs(CHPAsset):
     def __init__(self,
                  min_load_threshhold: Union[float, Sequence[float], StartEndValueDict] = 0.,
-                 min_load_costs: Union[float, Sequence[float], StartEndValueDict] = None,
+                 min_load_costs: Union[float, Sequence[float], StartEndValueDict, None] = None,
                 **kwargs                 
                  ):
         """ CHPContract with additional Min Load costs: 
@@ -895,7 +895,7 @@ class CHPAsset_with_min_load_costs(CHPAsset):
         self.min_load_costs      = min_load_costs
 
 
-    def setup_optim_problem(self, prices: dict, timegrid: Timegrid = None,
+    def setup_optim_problem(self, prices: dict, timegrid: Union[Timegrid, None] = None,
                             costs_only: bool = False) -> OptimProblem:
         """ Set up optimization problem for asset
 
@@ -1099,7 +1099,7 @@ class Plant(CHPAsset):
 class CHP_PQ_diagram(CHPAsset): 
     def __init__(self,
                  pq_polygon: Union[List[Union[List, np.ndarray]], None] = None,
-                **kwargs                 
+                 **kwargs                 
                  ):
         """ CHPContract using a convex polygon to define feasible (P,Q) operating points: 
 
@@ -1110,10 +1110,19 @@ class CHP_PQ_diagram(CHPAsset):
         pq_polygon (list of 2-element lists or arrays): 2D points [P, Q] in convex polygon - given as lists or arrays of 2 elements
                                                         e.g. [[0,0], [1,0], [1,1], [0,1]] for a square
                                                         Order of points is relevant! Polygon has to be convex
-
         """
         super().__init__(**kwargs)
-        # self.pq_polygon = pq_polygon
+        # do some checks and store polygon
+        if pq_polygon is None:  
+            print('Warning: No PQ diagram polygon given. Use CHPAsset if no polygon is needed')
+        else:
+            if len(pq_polygon) < 3: raise ValueError('Error - PQ diagram polygon has to have at least 3 points')
+            check = self._check_polygon(pq_polygon)
+            if check == 0: raise ValueError('Error - PQ diagram polygon is not convex')
+            # do we have max_share_heat given? That's compatiple, but not needed. Warn user
+            if self.max_share_heat is not None:
+                print('Warning: max_share_heat given, but not needed when using PQ diagram. Think about removing it.')
+        self.pq_polygon = pq_polygon # add anyhon - if None OptimProblem of CHPAsset is used
 
     @staticmethod
     def _check_polygon(points:List[Union[List, np.ndarray]]) -> int:
@@ -1125,17 +1134,36 @@ class CHP_PQ_diagram(CHPAsset):
             Returns:
                 int: 0: not valid, 1: valid clockwise, -1: valid counterclockwise
         """
-        def cross_product(o, a, b):
-            return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
-       
-        n = len(points)
+        def cross_product(a, b, c):
+            return ((b[0]-a[0])*(c[1]-b[1]) - (b[1]-a[1])*(c[0]-b[0]))  # z component of cross product, edges a - b - c
+      
         prev = 0
+        n = len(points)
         for i in range(n):
-            cp = cross_product(points[i], 
-                               points[(i + 1) % n], 
-                               points[(i + 2) % n])
+            cp = -cross_product(points[i], 
+                                points[(i + 1) % n], 
+                                points[(i + 2) % n])
             if cp != 0:
                 if prev == 0: prev = cp
                 elif cp * prev < 0:
                     return 0 # not convex
         return np.sign(cp)
+    
+    def setup_optim_problem(self, prices: dict, timegrid: Union[Timegrid, None] = None,
+                            costs_only: bool = False) -> OptimProblem:
+        """ Set up optimization problem for asset. Use super class and add polygon restriction on heat & power
+
+        Args:
+            prices (dict): Dictionary of price arrays needed by assets in portfolio
+            timegrid (Timegrid, optional): Discretization grid for asset. Defaults to None,
+                                           in which case it must have been set previously
+            costs_only (bool): Only create costs vector (speed up e.g. for sampling prices). Defaults to False
+
+        Returns:
+            OptimProblem: Optimization problem to be used by optimizer
+        """
+        op = super().setup_optim_problem(prices=prices, timegrid=timegrid, costs_only=costs_only)
+        # add polygon restriction
+        if (self.pq_polygon is not None):
+            pass
+        return op
