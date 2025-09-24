@@ -10,6 +10,30 @@ Assets
    :undoc-members:
    :show-inheritance:
 
+Basic assets
+------------------------------------
+
+.. automodule:: eaopack.assets_basic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Structured assets
+------------------------------------
+
+.. automodule:: eaopack.assets_structured
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Power plant & CHP assets
+------------------------------------
+
+.. automodule:: eaopack.assets_plants
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Portfolio
 ------------------------------------
 

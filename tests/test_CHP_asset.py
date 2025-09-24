@@ -1400,6 +1400,33 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
             self.assertTrue(poly_path.contains_point(point), msg=f"point {point} not in polygon")
         return
 
+    def test_polygon_serialization(self):
+        """ Unit test. PQ diagram given as polygon. tetraeder """
+        # most basic asset
+        node_power = eao.assets.Node('node_power')
+        node_heat  = eao.assets.Node('node_heat')
+        timegrid   = eao.assets.Timegrid(dt.date(2024,1,1), dt.date(2024,1,20), freq = 'h')
+        poly = [[ 5, 5],
+                [10, 15],
+                [ 8, 25],
+                [ 6, 30]]
+        # no further restriction - instantaneous reaction to prices
+        m = eao.assets.SimpleContract(name = 'market', price='price', nodes = node_power, min_cap=-1000, max_cap=1000)
+        h = eao.assets.SimpleContract(name = 'heat', nodes = node_heat, min_cap='heat', max_cap='heat')
+        a = eao.assets.CHP_PQ_diagram(name='poly',
+                                      nodes = (node_power, node_heat),
+                                      min_cap=0.,
+                                      max_cap=500.,   # generous, restr only from poly!
+                                      conversion_factor_power_heat=0.2,
+                                      pq_polygon = poly)
+        portf = eao.portfolio.Portfolio([m, a, h])
+        s = eao.serialization.to_json(a)
+        aa = eao.serialization.load_from_json(s)
+        self.assertEqual(a.pq_polygon, aa.pq_polygon)
+        s = eao.serialization.to_json(portf)
+        pp = eao.serialization.load_from_json(s)
+        self.assertEqual(a.pq_polygon, pp.assets[1].pq_polygon)
+
 
 ###########################################################################################################
 ###########################################################################################################
