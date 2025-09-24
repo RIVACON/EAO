@@ -1187,8 +1187,6 @@ class CHP_PQ_diagram(CHPAsset):
             # looking at the restriction given by edge p(i) and p(i+1)
             a = self.pq_polygon[i]
             b = self.pq_polygon[(i+1) % n_poly]
-            print(a)
-            print(b)
             if (b[1]-a[1]) == 0:     # vertical in PQ, Q constant
                 #### effectively new minimum or maximum heat
                 if      ((a[0] < b[0]) and (poly_type == -1)) \
@@ -1218,6 +1216,5 @@ class CHP_PQ_diagram(CHPAsset):
                 op.A      = sp.vstack((op.A, myA))
                 op.cType +=  mytype
                 op.b = np.hstack((op.b, myb))
-
         return op
     

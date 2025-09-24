@@ -1325,6 +1325,10 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
                 [10, 15],
                 [ 8, 25],
                 [ 6, 30]]
+        poly_eps = [[ 4.99, 4.88], # making it a bit bigger to avoid numerical issues
+                    [10.01, 14.99],
+                    [ 8.01, 25.01],
+                    [ 5.99, 30.03]]        
         # no further restriction - instantaneous reaction to prices
         m = eao.assets.SimpleContract(name = 'market', price='price', nodes = node_power, min_cap=-1000, max_cap=1000)
         h = eao.assets.SimpleContract(name = 'heat', nodes = node_heat, min_cap='heat', max_cap='heat')
@@ -1346,33 +1350,56 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
         # fig.show()
         #### test: any dispatch outside polygon?
 
-        # Ray tracing
-        def ray_tracing_method(x,y,poly):
-            n = len(poly)
-            inside = False
-            p1x,p1y = poly[0]
-            for i in range(n+1):
-                p2x,p2y = poly[i % n]
-                if y > min(p1y,p2y):
-                    if y <= max(p1y,p2y):
-                        if x <= max(p1x,p2x):
-                            if p1y != p2y:
-                                xints = (y-p1y)*(p2x-p1x)/(p2y-p1y)+p1x
-                            if p1x == p2x or x <= xints:
-                                inside = not inside
-                p1x,p1y = p2x,p2y
-            return inside
-
-        # import matplotlib.path as mplPath
-        # poly_path = mplPath.Path(poly)
+        import matplotlib.path as mplPath
+        poly_path = mplPath.Path(poly_eps)
         for i in range(len(x)):
             point = np.array([y[i], x[i]])
             # print(point, " is in polygon: ", poly_path.contains_point(point))
-            print(point, " is in polygon: ", ray_tracing_method(y[i], x[i], poly))
-            #self.assertTrue(poly_path.contains_point(point), msg=f"point {point} not in polygon")
-        print(point, " is in polygon: ", poly_path.contains_point(point))
-
+            self.assertTrue(poly_path.contains_point(point), msg=f"point {point} not in polygon")
         return
+
+
+    def test_build_polygon_asset_mixed_straight_tetra(self):
+        """ Unit test. PQ diagram given as polygon. tetraeder """
+        # most basic asset
+        node_power = eao.assets.Node('node_power')
+        node_heat  = eao.assets.Node('node_heat')
+        timegrid   = eao.assets.Timegrid(dt.date(2024,1,1), dt.date(2024,1,20), freq = 'h')
+        data = {'price': np.sin(np.linspace(0,20*np.pi, timegrid.T)),
+                'heat' : -5-25*(np.linspace(0,1, timegrid.T))}
+        # square
+        #        [P, Q]
+        poly = [[ 5, 5],
+                [10, 5],
+                [ 8, 25],
+                [ 6, 30]]
+        poly_eps = [[ 4.99, 4.99], # making it a bit bigger to avoid numerical issues
+                    [10.01, 4.99],
+                    [ 8.01, 25.01],
+                    [ 5.99, 30.03]]        
+        # no further restriction - instantaneous reaction to prices
+        m = eao.assets.SimpleContract(name = 'market', price='price', nodes = node_power, min_cap=-1000, max_cap=1000)
+        h = eao.assets.SimpleContract(name = 'heat', nodes = node_heat, min_cap='heat', max_cap='heat')
+        a = eao.assets.CHP_PQ_diagram(name='poly',
+                                      nodes = (node_power, node_heat),
+                                      min_cap=0.,
+                                      max_cap=500.,   # generous, restr only from poly!
+                                      conversion_factor_power_heat=0.2,
+                                      pq_polygon =poly)
+        portf = eao.portfolio.Portfolio([m, a, h])
+        ##### optimize
+        out   = eao.optimize(portf, timegrid, data)
+        x = out['dispatch']["poly (node_heat)"].values
+        y = out['dispatch']["poly (node_power)"].values
+        #### test: any dispatch outside polygon?
+        import matplotlib.path as mplPath
+        poly_path = mplPath.Path(poly_eps)
+        for i in range(len(x)):
+            point = np.array([y[i], x[i]])
+            # print(point, " is in polygon: ", poly_path.contains_point(point))
+            self.assertTrue(poly_path.contains_point(point), msg=f"point {point} not in polygon")
+        return
+
 
 ###########################################################################################################
 ###########################################################################################################
