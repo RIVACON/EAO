@@ -1169,6 +1169,8 @@ class CHP_PQ_diagram(CHPAsset):
         op = super().setup_optim_problem(prices=prices, timegrid=timegrid, costs_only=costs_only)
         if self.pq_polygon is None:
             return op    # return as is - no polygon given
+        poly_type = self._check_polygon(self.pq_polygon)
+        assert poly_type != 0, 'Implementation error - polygon not convex, should have been caught before'
         # add polygon restriction
         n_poly = len(self.pq_polygon)
         # get node names and indices of dispatch variables
@@ -1185,16 +1187,34 @@ class CHP_PQ_diagram(CHPAsset):
             # looking at the restriction given by edge p(i) and p(i+1)
             a = self.pq_polygon[i]
             b = self.pq_polygon[(i+1) % n_poly]
-            if (b[0]-a[0]) != 0: # no vertical line
-                # determine line equation:  y = m*x + b
-                m_eq = (b[1]-a[1])/(b[0]-a[0]) 
-                b_eq = a[1] - m_eq*a[0]
+            if (b[1]-a[1]) == 0:     # vertical in PQ, Q constant
+                #### effectively new minimum or maximum heat
+                if      ((a[0] < b[0]) and (poly_type == 1)) \
+                    or  ((a[0] > b[0]) and (poly_type == -1)) :  # increase minimum heat
+                    op.l[ind_heat] = np.maximum(op.l[ind_heat], np.ones(n)*a[1])
+                else:           #  reduce maximum heat
+                    op.u[ind_heat] = np.minimum(op.u[ind_heat], np.ones(n)*a[1])
+            elif (b[0]-a[0]) == 0:   # horizontal in PQ, P constant)
+                    #### effectively new minimum or maximum power
+                    if      ((a[1] < b[1]) and (poly_type == 1)) \
+                        or  ((a[1] > b[1]) and (poly_type == -1)) :  # decrease maximum power
+                        op.u[ind_power] = np.minimum(op.u[ind_power], np.ones(n)*a[1])
+                    else:           #  increase minimum power
+                        op.l[ind_power] = np.maximum(op.l[ind_power], np.ones(n)*a[1])
+            else:  # determine line equation:  P = m_eq * Q + b_eq    
+                m_eq = (b[0]-a[0])/(b[1]-a[1])
+                b_eq = a[0] - m_eq*a[1]  # b = P1-mQ1
                 #### extend restrictions
-                ## create restriction to add to op
                 myA = sp.hstack([sp.eye(n), -m_eq*sp.eye(n), sp.lil_matrix((n, m))])
                 myb = np.ones(n)*b_eq
-                mytype = 'L'*n
-            else: 
-                pass
+                if poly_type == 1:   # clockwise - upper boundary
+                    mytype = 'U'*n
+                else:                # counterclockwise - lower boundary
+                    mytype = 'L'*n
+                #### stack
+                op.A      = sp.vstack((op.A, myA))
+                op.cType +=  mytype
+                op.b = np.hstack((op.b, myb))
+
         return op
     
