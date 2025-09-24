@@ -32,7 +32,7 @@ class Unit:
         assert (factor == 1.), 'conversion of volume/flow units using factor not implemented. please choose units with conversion factor 1'
 
 class Node:
-    def __init__(self, name: str, commodity:str = None, unit: Unit = Unit()) :
+    def __init__(self, name: str, commodity: Union[None, str] = None, unit: Unit = Unit()) :
         """ Class to define a node in the optimization problem. A node is a (virtual) point, where
             assets are located. In a node, the sum of all commodity flows must be zero.
             Only one commodity may be present in each node. 
@@ -49,7 +49,12 @@ class Node:
         self.unit = unit
 
 class Timegrid:
-    def __init__(self, start:dt.datetime, end:dt.datetime, freq:str='h', main_time_unit = 'h', ref_timegrid=None, timezone: str = None):
+    def __init__(self,  start:          Union[None, dt.date, dt.datetime, pd.Timestamp],
+                        end:            Union[None, dt.date, dt.datetime, pd.Timestamp],
+                        freq:           str = 'h', 
+                        main_time_unit: str = 'h', 
+                        ref_timegrid     = None, 
+                        timezone:       Union[None, str]      = None):
         """ Manage the timegrid used for optimization. 
 
         Args:

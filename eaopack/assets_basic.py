@@ -16,11 +16,11 @@ class Asset:
     def __init__(self,
                 name: str = 'default_name',
                 nodes: Union[Node, List[Node]] = Node(name = 'default_node'),
-                start: dt.datetime = None,
-                end:   dt.datetime = None,
+                start: Union[dt.datetime, None] = None,
+                end:   Union[dt.datetime, None] = None,
                 wacc: float = 0,
-                freq: str = None,
-                profile: pd.Series = None):
+                freq: Union[str, None] = None,
+                profile: Union[pd.Series, None] = None):
         """ The base class to define an asset.
 
         Args:
@@ -184,7 +184,10 @@ class Asset:
             time_value_converted = int(time_value_converted)
         return time_value_converted
 
-    def make_vector(self, value:  Union[float, StartEndValueDict, str], prices:dict, default_value: float = None, convert=False):
+    def make_vector(self, value:  Union[float, StartEndValueDict, str], 
+                          prices: Union[None, dict], 
+                          default_value: Union[None, float] = None, 
+                          convert=False):
         """
         Make a vector out of value
         Args:

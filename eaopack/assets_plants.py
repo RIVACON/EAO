@@ -213,7 +213,7 @@ class CHPAsset(ea.Contract):
         if self.min_downtime > 1:
             assert (self.time_already_off == 0) ^ (self.time_already_running == 0), "Either time_already_off or time_already_running has to be 0, but not both. Asset: " + self.name
 
-    def setup_optim_problem(self, prices: dict, timegrid: Timegrid = None,
+    def setup_optim_problem(self, prices: dict, timegrid: Union[Timegrid, None] = None,
                             costs_only: bool = False) -> OptimProblem:
         """ Set up optimization problem for asset
 
@@ -875,7 +875,7 @@ class CHPAsset(ea.Contract):
 class CHPAsset_with_min_load_costs(CHPAsset):
     def __init__(self,
                  min_load_threshhold: Union[float, Sequence[float], StartEndValueDict] = 0.,
-                 min_load_costs: Union[float, Sequence[float], StartEndValueDict] = None,
+                 min_load_costs: Union[float, Sequence[float], StartEndValueDict, None] = None,
                 **kwargs                 
                  ):
         """ CHPContract with additional Min Load costs: 
@@ -895,7 +895,7 @@ class CHPAsset_with_min_load_costs(CHPAsset):
         self.min_load_costs      = min_load_costs
 
 
-    def setup_optim_problem(self, prices: dict, timegrid: Timegrid = None,
+    def setup_optim_problem(self, prices: dict, timegrid: Union[Timegrid, None] = None,
                             costs_only: bool = False) -> OptimProblem:
         """ Set up optimization problem for asset
 
@@ -1096,3 +1096,125 @@ class Plant(CHPAsset):
                                        consumption_if_on = consumption_if_on,
                                        _no_heat = True)
 
+class CHP_PQ_diagram(CHPAsset): 
+    def __init__(self,
+                 pq_polygon: Union[List[Union[List[float], np.ndarray]], None] = None,
+                 **kwargs                 
+                 ):
+        """ CHPContract using a convex polygon to define feasible (P,Q) operating points: 
+
+        Args:
+        * CHPAsset arguments
+
+        additional:
+        pq_polygon (list of 2-element lists or arrays): 2D points [P, Q] in convex polygon - given as lists or arrays of 2 elements
+                                                        e.g. [[0,0], [1,0], [1,1], [0,1]] for a square
+                                                        Order of points is relevant! Polygon has to be convex
+        """
+        super().__init__(**kwargs)
+        # do some checks and store polygon
+        if pq_polygon is None:  
+            print('Warning: No PQ diagram polygon given. Use CHPAsset if no polygon is needed')
+        else:
+            if len(pq_polygon) < 3: raise ValueError('Error - PQ diagram polygon has to have at least 3 points')
+            check = self._check_polygon(pq_polygon)
+            if check == 0: raise ValueError('Error - PQ diagram polygon is not convex')
+            # do we have max_share_heat given? That's compatiple, but not needed. Warn user
+            if self.max_share_heat is not None:
+                print('Warning: max_share_heat given, but not needed when using PQ diagram. Think about removing it.')
+            # heat node given?
+            if self.idx_nodes['heat'] is None:
+                raise ValueError('Error - no heat node given, but pq_polygon given. Use Plant asset?')
+
+        self.pq_polygon = pq_polygon # add anyhon - if None OptimProblem of CHPAsset is used
+
+    @staticmethod
+    def _check_polygon(points:List[Union[List[float], np.ndarray]]) -> int:
+        """ Check validity and orientation of polygon (is convex?)
+            How: calculate cross product of each edge with the next edge. 
+                 All positive: clock, all negative: counterclockwise, mixed: not convex
+            Args:
+                points (dict): 2D points in polygon - given as lists or arrays of 2 elements
+            Returns:
+                int: 0: not valid, 1: valid clockwise, -1: valid counterclockwise
+        """
+        def cross_product(a, b, c):
+            return ((b[0]-a[0])*(c[1]-b[1]) - (b[1]-a[1])*(c[0]-b[0]))  # z component of cross product, edges a - b - c
+      
+        prev = 0
+        n = len(points)
+        for i in range(n):
+            cp = -cross_product(points[i], 
+                                points[(i + 1) % n], 
+                                points[(i + 2) % n])
+            if cp != 0:
+                if prev == 0: prev = cp
+                elif cp * prev < 0:
+                    return 0 # not convex
+        return np.sign(cp)
+    
+    def setup_optim_problem(self, prices: dict, timegrid: Union[Timegrid, None] = None,
+                            costs_only: bool = False) -> OptimProblem:
+        """ Set up optimization problem for asset. Use super class and add polygon restriction on heat & power
+
+        Args:
+            prices (dict): Dictionary of price arrays needed by assets in portfolio
+            timegrid (Timegrid, optional): Discretization grid for asset. Defaults to None,
+                                           in which case it must have been set previously
+            costs_only (bool): Only create costs vector (speed up e.g. for sampling prices). Defaults to False
+
+        Returns:
+            OptimProblem: Optimization problem to be used by optimizer
+        """
+        op = super().setup_optim_problem(prices=prices, timegrid=timegrid, costs_only=costs_only)
+        if self.pq_polygon is None:
+            return op    # return as is - no polygon given
+        poly_type = self._check_polygon(self.pq_polygon)
+        assert poly_type != 0, 'Implementation error - polygon not convex, should have been caught before'
+        # add polygon restriction
+        n_poly = len(self.pq_polygon)
+        # get node names and indices of dispatch variables
+        n_power   = self.node_names[self.idx_nodes['power']]
+        n_heat    = self.node_names[self.idx_nodes['heat']]
+        ind_power = op.mapping.loc[(op.mapping['node'] == n_power) & (op.mapping['type'] == 'd')].index
+        ind_heat  = op.mapping.loc[(op.mapping['node'] == n_heat)  & (op.mapping['type'] == 'd')].index
+        assert len(ind_power) == len(ind_heat) == self.timegrid.restricted.T, 'Implementation error - number of dispatch variables not correct'
+        n = len(ind_power) 
+        m = op.A.shape[1]-2*n
+        assert op.A.shape[1]-2*n >=0, 'Implementation error - number of variables not correct'
+
+        for i in range(n_poly):  # loop over all edges
+            # looking at the restriction given by edge p(i) and p(i+1)
+            a = self.pq_polygon[i]
+            b = self.pq_polygon[(i+1) % n_poly]
+            if (b[1]-a[1]) == 0:     # vertical in PQ, Q constant
+                #### effectively new minimum or maximum heat
+                if      ((a[0] < b[0]) and (poly_type == -1)) \
+                    or  ((a[0] > b[0]) and (poly_type ==  1)) :  # increase minimum heat
+                    op.l[ind_heat] = np.maximum(op.l[ind_heat], np.ones(n)*a[1])
+                else:           #  reduce maximum heat
+                    op.u[ind_heat] = np.minimum(op.u[ind_heat], np.ones(n)*a[1])
+            elif (b[0]-a[0]) == 0:   # horizontal in PQ, P constant)
+                    #### effectively new minimum or maximum power
+                    if      ((a[1] < b[1]) and (poly_type == -1)) \
+                        or  ((a[1] > b[1]) and (poly_type ==  1)) :  # decrease maximum power
+                        op.u[ind_power] = np.minimum(op.u[ind_power], np.ones(n)*a[0])
+                    else:           #  increase minimum power
+                        op.l[ind_power] = np.maximum(op.l[ind_power], np.ones(n)*a[0])
+            else:  # determine line equation:  P = m_eq * Q + b_eq    
+                m_eq = (b[0]-a[0])/(b[1]-a[1])
+                b_eq = a[0] - m_eq*a[1]  # b = P1-mQ1
+                #### extend restrictions
+                myA = sp.hstack([sp.eye(n), -m_eq*sp.eye(n), sp.lil_matrix((n, m))])
+                myb = np.ones(n)*b_eq
+                if      ((a[1] < b[1]) and (poly_type == -1)) \
+                    or  ((a[1] > b[1]) and (poly_type ==  1)) :
+                    mytype = 'U'*n 
+                else:
+                    mytype = 'L'*n 
+                #### stack
+                op.A      = sp.vstack((op.A, myA))
+                op.cType +=  mytype
+                op.b = np.hstack((op.b, myb))
+        return op
+    

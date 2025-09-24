@@ -14,7 +14,8 @@ from eaopack.assets_basic import Asset, \
 
 from eaopack.assets_plants import CHPAsset, \
                                   CHPAsset_with_min_load_costs, \
-                                  Plant
+                                  Plant, \
+                                  CHP_PQ_diagram
 
 
 from eaopack.assets_structured import StructuredAsset, \
