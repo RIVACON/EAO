@@ -1123,7 +1123,7 @@ class CHP_PQ_diagram(CHPAsset):
             if self.max_share_heat is not None:
                 print('Warning: max_share_heat given, but not needed when using PQ diagram. Think about removing it.')
             # heat node given?
-            if len(self.nodes) < 2:
+            if self.idx_nodes['heat'] is None:
                 raise ValueError('Error - no heat node given, but pq_polygon given. Use Plant asset?')
 
         self.pq_polygon = pq_polygon # add anyhon - if None OptimProblem of CHPAsset is used
@@ -1170,17 +1170,31 @@ class CHP_PQ_diagram(CHPAsset):
         if self.pq_polygon is None:
             return op    # return as is - no polygon given
         # add polygon restriction
-        for i in len(self.pq_polygon):
+        n_poly = len(self.pq_polygon)
+        # get node names and indices of dispatch variables
+        n_power   = self.node_names[self.idx_nodes['power']]
+        n_heat    = self.node_names[self.idx_nodes['heat']]
+        ind_power = op.mapping.loc[(op.mapping['node'] == n_power) & (op.mapping['type'] == 'd')].index
+        ind_heat  = op.mapping.loc[(op.mapping['node'] == n_heat)  & (op.mapping['type'] == 'd')].index
+        assert len(ind_power) == len(ind_heat) == self.timegrid.restricted.T, 'Implementation error - number of dispatch variables not correct'
+        n = len(ind_power) 
+        m = op.A.shape[1]-2*n
+        assert op.A.shape[1]-2*n >=0, 'Implementation error - number of variables not correct'
+
+        for i in range(n_poly):  # loop over all edges
             # looking at the restriction given by edge p(i) and p(i+1)
             a = self.pq_polygon[i]
-            b = self.pq_polygon[i+1]
-            if (b[0]-a[0]) != 0 # no vertical line
+            b = self.pq_polygon[(i+1) % n_poly]
+            if (b[0]-a[0]) != 0: # no vertical line
                 # determine line equation:  y = m*x + b
                 m_eq = (b[1]-a[1])/(b[0]-a[0]) 
                 b_eq = a[1] - m_eq*a[0]
-                # extend restrictions
-                # ...
+                #### extend restrictions
+                ## create restriction to add to op
+                myA = sp.hstack([sp.eye(n), -m_eq*sp.eye(n), sp.lil_matrix((n, m))])
+                myb = np.ones(n)*b_eq
+                mytype = 'L'*n
             else: 
-                raise NotImplementedError('Error - vertical lines in PQ diagram not implemented yet')
+                pass
         return op
     
