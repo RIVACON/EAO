@@ -142,7 +142,7 @@ class CHPAssetTest(unittest.TestCase):
         on_variables = res.x[2*timegrid.T:3*timegrid.T]
         disp_variables = res.x[0*timegrid.T:1*timegrid.T]
         start_variables = res.x[3*timegrid.T:]
-        self.assertAlmostEqual(res.value, 10*1000. + 10*(-5)-1., 4) 
+        self.assertAlmostEqual(res.value, 10*1000. + 10*(-5)-1., 4)
         # min run time 20
         a = eao.assets.CHPAsset(name='CHP',
                                 price='price',
@@ -160,9 +160,9 @@ class CHPAssetTest(unittest.TestCase):
         on_variables = res.x[2*timegrid.T:3*timegrid.T]
         disp_variables = res.x[0*timegrid.T:1*timegrid.T]
         start_variables = res.x[3*timegrid.T:]
-        self.assertAlmostEqual(on_variables.sum(), 20., 4) 
+        self.assertAlmostEqual(on_variables.sum(), 20., 4)
         # 10 times full load, 10 time min load
-        self.assertAlmostEqual(res.value, 10*10*100. - 10*1 + 20*(-5)-1., 4) 
+        self.assertAlmostEqual(res.value, 10*10*100. - 10*1 + 20*(-5)-1., 4)
         # min run time 20 ... but 5 hours already on
         a = eao.assets.CHPAsset(name='CHP',
                                 price='price',
@@ -181,7 +181,7 @@ class CHPAssetTest(unittest.TestCase):
         on_variables = res.x[2*timegrid.T:3*timegrid.T]
         disp_variables = res.x[0*timegrid.T:1*timegrid.T]
         start_variables = res.x[3*timegrid.T:]
-        self.assertAlmostEqual(on_variables.sum(), 15., 4) 
+        self.assertAlmostEqual(on_variables.sum(), 15., 4)
         # 10 times full load, 10 time min load, NO start!
         self.assertAlmostEqual(res.value, 10*10*100. - 5*1 + 15*(-5), 4)
 
@@ -235,7 +235,7 @@ class CHPAssetTest(unittest.TestCase):
                                 max_share_heat= 1,
                                 start_fuel = 10,
                                 fuel_efficiency= .5,
-                                consumption_if_on= .1) 
+                                consumption_if_on= .1)
         b = eao.assets.SimpleContract(name = 'powerMarket', price='price', nodes = node_power, min_cap=-100, max_cap=100)
         c = eao.assets.SimpleContract(name = 'gasMarket', price='priceGas', nodes = node_gas, min_cap=-100, max_cap=100)
         d = eao.assets.SimpleContract(name = 'heatMarket', price='priceGas', nodes = node_heat, min_cap=-100, max_cap=100)
@@ -247,9 +247,9 @@ class CHPAssetTest(unittest.TestCase):
         out = eao.io.extract_output(portf, op, res, prices)
         # check manually checked values
         check = out['dispatch']['CHP (node_power)'].sum()
-        self.assertAlmostEqual(check, 190. , 4) 
+        self.assertAlmostEqual(check, 190. , 4)
         check = out['dispatch']['CHP (node_heat)'].sum()
-        self.assertAlmostEqual(check, 0. , 4) 
+        self.assertAlmostEqual(check, 0. , 4)
         check = out['dispatch']['gasMarket (node_gas)'].sum()
         self.assertAlmostEqual(check, 391.9 , 4)
 
@@ -607,17 +607,17 @@ class CHPAssetTest(unittest.TestCase):
                                 start_ramp_lower_bounds=start_ramp_lower_bounds,
                                 start_ramp_upper_bounds=start_ramp_upper_bounds,
                                 shutdown_ramp_lower_bounds=shutdown_ramp_lower_bounds,
-                                shutdown_ramp_upper_bounds=shutdown_ramp_upper_bounds,                                
+                                shutdown_ramp_upper_bounds=shutdown_ramp_upper_bounds,
                                 start_ramp_lower_bounds_heat=start_ramp_lower_bounds_heat,
                                 start_ramp_upper_bounds_heat=start_ramp_upper_bounds_heat,
                                 shutdown_ramp_lower_bounds_heat=shutdown_ramp_lower_bounds_heat,
-                                shutdown_ramp_upper_bounds_heat=shutdown_ramp_upper_bounds_heat 
+                                shutdown_ramp_upper_bounds_heat=shutdown_ramp_upper_bounds_heat
 
                                 )
         b = eao.assets.SimpleContract(name = 'powerMarket', price='price', nodes = node_power, min_cap=-100, max_cap=100)
         c = eao.assets.SimpleContract(name = 'gasMarket', price='priceGas', nodes = node_gas, min_cap=-100, max_cap=100)
         d = eao.assets.SimpleContract(name = 'heatMarket', nodes = node_heat, min_cap='heat_demand', max_cap='heat_demand')
-        prices ={'price': -50.*np.ones(timegrid.T), 
+        prices ={'price': -50.*np.ones(timegrid.T),
                  'priceGas': 10*np.ones(timegrid.T),
                  'heat_demand': np.zeros(timegrid.T)}
         prices['heat_demand'][10:20] = -1
@@ -660,20 +660,20 @@ class CHPAssetTest(unittest.TestCase):
                                 max_share_heat= 1,
                                 start_fuel = 10,
                                 fuel_efficiency= .5,
-                                consumption_if_on= .1,                     
+                                consumption_if_on= .1,
                                 start_ramp_lower_bounds=start_ramp_lower_bounds,
                                 start_ramp_upper_bounds=start_ramp_upper_bounds,
                                 shutdown_ramp_lower_bounds=shutdown_ramp_lower_bounds,
-                                shutdown_ramp_upper_bounds=shutdown_ramp_upper_bounds,                                
+                                shutdown_ramp_upper_bounds=shutdown_ramp_upper_bounds,
                                 start_ramp_lower_bounds_heat=start_ramp_lower_bounds_heat,
                                 start_ramp_upper_bounds_heat=start_ramp_upper_bounds_heat,
                                 shutdown_ramp_lower_bounds_heat=shutdown_ramp_lower_bounds_heat,
-                                shutdown_ramp_upper_bounds_heat=shutdown_ramp_upper_bounds_heat 
+                                shutdown_ramp_upper_bounds_heat=shutdown_ramp_upper_bounds_heat
                                 )
         b = eao.assets.SimpleContract(name = 'powerMarket', price='price', nodes = node_power, min_cap=-100, max_cap=100)
         c = eao.assets.SimpleContract(name = 'gasMarket', price='priceGas', nodes = node_gas, min_cap=-500, max_cap=500)
         d = eao.assets.SimpleContract(name = 'heatMarket', nodes = node_heat, min_cap=-100, max_cap=100)
-        prices ={'price': 0.*np.ones(timegrid.T), 
+        prices ={'price': 0.*np.ones(timegrid.T),
                  'priceGas': 10*np.ones(timegrid.T)}
 #                 'heat_demand': np.zeros(timegrid.T)}
 #        prices['heat_demand'][10:20] = -1
@@ -690,7 +690,7 @@ class CHPAssetTest(unittest.TestCase):
         for i in range(0,4):
              self.assertAlmostEqual(myr[i], start_ramp_lower_bounds_heat[i], 4)
                 # check power side ... total virtual dispatch
-             self.assertAlmostEqual(myrt[i], start_ramp_lower_bounds[i], 4)        
+             self.assertAlmostEqual(myrt[i], start_ramp_lower_bounds[i], 4)
 
 class CHPAssetTest_with_threshhold(unittest.TestCase):
 
@@ -745,7 +745,7 @@ class CHPAssetTest_with_threshhold(unittest.TestCase):
                                 min_cap=2., max_cap=10.,
                                 min_load_threshhold= 4,
                                 min_load_costs = 1.)
-        demand = eao.assets.SimpleContract(name = 'demand', 
+        demand = eao.assets.SimpleContract(name = 'demand',
                                            nodes = node_power,
                                            min_cap = 'demand', max_cap = 'demand')
         prices ={'price':  np.zeros(timegrid.T),
@@ -771,7 +771,7 @@ class CHPAssetTest_with_threshhold(unittest.TestCase):
                                 min_cap=2., max_cap=10.,
                                 min_load_threshhold= 'ml_t',
                                 min_load_costs = 'ml_c')
-        demand = eao.assets.SimpleContract(name = 'demand', 
+        demand = eao.assets.SimpleContract(name = 'demand',
                                            nodes = node_power,
                                            min_cap = 'demand', max_cap = 'demand')
         prices ={'price':   np.zeros(timegrid.T),
@@ -799,7 +799,7 @@ class CHPAssetTest_with_threshhold(unittest.TestCase):
                                 min_cap=2., max_cap=10.,
                                 min_load_threshhold= 7,
                                 min_load_costs = 1.)
-        demand = eao.assets.SimpleContract(name = 'demand', 
+        demand = eao.assets.SimpleContract(name = 'demand',
                                            nodes = node_power,
                                            min_cap = 'demand', max_cap = 'demand')
         prices ={'price':  np.zeros(timegrid.T),
@@ -834,12 +834,12 @@ class CHPAssetTest_with_threshhold(unittest.TestCase):
                                 start_costs=0.,
                                 fuel_efficiency=0.9,
                                 min_load_costs = 100)
-        demand = eao.assets.SimpleContract(name = 'demand', 
+        demand = eao.assets.SimpleContract(name = 'demand',
                                            nodes = node_power,
                                            min_cap = 'demand', max_cap = 'demand')
-        gas = eao.assets.SimpleContract(name = 'gas', 
+        gas = eao.assets.SimpleContract(name = 'gas',
                                            nodes = node_gas,
-                                           min_cap = -1000, max_cap = 1000)        
+                                           min_cap = -1000, max_cap = 1000)
         prices ={'price':  np.zeros(timegrid.T),
                  'demand': -np.linspace(2, 10, timegrid.T)}
         prices['demand'][0:5] = 0
@@ -852,7 +852,7 @@ class CHPAssetTest_with_threshhold(unittest.TestCase):
         # check: costs below threshhold are 1, above 0
         self.assertAlmostEqual(np.abs(costs[disp==0]).sum(), 0, 5)
         self.assertAlmostEqual(np.abs(costs[(disp<7)&(disp>0)]+100).sum(), 0, 5)
-        self.assertAlmostEqual(np.abs(costs[(disp>7)]).sum(), 0, 5)        
+        self.assertAlmostEqual(np.abs(costs[(disp>7)]).sum(), 0, 5)
 
 
 class CHPAssetTest_no_heat(unittest.TestCase):
@@ -876,7 +876,7 @@ class CHPAssetTest_no_heat(unittest.TestCase):
         x_power_o += x_heat
 
         ## new: heat node is None
-        a = eao.assets.CHPAsset(name='CHP', price='rand_price', 
+        a = eao.assets.CHPAsset(name='CHP', price='rand_price',
                                 nodes = node_power,  # !!!!! heat node not given or None
                                 conversion_factor_power_heat = 0,  # use high number to assert I'd see effects if used
                                 min_cap=5., max_cap=10.,
@@ -911,7 +911,7 @@ class CHPAssetTest_no_heat(unittest.TestCase):
                                 max_share_heat= 1,
                                 start_fuel = 10,
                                 fuel_efficiency= .5,
-                                consumption_if_on= .1) 
+                                consumption_if_on= .1)
         b = eao.assets.SimpleContract(name = 'powerMarket', price='price', nodes = node_power, min_cap=-100, max_cap=100)
         c = eao.assets.SimpleContract(name = 'gasMarket', price='priceGas', nodes = node_gas, min_cap=-100, max_cap=100)
         d = eao.assets.SimpleContract(name = 'heatMarket', price='priceGas', nodes = node_heat, min_cap=0, max_cap=0)
@@ -923,9 +923,9 @@ class CHPAssetTest_no_heat(unittest.TestCase):
         out = eao.io.extract_output(portf, op, res, prices)
         # check manually checked values
         check = out['dispatch']['CHP (node_power)'].sum()
-        self.assertAlmostEqual(check, 190. , 4) 
+        self.assertAlmostEqual(check, 190. , 4)
         check = out['dispatch']['CHP (node_heat)'].sum()
-        self.assertAlmostEqual(check, 0. , 4) 
+        self.assertAlmostEqual(check, 0. , 4)
         check = out['dispatch']['gasMarket (node_gas)'].sum()
         self.assertAlmostEqual(check, 391.9 , 4)
         #############################  test without heat node
@@ -941,7 +941,7 @@ class CHPAssetTest_no_heat(unittest.TestCase):
                                 max_share_heat= 1,
                                 start_fuel = 10,
                                 fuel_efficiency= .5,
-                                consumption_if_on= .1) 
+                                consumption_if_on= .1)
         b = eao.assets.SimpleContract(name = 'powerMarket', price='price', nodes = node_power, min_cap=-100, max_cap=100)
         c = eao.assets.SimpleContract(name = 'gasMarket', price='priceGas', nodes = node_gas, min_cap=-100, max_cap=100)
         prices ={'price': 50.*np.ones(timegrid.T), 'priceGas': 0.1*np.ones(timegrid.T)}
@@ -952,12 +952,12 @@ class CHPAssetTest_no_heat(unittest.TestCase):
         out = eao.io.extract_output(portf, op, res, prices)
         # check manually checked values
         check = out['dispatch']['CHP (node_power)'].sum()
-        self.assertAlmostEqual(check, 190. , 4) 
+        self.assertAlmostEqual(check, 190. , 4)
         check = out['dispatch']['gasMarket (node_gas)'].sum()
-        self.assertAlmostEqual(check, 391.9 , 4)        
+        self.assertAlmostEqual(check, 391.9 , 4)
 
     def test_optimization_vectors_no_heat(self):
-        """ Unit test. Same test as above, no heat 
+        """ Unit test. Same test as above, no heat
         """
         node_power = eao.assets.Node('node_power')
         timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,1,2), freq = 'h')
@@ -967,7 +967,7 @@ class CHPAssetTest_no_heat(unittest.TestCase):
                                 min_cap=2., max_cap=10.,
                                 min_load_threshhold= 'ml_t',
                                 min_load_costs = 'ml_c')
-        demand = eao.assets.SimpleContract(name = 'demand', 
+        demand = eao.assets.SimpleContract(name = 'demand',
                                            nodes = node_power,
                                            min_cap = 'demand', max_cap = 'demand')
         prices ={'price':   np.zeros(timegrid.T),
@@ -1007,7 +1007,7 @@ class Plant(unittest.TestCase):
         # self.assertTrue(all(x_heat==0))
 
         ## new: heat node is None
-        a = eao.assets.Plant(name='CHP', price='rand_price', 
+        a = eao.assets.Plant(name='CHP', price='rand_price',
                                 nodes = node_power,  # !!!!! heat node not given or None
                                 min_cap=5., max_cap=10.)
         op = a.setup_optim_problem(prices, timegrid=timegrid)
@@ -1040,7 +1040,7 @@ class Plant(unittest.TestCase):
                                 max_share_heat= 1,
                                 start_fuel = 10,
                                 fuel_efficiency= .5,
-                                consumption_if_on= .1) 
+                                consumption_if_on= .1)
         b = eao.assets.SimpleContract(name = 'powerMarket', price='price', nodes = node_power, min_cap=-100, max_cap=100)
         c = eao.assets.SimpleContract(name = 'gasMarket', price='priceGas', nodes = node_gas, min_cap=-100, max_cap=100)
         d = eao.assets.SimpleContract(name = 'heatMarket', price='priceGas', nodes = node_heat, min_cap=0, max_cap=0)
@@ -1052,9 +1052,9 @@ class Plant(unittest.TestCase):
         out = eao.io.extract_output(portf, op, res, prices)
         # check manually checked values
         check = out['dispatch']['CHP (node_power)'].sum()
-        self.assertAlmostEqual(check, 190. , 4) 
+        self.assertAlmostEqual(check, 190. , 4)
         check = out['dispatch']['CHP (node_heat)'].sum()
-        self.assertAlmostEqual(check, 0. , 4) 
+        self.assertAlmostEqual(check, 0. , 4)
         check = out['dispatch']['gasMarket (node_gas)'].sum()
         self.assertAlmostEqual(check, 391.9 , 4)
         #############################  test without heat node
@@ -1068,7 +1068,7 @@ class Plant(unittest.TestCase):
                                 running_costs=5.,
                                 start_fuel = 10,
                                 fuel_efficiency= .5,
-                                consumption_if_on= .1) 
+                                consumption_if_on= .1)
         b = eao.assets.SimpleContract(name = 'powerMarket', price='price', nodes = node_power, min_cap=-100, max_cap=100)
         c = eao.assets.SimpleContract(name = 'gasMarket', price='priceGas', nodes = node_gas, min_cap=-100, max_cap=100)
         prices ={'price': 50.*np.ones(timegrid.T), 'priceGas': 0.1*np.ones(timegrid.T)}
@@ -1079,9 +1079,9 @@ class Plant(unittest.TestCase):
         out = eao.io.extract_output(portf, op, res, prices)
         # check manually checked values
         check = out['dispatch']['PP (node_power)'].sum()
-        self.assertAlmostEqual(check, 190. , 4) 
+        self.assertAlmostEqual(check, 190. , 4)
         check = out['dispatch']['gasMarket (node_gas)'].sum()
-        self.assertAlmostEqual(check, 391.9 , 4)        
+        self.assertAlmostEqual(check, 391.9 , 4)
 
         # check serialization (new class...)
         s = eao.serialization.to_json(a)
@@ -1103,7 +1103,7 @@ class Plant(unittest.TestCase):
         # load test data
         import os
         myfile = os.path.join(os.path.join(os.path.dirname(__file__)),'plant_test_data.csv')
-        df = pd.read_csv(myfile)       
+        df = pd.read_csv(myfile)
         df.set_index('date', inplace = True)
         df.index = pd.to_datetime(df.index, format='%m/%d/%y %I:%M %p')
         df = timegrid.prices_to_grid(df)
@@ -1120,7 +1120,7 @@ class Plant(unittest.TestCase):
                                 min_downtime    = 2,
                                 ramp            = 10,
                                 time_already_running=0,
-                                time_already_off= 1) 
+                                time_already_off= 1)
         b = eao.assets.SimpleContract(name = 'powerMarket', price='power_price', nodes = node_power, min_cap=-100, max_cap=100)
         c = eao.assets.SimpleContract(name = 'gasMarket', price='gas_price', nodes = node_gas, min_cap=-100, max_cap=100)
         portf = eao.portfolio.Portfolio([a, b, c])
@@ -1130,11 +1130,11 @@ class Plant(unittest.TestCase):
         ##### for manual check: eao.io.output_to_file(out, 'results_plant.xlsx')
         # # check manually checked values
         # check = out['prices']['PP (node_power)'].sum()
-        self.assertAlmostEqual(res.value,  35926.718225, 2) 
-        self.assertAlmostEqual(out['DCF'].sum().sum(),  35926.718225, 2)         
-        self.assertAlmostEqual(out['dispatch'].sum().sum(),  0, 2)             
+        self.assertAlmostEqual(res.value,  35926.718225, 2)
+        self.assertAlmostEqual(out['DCF'].sum().sum(),  35926.718225, 2)
+        self.assertAlmostEqual(out['dispatch'].sum().sum(),  0, 2)
         # check = out['dispatch']['gasMarket (node_gas)'].sum()
-        # self.assertAlmostEqual(check, 391.9 , 4)        
+        # self.assertAlmostEqual(check, 391.9 , 4)
 
         # check serialization (new class...)
         s = eao.serialization.to_json(a)
@@ -1177,7 +1177,7 @@ class Plant(unittest.TestCase):
                                 start_ramp_lower_bounds=[1.1],
                                 shutdown_ramp_upper_bounds=[2.2],
                                 shutdown_ramp_lower_bounds=[2.2],
-                                ramp_freq='15min') 
+                                ramp_freq='15min')
         b = eao.assets.SimpleContract(name = 'powerMarket', price='power_price', nodes = node_power, min_cap=-100, max_cap=100)
         c = eao.assets.SimpleContract(name = 'gasMarket', price='gas_price', nodes = node_gas, min_cap=-100, max_cap=100)
         portf = eao.portfolio.Portfolio([a, b, c])
@@ -1186,9 +1186,9 @@ class Plant(unittest.TestCase):
         out = eao.io.extract_output(portf, op, res, df)
         ### for checks: eao.io.output_to_file(out, 'results_plant.xlsx')
         # # check manually checked values
-        self.assertAlmostEqual(res.value,  34752.9612, 2) 
-        self.assertAlmostEqual(out['DCF'].sum().sum(),  34752.9612, 2)         
-        # self.assertAlmostEqual(out['dispatch'].sum().sum(),  0, 2)             
+        self.assertAlmostEqual(res.value,  34752.9612, 2)
+        self.assertAlmostEqual(out['DCF'].sum().sum(),  34752.9612, 2)
+        # self.assertAlmostEqual(out['dispatch'].sum().sum(),  0, 2)
 
         # check serialization (new class...)
         s = eao.serialization.to_json(a)
@@ -1234,7 +1234,7 @@ class Plant(unittest.TestCase):
                                 start_ramp_lower_bounds=[1,2,4,6,10],
                                 shutdown_ramp_upper_bounds=[1.1],
                                 shutdown_ramp_lower_bounds=[1.1],
-                                ramp_freq='h') 
+                                ramp_freq='h')
         b = eao.assets.SimpleContract(name = 'powerMarket', price='power_price', nodes = node_power, min_cap=-100, max_cap=100)
         c = eao.assets.SimpleContract(name = 'gasMarket', price='gas_price', nodes = node_gas, min_cap=-100, max_cap=100)
         portf = eao.portfolio.Portfolio([a, b, c])
@@ -1242,14 +1242,14 @@ class Plant(unittest.TestCase):
         res = op.optimize()
         out = eao.io.extract_output(portf, op, res, df)
         # dispatch should follow start ramp and then add ramp
-        self.assertAlmostEqual(out['dispatch'].iloc[0,0],  0, 4) 
-        self.assertAlmostEqual(out['dispatch'].iloc[1,0],  1, 4) 
-        self.assertAlmostEqual(out['dispatch'].iloc[2,0],  2, 4) 
-        self.assertAlmostEqual(out['dispatch'].iloc[3,0],  4, 4) 
-        self.assertAlmostEqual(out['dispatch'].iloc[4,0],  6, 4) 
-        self.assertAlmostEqual(out['dispatch'].iloc[5,0],  10, 4) 
-        self.assertAlmostEqual(out['dispatch'].iloc[6,0],  11.1, 4) 
-        self.assertAlmostEqual(out['dispatch'].iloc[7,0],  12.2, 4) 
+        self.assertAlmostEqual(out['dispatch'].iloc[0,0],  0, 4)
+        self.assertAlmostEqual(out['dispatch'].iloc[1,0],  1, 4)
+        self.assertAlmostEqual(out['dispatch'].iloc[2,0],  2, 4)
+        self.assertAlmostEqual(out['dispatch'].iloc[3,0],  4, 4)
+        self.assertAlmostEqual(out['dispatch'].iloc[4,0],  6, 4)
+        self.assertAlmostEqual(out['dispatch'].iloc[5,0],  10, 4)
+        self.assertAlmostEqual(out['dispatch'].iloc[6,0],  11.1, 4)
+        self.assertAlmostEqual(out['dispatch'].iloc[7,0],  12.2, 4)
 
 
 class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
@@ -1273,33 +1273,106 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
         poly = [np.array(p) for p in poly] # also test with arrays
         self.assertEqual(a._check_polygon(poly), -1)
 
-    def test_build_polygon_asset(self):
-        """ Unit test. PQ diagram given as polygon. Test building asset """
+    def test_build_polygon_asset_square(self):
+        """ Unit test. PQ diagram given as polygon. SQUARE """
         # most basic asset
         node_power = eao.assets.Node('node_power')
         node_heat  = eao.assets.Node('node_heat')
         timegrid   = eao.assets.Timegrid(dt.date(2024,1,1), dt.date(2024,1,2), freq = 'h')
         data = {'price': np.sin(np.linspace(0,20*np.pi, timegrid.T)),
-                'heat' : 50*np.cos(np.linspace(0,20*np.pi, timegrid.T))}
-        # Tetraeder - similar to std. PQ
-        # power between 10 and 10, heat between 0 and 50
+                'heat' : -50*(np.linspace(0,1, timegrid.T))-15}
+        # square
         #        [P, Q]
-        poly = [[ 0., 10.], 
-                [ 0., 20.], 
-                [50., 15.],
-                [30.,  5.]]
+        poly = [[ 5, 15],
+                [10, 15],
+                [10, 25],
+                [ 5, 25]]
         # no further restriction - instantaneous reaction to prices
         m = eao.assets.SimpleContract(name = 'market', price='price', nodes = node_power, min_cap=-1000, max_cap=1000)
-        a = eao.assets.CHP_PQ_diagram(name='poly', 
+        h = eao.assets.SimpleContract(name = 'heat', nodes = node_heat, min_cap='heat', max_cap='heat')
+        a = eao.assets.CHP_PQ_diagram(name='poly',
                                       nodes = (node_power, node_heat),
-                                      min_cap=0., 
-                                      max_cap=100.,   # generous, restr only from poly!
+                                      min_cap=0.,
+                                      max_cap=500.,   # generous, restr only from poly!
                                       conversion_factor_power_heat=0.2,
                                       pq_polygon =poly)
-        portf = eao.portfolio.Portfolio([m, a])
+        portf = eao.portfolio.Portfolio([m, a, h])
+        op = portf.setup_optim_problem(prices=data, timegrid=timegrid)
+        #### check limits for this setup
+        # power limits
+        ind = op.mapping[(op.mapping['asset']=='poly')&(op.mapping['node']=='node_power')&(op.mapping['type']=='d')].index.values
+        self.assertTrue(all(op.l[ind]==5))
+        self.assertTrue(all(op.u[ind]==10))
+        # heat limits
+        ind = op.mapping[(op.mapping['asset']=='poly')&(op.mapping['node']=='node_heat')&(op.mapping['type']=='d')].index.values
+        self.assertTrue(all(op.l[ind]==15))
+        self.assertTrue(all(op.u[ind]==25))
+        ##### optimize
         out   = eao.optimize(portf, timegrid, data)
-        return
+        self.assertTrue(out['summary']['status'] == 'not successful') # heat delivery cannot be met with given poly
 
+    def test_build_polygon_asset_tetra(self):
+        """ Unit test. PQ diagram given as polygon. tetraeder """
+        # most basic asset
+        node_power = eao.assets.Node('node_power')
+        node_heat  = eao.assets.Node('node_heat')
+        timegrid   = eao.assets.Timegrid(dt.date(2024,1,1), dt.date(2024,1,20), freq = 'h')
+        data = {'price': np.sin(np.linspace(0,20*np.pi, timegrid.T)),
+                'heat' : -5-25*(np.linspace(0,1, timegrid.T))}
+        # square
+        #        [P, Q]
+        poly = [[ 5, 5],
+                [10, 15],
+                [ 8, 25],
+                [ 6, 30]]
+        # no further restriction - instantaneous reaction to prices
+        m = eao.assets.SimpleContract(name = 'market', price='price', nodes = node_power, min_cap=-1000, max_cap=1000)
+        h = eao.assets.SimpleContract(name = 'heat', nodes = node_heat, min_cap='heat', max_cap='heat')
+        a = eao.assets.CHP_PQ_diagram(name='poly',
+                                      nodes = (node_power, node_heat),
+                                      min_cap=0.,
+                                      max_cap=500.,   # generous, restr only from poly!
+                                      conversion_factor_power_heat=0.2,
+                                      pq_polygon =poly)
+        portf = eao.portfolio.Portfolio([m, a, h])
+        ##### optimize
+        out   = eao.optimize(portf, timegrid, data)
+        x = out['dispatch']["poly (node_heat)"].values
+        y = out['dispatch']["poly (node_power)"].values
+        ### look at dispatch along edges
+        # import matplotlib.pyplot as plt
+        # fig, ax = plt.subplots()
+        # ax.scatter(x, y)
+        # fig.show()
+        #### test: any dispatch outside polygon?
+
+        # Ray tracing
+        def ray_tracing_method(x,y,poly):
+            n = len(poly)
+            inside = False
+            p1x,p1y = poly[0]
+            for i in range(n+1):
+                p2x,p2y = poly[i % n]
+                if y > min(p1y,p2y):
+                    if y <= max(p1y,p2y):
+                        if x <= max(p1x,p2x):
+                            if p1y != p2y:
+                                xints = (y-p1y)*(p2x-p1x)/(p2y-p1y)+p1x
+                            if p1x == p2x or x <= xints:
+                                inside = not inside
+                p1x,p1y = p2x,p2y
+            return inside
+
+        # import matplotlib.path as mplPath
+        # poly_path = mplPath.Path(poly)
+        for i in range(len(x)):
+            point = np.array([y[i], x[i]])
+            # print(point, " is in polygon: ", poly_path.contains_point(point))
+            print(point, " is in polygon: ", ray_tracing_method(y[i], x[i], poly))
+            #self.assertTrue(poly_path.contains_point(point), msg=f"point {point} not in polygon")
+        print(point, " is in polygon: ", poly_path.contains_point(point))
+
+        return
 
 ###########################################################################################################
 ###########################################################################################################

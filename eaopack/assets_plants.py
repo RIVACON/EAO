@@ -1187,30 +1187,33 @@ class CHP_PQ_diagram(CHPAsset):
             # looking at the restriction given by edge p(i) and p(i+1)
             a = self.pq_polygon[i]
             b = self.pq_polygon[(i+1) % n_poly]
+            print(a)
+            print(b)
             if (b[1]-a[1]) == 0:     # vertical in PQ, Q constant
                 #### effectively new minimum or maximum heat
-                if      ((a[0] < b[0]) and (poly_type == 1)) \
-                    or  ((a[0] > b[0]) and (poly_type == -1)) :  # increase minimum heat
+                if      ((a[0] < b[0]) and (poly_type == -1)) \
+                    or  ((a[0] > b[0]) and (poly_type ==  1)) :  # increase minimum heat
                     op.l[ind_heat] = np.maximum(op.l[ind_heat], np.ones(n)*a[1])
                 else:           #  reduce maximum heat
                     op.u[ind_heat] = np.minimum(op.u[ind_heat], np.ones(n)*a[1])
             elif (b[0]-a[0]) == 0:   # horizontal in PQ, P constant)
                     #### effectively new minimum or maximum power
-                    if      ((a[1] < b[1]) and (poly_type == 1)) \
-                        or  ((a[1] > b[1]) and (poly_type == -1)) :  # decrease maximum power
-                        op.u[ind_power] = np.minimum(op.u[ind_power], np.ones(n)*a[1])
+                    if      ((a[1] < b[1]) and (poly_type == -1)) \
+                        or  ((a[1] > b[1]) and (poly_type ==  1)) :  # decrease maximum power
+                        op.u[ind_power] = np.minimum(op.u[ind_power], np.ones(n)*a[0])
                     else:           #  increase minimum power
-                        op.l[ind_power] = np.maximum(op.l[ind_power], np.ones(n)*a[1])
+                        op.l[ind_power] = np.maximum(op.l[ind_power], np.ones(n)*a[0])
             else:  # determine line equation:  P = m_eq * Q + b_eq    
                 m_eq = (b[0]-a[0])/(b[1]-a[1])
                 b_eq = a[0] - m_eq*a[1]  # b = P1-mQ1
                 #### extend restrictions
                 myA = sp.hstack([sp.eye(n), -m_eq*sp.eye(n), sp.lil_matrix((n, m))])
                 myb = np.ones(n)*b_eq
-                if poly_type == 1:   # clockwise - upper boundary
-                    mytype = 'U'*n
-                else:                # counterclockwise - lower boundary
-                    mytype = 'L'*n
+                if      ((a[1] < b[1]) and (poly_type == -1)) \
+                    or  ((a[1] > b[1]) and (poly_type ==  1)) :
+                    mytype = 'U'*n 
+                else:
+                    mytype = 'L'*n 
                 #### stack
                 op.A      = sp.vstack((op.A, myA))
                 op.cType +=  mytype
