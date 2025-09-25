@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Linking Assets &mdash; EAO  documentation</title>
+  <title>Linking Assets - a very simple example &mdash; EAO  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -66,7 +66,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Linking Assets</li>
+      <li class="breadcrumb-item active">Linking Assets - a very simple example</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/samples/combined_heat_power/linkedAsset_sample.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -76,8 +76,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="Linking-Assets">
-<h1>Linking Assets<a class="headerlink" href="#Linking-Assets" title="Link to this heading"></a></h1>
+  <section id="Linking-Assets---a-very-simple-example">
+<h1>Linking Assets - a very simple example<a class="headerlink" href="#Linking-Assets---a-very-simple-example" title="Link to this heading"></a></h1>
 <p>The LinkedAsset class can link two Assets and wrap them as one asset with additional constraints.</p>
 <section id="Example-Portfolio">
 <h2>Example Portfolio<a class="headerlink" href="#Example-Portfolio" title="Link to this heading"></a></h2>
@@ -91,7 +91,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">eaopack.portfolio</span><span class="w"> </span><span class="kn">import</span> <span class="n">Portfolio</span><span class="p">,</span> <span class="n">LinkedAsset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eaopack.portfolio</span><span class="w"> </span><span class="kn">import</span> <span class="n">Portfolio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eaopack.assets</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinkedAsset</span>
 </pre></div>
 </div>
 </div>
@@ -99,7 +100,7 @@
 <section id="Defining-a-portfolio">
 <h3>Defining a portfolio<a class="headerlink" href="#Defining-a-portfolio" title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node_power</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;node_power&#39;</span><span class="p">)</span>
@@ -152,7 +153,13 @@
           <span class="p">}</span>
 
 <span class="n">linkedAsset_portfolio</span> <span class="o">=</span> <span class="n">Portfolio</span><span class="p">([</span><span class="n">chpasset1</span><span class="p">,</span> <span class="n">chpasset2</span><span class="p">])</span>
-<span class="n">linkedAsset</span> <span class="o">=</span> <span class="n">LinkedAsset</span><span class="p">(</span><span class="n">portfolio</span><span class="o">=</span><span class="n">linkedAsset_portfolio</span><span class="p">,</span> <span class="n">asset1_variable</span><span class="o">=</span><span class="p">(</span><span class="n">chpasset1</span><span class="p">,</span> <span class="s2">&quot;bool_on&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">asset2_variable</span><span class="o">=</span><span class="p">(</span><span class="n">chpasset2</span><span class="p">,</span> <span class="s2">&quot;bool_on&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;linkedAsset&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="p">[</span><span class="n">node_power</span><span class="p">,</span> <span class="n">node_heat</span><span class="p">,</span> <span class="n">node_gas</span><span class="p">],</span> <span class="n">time_back</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">time_forward</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">linkedAsset</span> <span class="o">=</span> <span class="n">LinkedAsset</span><span class="p">(</span><span class="n">portfolio</span><span class="o">=</span><span class="n">linkedAsset_portfolio</span><span class="p">,</span>
+                          <span class="n">asset1_variable</span><span class="o">=</span><span class="p">(</span><span class="n">chpasset1</span><span class="p">,</span> <span class="s2">&quot;bool_on&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                          <span class="n">asset2_variable</span><span class="o">=</span><span class="p">(</span><span class="n">chpasset2</span><span class="p">,</span> <span class="s2">&quot;bool_on&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                          <span class="n">name</span><span class="o">=</span><span class="s2">&quot;linkedAsset&quot;</span><span class="p">,</span>
+                          <span class="n">nodes</span><span class="o">=</span><span class="p">[</span><span class="n">node_power</span><span class="p">,</span> <span class="n">node_heat</span><span class="p">,</span> <span class="n">node_gas</span><span class="p">],</span>
+                          <span class="n">time_back</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                          <span class="n">time_forward</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="n">portfolio</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">linkedAsset</span><span class="p">,</span> <span class="n">simple_contract_power</span><span class="p">,</span> <span class="n">simple_contract_heat</span><span class="p">,</span> <span class="n">simple_contract_gas</span><span class="p">])</span>
 <span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">portfolio</span><span class="p">)</span>
@@ -174,7 +181,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">portfolio</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">prices</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">)</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;GLPK_MI&quot;</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
 <span class="c1"># res = op.optimize(solver=&quot;GLPK&quot;, make_soft_problem=True)  # Relax bool variables, i.e. allow &quot;half on&quot;</span>
 <span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">extract_output</span><span class="p">(</span><span class="n">portfolio</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">prices</span><span class="p">)</span>
 <span class="n">out</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">]</span>
