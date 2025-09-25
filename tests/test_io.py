@@ -177,7 +177,7 @@ class IOTests(unittest.TestCase):
 
         market = eao.assets.SimpleContract(max_cap=10, min_cap=-10, price='price', nodes = node_main, name = 'market')
         portf          = eao.portfolio.Portfolio([battery, charge, discharge])
-        struct_battery = eao.portfolio.StructuredAsset(name = 'xxxxx', portfolio= portf, nodes = node_main)
+        struct_battery = eao.assets.StructuredAsset(name = 'xxxxx', portfolio= portf, nodes = node_main)
         ## write to JSON
         eao.serialization.to_json(struct_battery, file_name=asset_file)
         ## get from JSON

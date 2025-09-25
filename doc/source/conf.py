@@ -23,8 +23,8 @@ sys.path.append(os.path.abspath('../samples/'))
 # -- Project information -----------------------------------------------------
 
 project = 'EAO'
-copyright = '2021'
-author = ''
+copyright = '2025'
+author = 'powered by RIVACON GmbH'
 
 
 # -- General configuration ---------------------------------------------------

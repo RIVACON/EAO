@@ -4,8 +4,36 @@ EAO package
 
 Assets
 ------------------------------------
+collecting all assets from various submodules
 
 .. automodule:: eaopack.assets
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Basic assets
+------------------------------------
+available via eaopack.assets
+
+.. automodule:: eaopack.assets_basic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Structured assets
+------------------------------------
+available via eaopack.assets
+
+.. automodule:: eaopack.assets_structured
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Power plant & CHP assets
+------------------------------------
+available via eaopack.assets
+
+.. automodule:: eaopack.assets_plants
    :members:
    :undoc-members:
    :show-inheritance:
