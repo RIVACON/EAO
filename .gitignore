@@ -45,3 +45,4 @@ coverage.json
 .coverage
 test_status.json
 notebooks_status.json
+/doc/source/_static
