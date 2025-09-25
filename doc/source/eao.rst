@@ -4,6 +4,7 @@ EAO package
 
 Assets
 ------------------------------------
+collecting all assets from various submodules
 
 .. automodule:: eaopack.assets
    :members:
@@ -12,6 +13,7 @@ Assets
 
 Basic assets
 ------------------------------------
+available via eaopack.assets
 
 .. automodule:: eaopack.assets_basic
    :members:
@@ -20,6 +22,7 @@ Basic assets
 
 Structured assets
 ------------------------------------
+available via eaopack.assets
 
 .. automodule:: eaopack.assets_structured
    :members:
@@ -28,6 +31,7 @@ Structured assets
 
 Power plant & CHP assets
 ------------------------------------
+available via eaopack.assets
 
 .. automodule:: eaopack.assets_plants
    :members:
