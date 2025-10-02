@@ -17,7 +17,7 @@ We found that the approach is useful for modeling very different problem setting
 
 Further information:
  - documentation along with several sample notebooks: [`EAO documentation`](https://RIVACON.github.io/EAO) 
- - extensive technical report: [`Report`](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3842822)
+ - extensive technical report: [`Report`](doc/source/EnergyAssetOptimization White Paper.pdf)
 
 Please feel free to contact us if you have questions or if you are interested in using EAO: [`Contact`](https://rivacon.com/kontakt/)
 
