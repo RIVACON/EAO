@@ -3,7 +3,8 @@ name: eao_env
 
 channels:
   - conda-forge
- #  - defaults
+  - nodefaults
+  #  - defaults
 
 dependencies:
   - python==3.13.7
