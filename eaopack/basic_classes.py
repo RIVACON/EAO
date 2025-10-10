@@ -202,9 +202,9 @@ class Timegrid:
             else:
                 prices.index = pd.to_datetime(prices.index)
         # check: time grid covered by data?
-        if prices.index.values[0]>self.timepoints[0]:
-            raise ValueError("Error: Data provided starts later than timegrid -- check input data")
-        if prices.index.values[-1]<self.timepoints[-1]:
+        if prices.index[0]>self.timepoints[0]:
+            raise ValueError("Error: Data provided starts later than timegrid -- check input data")            
+        if prices.index[-1]<self.timepoints[-1]:
             raise ValueError("Error: Data provided ends before timegrid -- check input data")        
         prices = prices.reindex(prices.index.union(self.timepoints))
         prices = prices.interpolate(method='time', limit_direction="both")

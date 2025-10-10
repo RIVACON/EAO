@@ -193,8 +193,22 @@ class TimeZones(unittest.TestCase):
         res = op.optimize()
         self.assertAlmostEqual(res.value, 50./4., 5)
 
-                       
+    def test_cast_from_df_tz(self):
+        """ test example from issue encountered (tz dataframe to grid)
+        """
+        Start = dt.datetime(2024, 2, 1)
+        End   = dt.datetime(2024, 2, 2)
+        Start = pd.Timestamp(Start).tz_localize('CET')
+        End   = pd.Timestamp(End).tz_localize('CET')
 
+        data      = pd.read_pickle('./tests/data_DAH_ID.pkl')
+        tg_dah = eao.basic_classes.Timegrid(start=Start, end=End, freq='h', timezone='CET')
+        #### cast to grid: there was an issue here:
+        p = tg_dah.prices_to_grid(data)   
+        self.assertAlmostEqual(data.loc['2024-02-01 00:00:00+01:00', 'id'], p.loc['2024-02-01 00:00:00+01:00', 'id'], 3)
+        self.assertAlmostEqual(data.loc['2024-02-01 02:00:00+01:00', 'id'], p.loc['2024-02-01 02:00:00+01:00', 'id'], 3)        
+        
+        
 ###########################################################################################################
 ###########################################################################################################
 ###########################################################################################################
