@@ -106,10 +106,10 @@ def make_slp(optim_problem:OptimProblem, portf:Portfolio, timegrid:Timegrid,  st
     optim_problem.A = sp.lil_matrix(optim_problem.A) # convert to subscriptable format 
     # Note: Check and ideally avoid any such conversion (agree on one format)
     # futures only matric
-    Af               = optim_problem.A[:, If]
+    Af               = optim_problem.A[:, If.values]
     # "present only" matrix -- set future elements to zero to decouply
     Ap               = optim_problem.A.copy()
-    Ap[:,If]         = 0.
+    Ap[:,If.values]         = 0.
     # start extending the matrix
     optim_problem.A  = sp.hstack((optim_problem.A, sp.lil_matrix((n, nS * n_f))))
     #### add  rows, that encode the same restriction as the orig. A for the orig. set - only with new set of future vars
