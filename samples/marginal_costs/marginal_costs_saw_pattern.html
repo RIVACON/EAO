@@ -1,0 +1,233 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marginal costs - basic concept and example &mdash; EAO  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=d2ebc91c" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/EAO_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../samples.html">Samples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../eao.html">EAO package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">EAO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Marginal costs - basic concept and example</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/samples/marginal_costs/marginal_costs_saw_pattern.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Marginal-costs---basic-concept-and-example">
+<h1>Marginal costs - basic concept and example<a class="headerlink" href="#Marginal-costs---basic-concept-and-example" title="Link to this heading"></a></h1>
+<p>In this sample, we illustrate the concept of marginal costs. We use a very simple portfolio of generation assets that are used to cover a given load. The marginal costs of the portfolio indicate at which prices it would be valuable to buy or sell electricity into / out of the portfolio.</p>
+<p>While the example portfolio is simple, the concept is valid for any other case of more complex portfolio or asset</p>
+</section>
+<section id="Some-prerequisites">
+<h1>Some prerequisites<a class="headerlink" href="#Some-prerequisites" title="Link to this heading"></a></h1>
+<section id="Basic-definitions">
+<h2>Basic definitions<a class="headerlink" href="#Basic-definitions" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eaopack.assets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Timegrid</span><span class="p">,</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">SimpleContract</span><span class="p">,</span> <span class="n">Plant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eaopack.portfolio</span><span class="w"> </span><span class="kn">import</span> <span class="n">Portfolio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Parameter-setting">
+<h2>Parameter setting<a class="headerlink" href="#Parameter-setting" title="Link to this heading"></a></h2>
+<p>Defining timegrid and main portfolio settings. Note that we do not explain the setup in detail. Please refer to the basic samples to understand the concepts and parameters</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[102]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Start</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">End</span>   <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">timegrid</span> <span class="o">=</span> <span class="n">Timegrid</span><span class="p">(</span><span class="n">Start</span><span class="p">,</span> <span class="n">End</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;15min&#39;</span><span class="p">)</span>
+<span class="n">node</span>  <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;node&#39;</span><span class="p">,</span> <span class="n">commodity</span><span class="o">=</span><span class="s1">&#39;power&#39;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;MWh&#39;</span><span class="p">)</span>
+<span class="c1"># very simple setup, working directly on the time grid. Alternatively we can use</span>
+<span class="c1"># dictionaries with start/end and values</span>
+<span class="n">load_profile</span>   <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="mi">15</span><span class="o">+</span><span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="mf">3.14</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">))))</span>
+<span class="c1"># capacities and costs of generation assets in portfolio</span>
+<span class="n">capacities</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">25</span><span class="p">]</span>
+<span class="n">costs</span>      <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Set-up-portfolio">
+<h1>Set up portfolio<a class="headerlink" href="#Set-up-portfolio" title="Link to this heading"></a></h1>
+<ol class="arabic simple">
+<li><p>a given load to cover</p></li>
+<li><p>generation assets with different production costs</p></li>
+</ol>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[117]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">assets</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">assets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Contract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="n">load_profile</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span> <span class="n">load_profile</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">node</span><span class="p">))</span>
+<span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">my_cap</span><span class="p">,</span> <span class="n">my_costs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">capacities</span><span class="p">,</span> <span class="n">costs</span><span class="p">):</span>
+        <span class="n">counter</span> <span class="o">+=</span><span class="mi">1</span>
+        <span class="n">myc</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># capacity of each contract</span>
+        <span class="n">assets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Plant</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;gen_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">counter</span><span class="p">),</span>
+                            <span class="n">nodes</span> <span class="o">=</span> <span class="n">node</span><span class="p">,</span>
+                            <span class="n">extra_costs</span> <span class="o">=</span> <span class="n">my_costs</span><span class="p">,</span>
+                            <span class="n">max_cap</span> <span class="o">=</span> <span class="n">my_cap</span><span class="p">,</span>
+                            <span class="n">min_cap</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                            <span class="n">ramp</span>    <span class="o">=</span> <span class="kc">None</span> <span class="c1"># 20% of capacity per hour</span>
+                            <span class="p">))</span>
+<span class="n">portf</span> <span class="o">=</span> <span class="n">Portfolio</span><span class="p">(</span><span class="n">assets</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Perform-the-optimization">
+<h1>Perform the optimization<a class="headerlink" href="#Perform-the-optimization" title="Link to this heading"></a></h1>
+<p>Setting up the optimization provlem ans solving. Note that in this setup no (market) prices are needed to solve the problem, as we try to cover the load at minimal costs</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[118]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">output</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Some minor manupulations to create nicer charts …</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[119]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;prices&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;nodal price: node&#39;</span><span class="p">:</span><span class="s1">&#39;nodal price&#39;</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="c1"># omit load (is given by sum of generation)</span>
+<span class="n">output</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;load&#39;</span><span class="p">],</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">output</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Create-charts-and-interpret-the-results">
+<h1>Create charts and interpret the results<a class="headerlink" href="#Create-charts-and-interpret-the-results" title="Link to this heading"></a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[120]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">rcdefaults</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">tight_layout</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">output</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">area</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">stacked</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">)</span>
+<span class="n">output</span><span class="p">[</span><span class="s1">&#39;prices&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Cumulative asset dispatch&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;MW&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Marginal production cost&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;€/MWh&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span> <span class="o">=</span> <span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="c1">#plt.savefig(file_chart)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/samples_marginal_costs_marginal_costs_saw_pattern_12_0.png" src="../../_images/samples_marginal_costs_marginal_costs_saw_pattern_12_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <div role="contentinfo">
+    <p>
+        &copy 2025 - <a href="https://rivacon.com/impressum/">Impressum</a>
+    </p>
+</div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
