@@ -19,11 +19,12 @@ jobs:
         with:
           auto-update-conda: true
           miniconda-version: "latest"
-          python-version: "3.12"
+          python-version: "3.13.7"
           activate-environment: eao_env
           environment-file: environment.yml
+          channels: conda-forge
+          conda-remove-defaults: "true"   
           use-only-actions-cli: true
-
       - name: Initialize conda and build the docs
         run: |
           conda init bash
