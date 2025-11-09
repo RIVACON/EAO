@@ -23,6 +23,7 @@ class CHPAsset(ea.Contract):
                  end:   dt.datetime = None,
                  wacc: float = 0,
                  price:str = None,
+                 heat_price:Union[float, StartEndValueDict, str] = None,
                  extra_costs: Union[float, StartEndValueDict, str] = 0.,
                  min_cap: Union[float, StartEndValueDict, str] = 0.,
                  max_cap: Union[float, StartEndValueDict, str] = 0.,
@@ -83,7 +84,8 @@ class CHPAsset(ea.Contract):
                               dict:  dict['start'] = np.array
                                      dict['end']   = np.array
                                      dict['values"] = np.array
-            price (str): Name of price vector for buying / selling
+            price (str): Name of price vector for power equivalent (power + conversion_factor*heat) produced
+            heat_price (float, dict, str): Price for heat produced. Defaults to None
             extra_costs (float, dict, str): extra costs added to price vector (in or out). Defaults to 0.
                                             float: constant value
                                             dict:  dict['start'] = array
@@ -124,7 +126,7 @@ class CHPAsset(ea.Contract):
                              interpolated to get values in the timegrids freq.
 
 
-            Optional: Explicit fuel consumption (e.g. gas) for multi-commodity simulation
+            Optional fuel: Explicit fuel consumption (e.g. gas) for multi-commodity simulation
                  start_fuel (float, dict, str): detaults to  0
                  fuel_efficiency (float, dict, str): defaults to 1
                  consumption_if_on (float, dict, str): defaults to 0
@@ -164,8 +166,9 @@ class CHPAsset(ea.Contract):
             else:
                 self.idx_nodes['fuel']  = None
 
-        self.conversion_factor_power_heat                = conversion_factor_power_heat
+        self.conversion_factor_power_heat   = conversion_factor_power_heat
         self.max_share_heat                 = max_share_heat
+        self.heat_price           = heat_price
         self.ramp                 = ramp
         self.start_costs          = start_costs
         self.running_costs        = running_costs
@@ -246,7 +249,7 @@ class CHPAsset(ea.Contract):
         start_ramp_upper_bounds = self.start_ramp_upper_bounds
         start_ramp_lower_bounds_heat = self.start_ramp_lower_bounds_heat
         start_ramp_upper_bounds_heat = self.start_ramp_upper_bounds_heat
-        shutdown_ramp_time = self.shutdown_ramp_time        
+        shutdown_ramp_time = self.shutdown_ramp_time
         shutdown_ramp_lower_bounds = self.shutdown_ramp_lower_bounds
         shutdown_ramp_upper_bounds = self.shutdown_ramp_upper_bounds
         shutdown_ramp_lower_bounds_heat = self.shutdown_ramp_lower_bounds_heat
@@ -289,8 +292,11 @@ class CHPAsset(ea.Contract):
         last_dispatch = self.last_dispatch * self.timegrid.restricted.dt[0]
 
         # Make vectors of input params:
-        start_costs = self.make_vector(self.start_costs, prices, default_value=0.)
-        running_costs = self.make_vector(self.running_costs, prices, default_value=0., convert=True)
+        if self.heat_price is None: heat_price = 0   # for simplicity convert None to 0
+        else:                       heat_price = self.heat_price
+        heat_price     = self.make_vector(heat_price,     prices, default_value=0.)
+        start_costs    = self.make_vector(self.start_costs,    prices, default_value=0.)
+        running_costs  = self.make_vector(self.running_costs,  prices, default_value=0., convert=True)
         max_share_heat = self.make_vector(self.max_share_heat, prices, default_value=1.)
         conversion_factor_power_heat = self.make_vector(self.conversion_factor_power_heat, prices, default_value=1.)
         if (self.idx_nodes['heat'] is not None): # heat note given
@@ -307,8 +313,9 @@ class CHPAsset(ea.Contract):
         else:
             c = op.c
         if (self.idx_nodes['heat'] is not None): # if heat node given
-            c = np.hstack([c, conversion_factor_power_heat * c])  # costs for power and heat dispatch
-
+            # costs for power and heat dispatch
+            # note that we are using c to act on the equivalent power production (i.e. power + conv*heat)
+            c = np.hstack([c, conversion_factor_power_heat * c + heat_price])  
         include_shutdown_variables = shutdown_ramp_time > 0 or start_ramp_time > 0
         include_start_variables = min_runtime > 1 or np.any(start_costs != 0) or start_ramp_time > 0 or shutdown_ramp_time > 0
         include_on_variables = include_start_variables or min_downtime > 1 or include_shutdown_variables or np.any(self.min_cap != 0.)
@@ -1209,9 +1216,9 @@ class CHP_PQ_diagram(CHPAsset):
                 myb = np.ones(n)*b_eq
                 if      ((a[1] < b[1]) and (poly_type == -1)) \
                     or  ((a[1] > b[1]) and (poly_type ==  1)) :
-                    mytype = 'U'*n 
+                    mytype = 'U'*n
                 else:
-                    mytype = 'L'*n 
+                    mytype = 'L'*n
                 #### stack
                 op.A      = sp.vstack((op.A, myA))
                 op.cType +=  mytype
