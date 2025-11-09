@@ -233,7 +233,7 @@ class Storage(Asset):
                 start   : Union[dt.datetime, pd.Timestamp, None] = None,
                 end     : Union[dt.datetime, pd.Timestamp, None] = None,
                 wacc    : float = 0.,
-                size    : Union[None, float] = None,
+                size    : Union[float, StartEndValueDict, str] = 0.,
                 cap_in  : Union[None, float] = None,
                 cap_out : Union[None, float] = None,
                 start_level: float = 0.,
@@ -270,7 +270,7 @@ class Storage(Asset):
             profile (pd.Series, optional):  If freq(asset) > freq(portf) assuming this profile for granular dispatch (e.g. scaling hourly profile to week).
                                             Defaults to None, only relevant if freq is not none
 
-            size (float): maximum volume of commodity in storage.
+            size (float, str, StartEndValueDict): Maximum volume of commodity in storage. Use str or StartEndValueDict for time dependency
             cap_in (float): Maximum flow rate for taking in a commodity
             cap_out (float): Maximum flow rate for taking in a commodity
             start_level (float, optional): Level of storage at start of optimization. Defaults to zero.
@@ -286,6 +286,7 @@ class Storage(Asset):
             eff_out: Efficiency taking out the commodity. Defaults to 1 (=100%)
 
             max_cycles_no   (float, optional): Maximum number of cycles the battery can perform. Defaults to None -- MIP!
+                                               In case a time-dependent size is chosen, max_cycles_no refers to the average size
             max_cycles_freq (str, optional): Frequency of the maximum number of cycles. Example: "d" for daily cycles. Defaults to 'd'
 
             inflow (float, optional): Constant rate of inflow volumes (flow in each time step. E.g. water inflow in hydro storage). Defaults to 0.
@@ -300,11 +301,13 @@ class Storage(Asset):
         self.size = size
         self.start_level = start_level
         self.end_level= end_level
-        assert start_level <= size, 'Storage --'+self.name+'--: start level must be <=  storage size'
+        if isinstance(size, float): # do not check if time dependent, otherwise not possible to check
+            assert start_level <= size, 'Storage --'+self.name+'--: start level must be <=  storage size'
         self.cap_in = cap_in
         self.cap_out = cap_out
-        assert cap_in  >=0, 'Storage --'+self.name+'--: cap_in must not be negative'
-        assert cap_out >=0, 'Storage --'+self.name+'--: cap_out must not be negative'
+        # check if constant value - otherwise not possible to check
+        if isinstance(cap_in,  float): assert cap_in  >=0, 'Storage --'+self.name+'--: cap_in must not be negative'
+        if isinstance(cap_out, float): assert cap_out >=0, 'Storage --'+self.name+'--: cap_out must not be negative'
         self.eff_in = eff_in
         self.eff_out = eff_out
         self.inflow = inflow
@@ -342,16 +345,14 @@ class Storage(Asset):
             self.set_timegrid(timegrid)
         # check: timegrid set?
         assert hasattr(self, 'timegrid'), 'Set timegrid of asset before creating optim problem. Asset: '+ self.name
-
         dt =  self.timegrid.restricted.dt
-
         if len(dt) == 0: # no overlap between timegrids, asset not active
             return OptimProblem(c=np.array([]),l=np.array([]), u=np.array([]), cType='', mapping =  pd.DataFrame(),
                                 timegrid = self.timegrid)
         n = self.timegrid.restricted.T # moved to Timegrid
-
-        ct = self.cap_out * dt #  Adjust capacity (unit is in vol/h)
-        cp = self.cap_in * dt  #  Adjust capacity (unit is in vol/h)
+        # capacities convert to arrays, adjusting capacity (unit is in vol/h) 
+        ct = self.make_vector(self.cap_out, prices, default_value=0., convert = True)
+        cp = self.make_vector(self.cap_in,  prices, default_value=0., convert = True)
         inflow  = np.cumsum(self.inflow*dt)
         discount = self.timegrid.restricted.discount_factors
 
@@ -383,6 +384,8 @@ class Storage(Asset):
         #       where N_t is the number of time steps after (t)
         # convert to costs per main time unit
 
+        # account for time dependent size and capa
+        size  = self.make_vector(self.size, prices, default_value=0.)
         if self.cost_store != 0:
             cost_store = self.cost_store * dt * discount
             cost_store = np.asarray([cost_store[ii:].sum() for ii in range(0,len(cost_store))] )
@@ -416,7 +419,7 @@ class Storage(Asset):
         if self.block_size is None:
             A = -sp.tril(np.ones((n,n),float))
             # Maximum: max volume not exceeded
-            b = (self.size-self.start_level)*np.ones(n) - inflow
+            b = (size-self.start_level) - inflow
             b[-1] = self.end_level - self.start_level   - inflow[-1]
             # Minimum: empty
             b_min     =  -self.start_level*np.ones(n,float) - inflow
@@ -458,7 +461,7 @@ class Storage(Asset):
                 else:
                     my_start = self.start_level
                 # Maximum: max volume not exceeded
-                parts_b = (self.size-my_start)*np.ones(diff) - inflow[a:a+diff]
+                parts_b = (size[a:a+diff]-my_start) - inflow[a:a+diff]
                 parts_b[-1] = self.end_level - my_start      - inflow[a+diff-1]
                 b[a:a+diff] = parts_b
                 # Minimum: empty
@@ -475,7 +478,7 @@ class Storage(Asset):
         ## add restrictions for max_cycles
         # quantity behind no of cycles
         if self.max_cycles_no is not None:
-            cycle_quant = self.max_cycles_no * self.size
+            cycle_quant = self.max_cycles_no * size.mean()   # in case of time-dependent size use mean
             ## create daterange for start / end of cycles
             try:   extra_time = pd.Timedelta(self.max_cycles_freq)
             except:extra_time = pd.Timedelta(1,self.max_cycles_freq)

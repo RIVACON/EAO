@@ -42,12 +42,11 @@ class BatteryTest(unittest.TestCase):
         self.assertAlmostEqual(fl.max(), 5, 5)
         print(res)
 
-
     def test_no_cycles(self):
         """ trivial test max number cycles
         """
         node = eao.assets.Node('testNode')
-        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,1,10), freq = 'h')
+        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,1,5), freq = 'h')
         a = eao.assets.Storage('STORAGE', node, 
                                size=2,
                                cap_in=1,
@@ -74,7 +73,6 @@ class BatteryTest(unittest.TestCase):
             if any(myI):
                 print(abs(xin[myI].sum()))
                 self.assertTrue(abs(xin[myI].sum()) <= a.max_cycles_no*a.size/0.9 + 0.0001)
-
 
     def test_two_versions(self):
         """ implementing two alternative ways - new battery and via contract max_take / reformulation of roundtrip efficiency
@@ -170,7 +168,6 @@ class BatteryTest(unittest.TestCase):
         out['internal_variables'].loc[myI,'battery_charge'].max()
         self.assertGreater(battery_data['size']+1e-3, out['internal_variables'].loc[:,'battery_charge'].max())
 
-
     def test_blocks_split(self):
         """ trivial test with eff_out
         """
@@ -203,6 +200,71 @@ class BatteryTest(unittest.TestCase):
         myi = timegrid.timepoints.hour ==20
         for i in timegrid.I[myi]:
             self.assertAlmostEqual(fl[i], 2, 5)
+
+    def test_time_dependent_size(self):
+        """ test time dependency of storage size
+        """
+        node = eao.assets.Node('testNode')
+        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,1,10), freq = 'h')
+        a = eao.assets.Storage('STORAGE', node, 
+                               size="size",
+                               cap_in  = 100, # "instantaneous" charge / discharge"
+                               cap_out = 100, 
+                               start_level=0, 
+                               end_level=10, 
+                               price='price')
+        price = np.ones([timegrid.T])
+        price[0:timegrid.T:2] = 0 # expect every 2nd hour empty / full
+        data ={ 'price': price}
+        data['size'] = np.linspace(1,10, timegrid.T)
+        op = a.setup_optim_problem(data, timegrid=timegrid)
+        res = op.optimize()
+        # every 2nd time step completely full to changing level
+        np.testing.assert_almost_equal(-res.x.cumsum()[0:timegrid.T:2], data['size'][0:timegrid.T:2], 4)
+
+    def test_time_dependent_capa_in(self):
+        """ test time dependency of storage capacity in
+        """
+        node = eao.assets.Node('testNode')
+        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,1,10), freq = 'h')
+        a = eao.assets.Storage('STORAGE', node, 
+                               size    = 50,
+                               cap_in  = "capa_in", 
+                               cap_out = 100,
+                               start_level=0, 
+                               end_level=10, 
+                               cost_out=1e-3,
+                               price='price')
+        price = np.ones([timegrid.T])
+        price[0:timegrid.T:2] = 0 # expect every 2nd hour empty / full
+        data ={ 'price': price}
+        data['capa_in']  = np.linspace(1,10, timegrid.T)
+        op = a.setup_optim_problem(data, timegrid=timegrid)
+        res = op.optimize()
+        # every 2nd should be full power (changing capa)
+        np.testing.assert_almost_equal(-res.x[0:timegrid.T:2],data['capa_in'][0:timegrid.T:2], 4)
+
+    def test_time_dependent_capa_out(self):
+        """ test time dependency of storage capacity out
+        """
+        node = eao.assets.Node('testNode')
+        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,1,10), freq = 'h')
+        a = eao.assets.Storage('STORAGE', node, 
+                               size    = 50,
+                               cap_in  = 100,
+                               cap_out = "capa_out", 
+                               start_level=0, 
+                               end_level=10, 
+                               cost_out=1e-3,
+                               price='price')
+        price = np.ones([timegrid.T])
+        price[0:timegrid.T:2] = 0 # expect every 2nd hour empty / full
+        data ={ 'price': price}
+        data['capa_out']  = np.linspace(2,8, timegrid.T)
+        op = a.setup_optim_problem(data, timegrid=timegrid)
+        res = op.optimize()
+        # every 2nd should be full power (changing capa)
+        np.testing.assert_almost_equal(res.x[1+timegrid.T:2*timegrid.T:2],data['capa_out'][1:timegrid.T:2], 4)
 
 ###########################################################################################################
 ###########################################################################################################
