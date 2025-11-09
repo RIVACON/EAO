@@ -1141,7 +1141,6 @@ class CHP_PQ_diagram(CHPAsset):
         assert self.shutdown_ramp_upper_bounds is None, 'In development. Start/shutdown ramps not implemented with PQ dependency. Use CHP Asset'
         assert self.shutdown_ramp_lower_bounds_heat is None, 'In development. Start/shutdown ramps not implemented with PQ dependency. Use CHP Asset'
         assert self.shutdown_ramp_upper_bounds_heat is None, 'In development. Start/shutdown ramps not implemented with PQ dependency. Use CHP Asset'
-        assert self.min_cap == 0, 'In development. Min_cap not implemented with PQ dependency. Use CHP Asset'
 
 
     @staticmethod

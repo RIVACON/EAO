@@ -1445,94 +1445,94 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
         self.assertEqual(a.pq_polygon, pp.assets[1].pq_polygon)
 
 
-    def test_PQ_CHP_with_start_ramps(self):
-        """ Unit test. PQ diagram given as polygon. tetraeder """
-        # most basic asset
-        node_power = eao.assets.Node('node_power')
-        node_heat  = eao.assets.Node('node_heat')
-        node_fuel  = eao.assets.Node('node_fuel')
+#     def test_PQ_CHP_with_start_ramps(self):
+#         """ Unit test. PQ diagram given as polygon. tetraeder """
+#         # most basic asset
+#         node_power = eao.assets.Node('node_power')
+#         node_heat  = eao.assets.Node('node_heat')
+#         node_fuel  = eao.assets.Node('node_fuel')
         
-        timegrid   = eao.assets.Timegrid(dt.date(2024,1,1), dt.date(2024,1,2), freq = 'h')
-        data = {'price': np.sin(np.linspace(0,20*np.pi, timegrid.T)),
-                'heat' : -5-25*(np.linspace(0,1, timegrid.T))*5}
-        # no further restriction - instantaneous reaction to prices
-        m = eao.assets.SimpleContract(name = 'market', price='price', nodes = node_power, min_cap=-1000, max_cap=1000)
-        h = eao.assets.SimpleContract(name = 'heat', nodes = node_heat, min_cap='heat', max_cap='heat')
-        g = eao.assets.SimpleContract(name = 'fuel', nodes = node_fuel, min_cap=-1000, max_cap=1000, price = 'price')
-        return ############################################## SKIP TEST
-        a = eao.assets.CHP_PQ_diagram(name="poly",
-                            min_cap = 200,
-                            max_cap = 600,
-                            nodes = [node_power, node_heat, node_fuel],
-                            fuel_efficiency = 0.75,
-                            conversion_factor_power_heat = 0.13,
-                            min_runtime = 0,
-                            start_ramp_lower_bounds = (330, 360),#(65, 78.0),
-                            start_ramp_upper_bounds = (350, 370),#(65, 78.0),
-                            # start_ramp_lower_bounds_heat = (0.0, 0.0),
-                            # start_ramp_upper_bounds_heat = (0.0, 0.0),
-                            # shutdown_ramp_lower_bounds = (75.0,),
-                            # shutdown_ramp_upper_bounds = (75.0,),
-                            # shutdown_ramp_lower_bounds_heat = (0.0,),
-                            # shutdown_ramp_upper_bounds_heat = (0.0,),
-                            start_costs=50,
-                            start_fuel=10,
-                            pq_polygon=[ [343.0, 0.0], [607.0,0.0] ,[537.0,300.0], [300.45, 199.5]]
-                            )
-        # In this test, the startup ramp does not violate the PQ restriction
-        # Do be seen, how to deal with cases, where start up ramps do that!
-        portf = eao.portfolio.Portfolio([m, a, h, g])
-        ##### optimize
+#         timegrid   = eao.assets.Timegrid(dt.date(2024,1,1), dt.date(2024,1,2), freq = 'h')
+#         data = {'price': np.sin(np.linspace(0,20*np.pi, timegrid.T)),
+#                 'heat' : -5-25*(np.linspace(0,1, timegrid.T))*5}
+#         # no further restriction - instantaneous reaction to prices
+#         m = eao.assets.SimpleContract(name = 'market', price='price', nodes = node_power, min_cap=-1000, max_cap=1000)
+#         h = eao.assets.SimpleContract(name = 'heat', nodes = node_heat, min_cap='heat', max_cap='heat')
+#         g = eao.assets.SimpleContract(name = 'fuel', nodes = node_fuel, min_cap=-1000, max_cap=1000, price = 'price')
+#         return ############################################## SKIP TEST
+#         a = eao.assets.CHP_PQ_diagram(name="poly",
+#                             min_cap = 200,
+#                             max_cap = 600,
+#                             nodes = [node_power, node_heat, node_fuel],
+#                             fuel_efficiency = 0.75,
+#                             conversion_factor_power_heat = 0.13,
+#                             min_runtime = 0,
+#                             start_ramp_lower_bounds = (330, 360),#(65, 78.0),
+#                             start_ramp_upper_bounds = (350, 370),#(65, 78.0),
+#                             # start_ramp_lower_bounds_heat = (0.0, 0.0),
+#                             # start_ramp_upper_bounds_heat = (0.0, 0.0),
+#                             # shutdown_ramp_lower_bounds = (75.0,),
+#                             # shutdown_ramp_upper_bounds = (75.0,),
+#                             # shutdown_ramp_lower_bounds_heat = (0.0,),
+#                             # shutdown_ramp_upper_bounds_heat = (0.0,),
+#                             start_costs=50,
+#                             start_fuel=10,
+#                             pq_polygon=[ [343.0, 0.0], [607.0,0.0] ,[537.0,300.0], [300.45, 199.5]]
+#                             )
+#         # In this test, the startup ramp does not violate the PQ restriction
+#         # Do be seen, how to deal with cases, where start up ramps do that!
+#         portf = eao.portfolio.Portfolio([m, a, h, g])
+#         ##### optimize
         
-        out   = eao.optimize(portf, timegrid, data)
-        # regression test - checked manually
-        self.assertAlmostEqual(out['dispatch'].loc["2024-01-01 00:00:00","poly (node_power)"], 342.1, 2)
-        self.assertAlmostEqual(out['dispatch'].loc["2024-01-01 00:00:00","poly (node_fuel)"], -467, 2)
-        self.assertAlmostEqual(out['dispatch'].loc["2024-01-01 00:00:00","poly (node_heat)"], 5, 2)
-        return
+#         out   = eao.optimize(portf, timegrid, data)
+#         # regression test - checked manually
+#         self.assertAlmostEqual(out['dispatch'].loc["2024-01-01 00:00:00","poly (node_power)"], 342.1, 2)
+#         self.assertAlmostEqual(out['dispatch'].loc["2024-01-01 00:00:00","poly (node_fuel)"], -467, 2)
+#         self.assertAlmostEqual(out['dispatch'].loc["2024-01-01 00:00:00","poly (node_heat)"], 5, 2)
+#         return
 
 
 
-    def test_trying_out(self):
-        """ Unit test. PQ diagram given as polygon. tetraeder """
-        # most basic asset
-        node_power = eao.assets.Node('node_power')
-        node_heat  = eao.assets.Node('node_heat')
-        node_fuel  = eao.assets.Node('node_fuel')
+#     def test_trying_out(self):
+#         """ Unit test. PQ diagram given as polygon. tetraeder """
+#         # most basic asset
+#         node_power = eao.assets.Node('node_power')
+#         node_heat  = eao.assets.Node('node_heat')
+#         node_fuel  = eao.assets.Node('node_fuel')
         
-        timegrid   = eao.assets.Timegrid(dt.date(2024,1,1), dt.date(2024,1,2), freq = 'h')
-        data = {'price': np.sin(np.linspace(0,20*np.pi, timegrid.T)),
-                'heat' : -5-25*(np.linspace(0,1, timegrid.T))*0} ### ZERO
-        # no further restriction - instantaneous reaction to prices
-        m = eao.assets.SimpleContract(name = 'market', price='price', nodes = node_power, min_cap=-1000, max_cap=1000)
-        h = eao.assets.SimpleContract(name = 'heat', nodes = node_heat, min_cap='heat', max_cap='heat')
-        g = eao.assets.SimpleContract(name = 'fuel', nodes = node_fuel, min_cap=-1000, max_cap=1000, price = 'price')
-        return ################################################## SKIP TEST                
-        a = eao.assets.CHP_PQ_diagram(name="poly",
-                            min_cap = 0#  200,
-                            max_cap = 600,
-                            nodes = [node_power, node_heat, node_fuel],
-                            fuel_efficiency = 0.75,
-                            conversion_factor_power_heat = 0.13,
-                            min_runtime = 0,
-#                            start_ramp_lower_bounds = (100, 360),#(65, 78.0),
-#                            start_ramp_upper_bounds = (120, 370),#(65, 78.0),
-                            # start_ramp_lower_bounds_heat = (0.0, 0.0),
-                            # start_ramp_upper_bounds_heat = (0.0, 0.0),
-                            # shutdown_ramp_lower_bounds = (75.0,),
-                            # shutdown_ramp_upper_bounds = (75.0,),
-                            # shutdown_ramp_lower_bounds_heat = (0.0,),
-                            # shutdown_ramp_upper_bounds_heat = (0.0,),
-                            start_costs=50,
-                            start_fuel=10,
-                            pq_polygon=[ [343.0, 0.0], [607.0,0.0] ,[537.0,300.0], [300.45, 199.5]]
-                            )
-        # In this test, the startup ramp does not violate the PQ restriction
-        # Do be seen, how to deal with cases, where start up ramps do that!
-        portf = eao.portfolio.Portfolio([m, a, h, g])
-        ##### optimize
-        out   = eao.optimize(portf, timegrid, data)
-        return
+#         timegrid   = eao.assets.Timegrid(dt.date(2024,1,1), dt.date(2024,1,2), freq = 'h')
+#         data = {'price': np.sin(np.linspace(0,20*np.pi, timegrid.T)),
+#                 'heat' : -5-25*(np.linspace(0,1, timegrid.T))*0} ### ZERO
+#         # no further restriction - instantaneous reaction to prices
+#         m = eao.assets.SimpleContract(name = 'market', price='price', nodes = node_power, min_cap=-1000, max_cap=1000)
+#         h = eao.assets.SimpleContract(name = 'heat', nodes = node_heat, min_cap='heat', max_cap='heat')
+#         g = eao.assets.SimpleContract(name = 'fuel', nodes = node_fuel, min_cap=-1000, max_cap=1000, price = 'price')
+#         return ################################################## SKIP TEST                
+#         a = eao.assets.CHP_PQ_diagram(name="poly",
+#                             min_cap = 0,#  200,
+#                             max_cap = 600,
+#                             nodes = [node_power, node_heat, node_fuel],
+#                             fuel_efficiency = 0.75,
+#                             conversion_factor_power_heat = 0.13,
+#                             min_runtime = 0,
+# #                            start_ramp_lower_bounds = (100, 360),#(65, 78.0),
+# #                            start_ramp_upper_bounds = (120, 370),#(65, 78.0),
+#                             # start_ramp_lower_bounds_heat = (0.0, 0.0),
+#                             # start_ramp_upper_bounds_heat = (0.0, 0.0),
+#                             # shutdown_ramp_lower_bounds = (75.0,),
+#                             # shutdown_ramp_upper_bounds = (75.0,),
+#                             # shutdown_ramp_lower_bounds_heat = (0.0,),
+#                             # shutdown_ramp_upper_bounds_heat = (0.0,),
+#                             start_costs=50,
+#                             start_fuel=10,
+#                             pq_polygon=[ [343.0, 0.0], [607.0,0.0] ,[537.0,300.0], [300.45, 199.5]]
+#                             )
+#         # In this test, the startup ramp does not violate the PQ restriction
+#         # Do be seen, how to deal with cases, where start up ramps do that!
+#         portf = eao.portfolio.Portfolio([m, a, h, g])
+#         ##### optimize
+#         out   = eao.optimize(portf, timegrid, data)
+#         return
 
 
 ###########################################################################################################
