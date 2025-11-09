@@ -57,7 +57,7 @@ class CHPAsset(ea.Contract):
                  consumption_if_on: Union[float, StartEndValueDict, str] = 0.,
                  _no_heat = False
                  ):
-        """ CHPContract: Generate heat and power
+        """ CHPAsset: Generate heat and power
             Restrictions
             - time dependent capacity restrictions
             - MinTake & MaxTake for a list of periods
