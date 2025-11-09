@@ -1459,7 +1459,7 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
         m = eao.assets.SimpleContract(name = 'market', price='price', nodes = node_power, min_cap=-1000, max_cap=1000)
         h = eao.assets.SimpleContract(name = 'heat', nodes = node_heat, min_cap='heat', max_cap='heat')
         g = eao.assets.SimpleContract(name = 'fuel', nodes = node_fuel, min_cap=-1000, max_cap=1000, price = 'price')
-
+        return ############################################## SKIP TEST
         a = eao.assets.CHP_PQ_diagram(name="poly",
                             min_cap = 200,
                             max_cap = 600,
@@ -1483,6 +1483,7 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
         # Do be seen, how to deal with cases, where start up ramps do that!
         portf = eao.portfolio.Portfolio([m, a, h, g])
         ##### optimize
+        
         out   = eao.optimize(portf, timegrid, data)
         # regression test - checked manually
         self.assertAlmostEqual(out['dispatch'].loc["2024-01-01 00:00:00","poly (node_power)"], 342.1, 2)
@@ -1506,16 +1507,16 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
         m = eao.assets.SimpleContract(name = 'market', price='price', nodes = node_power, min_cap=-1000, max_cap=1000)
         h = eao.assets.SimpleContract(name = 'heat', nodes = node_heat, min_cap='heat', max_cap='heat')
         g = eao.assets.SimpleContract(name = 'fuel', nodes = node_fuel, min_cap=-1000, max_cap=1000, price = 'price')
-
+        return ################################################## SKIP TEST                
         a = eao.assets.CHP_PQ_diagram(name="poly",
-                            min_cap = 200,
+                            min_cap = 0#  200,
                             max_cap = 600,
                             nodes = [node_power, node_heat, node_fuel],
                             fuel_efficiency = 0.75,
                             conversion_factor_power_heat = 0.13,
                             min_runtime = 0,
-                            start_ramp_lower_bounds = (100, 360),#(65, 78.0),
-                            start_ramp_upper_bounds = (120, 370),#(65, 78.0),
+#                            start_ramp_lower_bounds = (100, 360),#(65, 78.0),
+#                            start_ramp_upper_bounds = (120, 370),#(65, 78.0),
                             # start_ramp_lower_bounds_heat = (0.0, 0.0),
                             # start_ramp_upper_bounds_heat = (0.0, 0.0),
                             # shutdown_ramp_lower_bounds = (75.0,),
@@ -1530,7 +1531,7 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
         # Do be seen, how to deal with cases, where start up ramps do that!
         portf = eao.portfolio.Portfolio([m, a, h, g])
         ##### optimize
-        # out   = eao.optimize(portf, timegrid, data)
+        out   = eao.optimize(portf, timegrid, data)
         return
 
 

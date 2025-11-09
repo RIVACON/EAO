@@ -1131,9 +1131,18 @@ class CHP_PQ_diagram(CHPAsset):
                 print('Warning: max_share_heat given, but not needed when using PQ diagram. Think about removing it.')
             # heat node given?
             if self.idx_nodes['heat'] is None:
-                raise ValueError('Error - no heat node given, but pq_polygon given. Use Plant asset?')
-
+                raise ValueError('Error - no heat node given, but pq_polygon given. Use Plant asset instead.')
         self.pq_polygon = pq_polygon # add anyhon - if None OptimProblem of CHPAsset is used
+        
+        ### Still some things to implement. For the meanwhile do not allow some situations
+        assert self.start_ramp_lower_bounds is None, 'In development. Start/shutdown ramps not implemented with PQ dependency. Use CHP Asset'
+        assert self.start_ramp_upper_bounds is None, 'In development. Start/shutdown ramps not implemented with PQ dependency. Use CHP Asset'
+        assert self.shutdown_ramp_lower_bounds is None, 'In development. Start/shutdown ramps not implemented with PQ dependency. Use CHP Asset'
+        assert self.shutdown_ramp_upper_bounds is None, 'In development. Start/shutdown ramps not implemented with PQ dependency. Use CHP Asset'
+        assert self.shutdown_ramp_lower_bounds_heat is None, 'In development. Start/shutdown ramps not implemented with PQ dependency. Use CHP Asset'
+        assert self.shutdown_ramp_upper_bounds_heat is None, 'In development. Start/shutdown ramps not implemented with PQ dependency. Use CHP Asset'
+        assert self.min_cap == 0, 'In development. Min_cap not implemented with PQ dependency. Use CHP Asset'
+
 
     @staticmethod
     def _check_polygon(points:List[Union[List[float], np.ndarray]]) -> int:
