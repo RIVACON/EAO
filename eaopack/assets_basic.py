@@ -271,8 +271,8 @@ class Storage(Asset):
                                             Defaults to None, only relevant if freq is not none
 
             size (float, str, StartEndValueDict): Maximum volume of commodity in storage. Use str or StartEndValueDict for time dependency
-            cap_in (float): Maximum flow rate for taking in a commodity
-            cap_out (float): Maximum flow rate for taking in a commodity
+            cap_in (float, str, StartEndValueDict): Maximum flow rate for taking in a commodity. Use str or StartEndValueDict for time dependency
+            cap_out (float, str, StartEndValueDict): Maximum flow rate for taking in a commodity. Use str or StartEndValueDict for time dependency
             start_level (float, optional): Level of storage at start of optimization. Defaults to zero.
             end_level (float, optional):Level of storage at end of optimization. Defaults to zero.
             cost_out (float, optional): Cost for taking out volumes ($/volume). Defaults to 0.
