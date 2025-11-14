@@ -42,6 +42,22 @@ class AssetFrequency(unittest.TestCase):
         tot_dcf = np.around((a.dcf(op, res)).sum(), decimals = 3) # asset dcf, calculated independently
         check = check and (tot_dcf == np.around(res.value , decimals = 3))
         self.assertTrue(check)
+        
+    def test_freq_optimization_storage(self):
+        """ Unit test. Test asset with different granularity
+        """
+        node = eao.assets.Node('testNode')
+        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,2,1), freq = 'h')
+        a = eao.assets.Storage(name = 'SC', price = 'rand_price', nodes = node ,
+                        cap_in= 1., cap_out=1., size = 100,
+                        freq = 'd')
+        # solve optim problem
+        prices ={'rand_price': np.random.rand(timegrid.T)-0.5}
+        op = a.setup_optim_problem(prices, timegrid=timegrid)
+        res = op.optimize()
+        x = res.x.round(2)
+        p = prices['rand_price']
+        pass
 
     def test_freq_simple_portfolio(self):
         """ Unit test. Setting up a simple portfolio to check restrictions on nodes and

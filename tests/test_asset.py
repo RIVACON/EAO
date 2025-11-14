@@ -763,6 +763,49 @@ class TestOrderOrderBooks(unittest.TestCase):
         self.assertAlmostEqual(out['dispatch'].abs().sum().sum(), 192, 3) # recursion test
 
 
+class TestVarious(unittest.TestCase):
+    def test_availability(self):
+        """ Unit test. Test partly unavailable plant
+        """
+        node_power = eao.assets.Node('node_power')
+        node_heat = eao.assets.Node('node_heat')
+        node_gas = eao.assets.Node('node_gas')
+
+        Start = dt.date(2021, 1, 1)
+        End = dt.date(2021, 1, 10)
+        timegrid = eao.assets.Timegrid(Start, End, freq='h')
+
+        # simple case, no min run time
+        a = eao.assets.CHPAsset(name='CHP',
+                                nodes=(node_power, node_heat, node_gas),
+                                min_cap="min_capa",
+                                max_cap="max_capa",
+                                start_costs=1.,
+                                running_costs=5.,
+                                conversion_factor_power_heat= 0.2,
+                                max_share_heat= 1,
+                                start_fuel = 10,
+                                fuel_efficiency= .5,
+                                consumption_if_on= .1)
+        b = eao.assets.SimpleContract(name = 'powerMarket', price='price', nodes = node_power, min_cap=-100, max_cap=100)
+        c = eao.assets.SimpleContract(name = 'gasMarket', price='priceGas', nodes = node_gas, min_cap=-100, max_cap=100)
+        d = eao.assets.SimpleContract(name = 'heatMarket', price='priceGas', nodes = node_heat, min_cap=-100, max_cap=100)
+        data ={'price': 50.*np.ones(timegrid.T), 
+               'priceGas': 0.1*np.ones(timegrid.T),
+               'max_capa': 10*np.ones(timegrid.T),
+               'min_capa': 1*np.ones(timegrid.T)}
+        data['min_capa'][20:30] = 0
+        data['max_capa'][20:30] = 0
+        #prices['price'][0:5] = -100.
+        portf = eao.portfolio.Portfolio([a, b, c, d])
+        out = eao.optimize(portf, timegrid, data)
+        # op = portf.setup_optim_problem(prices, timegrid=timegrid)
+        # res = op.optimize()
+        # out = eao.io.extract_output(portf, op, res, prices)
+        self.assert( all(out['dispatch']['CHP (node_power)'].iloc[20:30]==0))
+        all(out['dispatch']['CHP (node_power)'].iloc[0:20]==10)
+        all(out['dispatch']['CHP (node_power)'].iloc[31:]==10)
+
 ###########################################################################################################
 ###########################################################################################################
 ###########################################################################################################
