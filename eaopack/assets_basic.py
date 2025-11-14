@@ -234,8 +234,8 @@ class Storage(Asset):
                 end     : Union[dt.datetime, pd.Timestamp, None] = None,
                 wacc    : float = 0.,
                 size    : Union[float, StartEndValueDict, str] = 0.,
-                cap_in  : Union[None, float] = None,
-                cap_out : Union[None, float] = None,
+                cap_in  : Union[float, StartEndValueDict, str] = None,
+                cap_out : Union[float, StartEndValueDict, str] = None,
                 start_level: float = 0.,
                 end_level:   float = 0.,
                 cost_out:    float = 0.,
@@ -835,9 +835,9 @@ class Transport(Asset):
                 wacc: float = 0,
                 costs_const:float = 0.,
                 costs_time_series:str = None,
-                min_cap:float = 0.,
-                max_cap:float = 0.,
-                efficiency: float = 1.,
+                min_cap:Union[float, StartEndValueDict, str] = 0.,
+                max_cap:Union[float, StartEndValueDict, str] = 0.,
+                efficiency: Union[float, StartEndValueDict, str] = 1.,
                 freq: str = None,
                 profile: pd.Series = None,
                 periodicity: str = None,
@@ -856,9 +856,9 @@ class Transport(Asset):
             profile (pd.Series, optional):  If freq(asset) > freq(portf) assuming this profile for granular dispatch (e.g. scaling hourly profile to week).
                                             Defaults to None, only relevant if freq is not none
 
-            min_cap (float) : Minimum flow/capacity for transporting (from node 1 to node 2)
-            max_cap (float) : Minimum flow/capacity for transporting (from node 1 to node 2)
-            efficiency (float): efficiency of transport. May be any positive float. Defaults to 1.
+            min_cap (float, str, StartEndValueDict) : Minimum flow/capacity for transporting (from node 1 to node 2)
+            max_cap (float, str, StartEndValueDict) : Minimum flow/capacity for transporting (from node 1 to node 2)
+            efficiency (float, str, StartEndValueDict): efficiency of transport. May be any positive float. Defaults to 1.
             costs_time_series (str): Name of cost vector for transporting. Defaults to None
             costs_const (float, optional): extra costs added to price vector (in or out). Defaults to 0.
 
@@ -872,7 +872,8 @@ class Transport(Asset):
         self.max_cap = max_cap
         self.costs_const = costs_const
         self.costs_time_series = costs_time_series
-        assert efficiency > 0., 'efficiency of transport must be chosen to be positive ('+name+')'
+        if isinstance(efficiency, float):
+            assert efficiency > 0., 'efficiency of transport must be chosen to be positive ('+name+')'
         self.efficiency = efficiency
         #### periodicity
         assert not ((periodicity_duration is not None) and (periodicity is None)), 'Cannot have periodicity duration not none and periodicity none'
@@ -924,17 +925,20 @@ class Transport(Asset):
             else: # simply restrict prices to  asset time window
                 costs_time_series           = costs_time_series[I]
         # Make vector of single min/max capacities.
-        if isinstance(self.max_cap, (float, int)):
-            max_cap = self.max_cap*np.ones(T)
-        else: # given in form of dict (start/end/values)
-            max_cap = timegrid.restricted.values_to_grid(self.max_cap)
-        if isinstance(self.min_cap, (float, int)):
-            min_cap = self.min_cap*np.ones(T)
-        else: # given in form of dict (start/end/values)
-            min_cap = timegrid.restricted.values_to_grid(self.min_cap)
-        # need to scale to discretization step since: flow * dT = volume in time step
-        min_cap = min_cap * self.timegrid.restricted.dt
-        max_cap = max_cap * self.timegrid.restricted.dt
+        max_cap    = self.make_vector(self.max_cap,  prices, default_value=0., convert = True)
+        min_cap    = self.make_vector(self.min_cap,  prices, default_value=0., convert = True)
+        efficiency = self.make_vector(self.efficiency,  prices, default_value=1., convert = False)
+        # if isinstance(self.max_cap, (float, int)):
+        #     max_cap = self.max_cap*np.ones(T)
+        # else: # given in form of dict (start/end/values)
+        #     max_cap = timegrid.restricted.values_to_grid(self.max_cap)
+        # if isinstance(self.min_cap, (float, int)):
+        #     min_cap = self.min_cap*np.ones(T)
+        # else: # given in form of dict (start/end/values)
+        #     min_cap = timegrid.restricted.values_to_grid(self.min_cap)
+        # # need to scale to discretization step since: flow * dT = volume in time step
+        # min_cap = min_cap * self.timegrid.restricted.dt
+        # max_cap = max_cap * self.timegrid.restricted.dt
 
 
         mapping = pd.DataFrame() ## mapping of variables for use in portfolio
@@ -970,7 +974,7 @@ class Transport(Asset):
             # first set belongs to node 1, second to node 2
             mapping['node']        = np.vstack((np.tile(self.nodes[0].name, (T,1)),np.tile(self.nodes[1].name, (T,1))))
             # specific column that implements the efficiency  x (node 1) ---> eff.x (node 2)
-            mapping['disp_factor'] = np.hstack((-np.ones(T),np.ones(T)*self.efficiency))
+            mapping['disp_factor'] = np.hstack((-np.ones(T),efficiency))
             mapping['var_name']  = 'disp' # name variables for use e.g. in RI
         else:
             raise NotImplementedError('For transport all capacities mus be positive or all negative for clarity purpose. Please use two transport assets')
@@ -1336,9 +1340,9 @@ class ExtendedTransport(Transport):
                 wacc: float = 0,
                 costs_const:float = 0.,
                 costs_time_series:str = None,
-                min_cap:float = 0.,
-                max_cap:float = 0.,
-                efficiency: float = 1.,
+                min_cap:Union[float, StartEndValueDict, str] = 0.,
+                max_cap:Union[float, StartEndValueDict, str] = 0.,
+                efficiency: Union[float, StartEndValueDict, str] = 1.,
                 min_take: StartEndValueDict = None,
                 max_take: StartEndValueDict = None,
                 freq: str = None,
@@ -1358,9 +1362,9 @@ class ExtendedTransport(Transport):
             profile (pd.Series, optional):  If freq(asset) > freq(portf) assuming this profile for granular dispatch (e.g. scaling hourly profile to week).
                                             Defaults to None, only relevant if freq is not none
 
-            min_cap (float) : Minimum flow/capacity for transporting (from node 1 to node 2)
-            max_cap (float) : Minimum flow/capacity for transporting (from node 1 to node 2)
-            efficiency (float): efficiency of transport. May be any positive float. Defaults to 1.
+            min_cap (float, str, StartEndValueDict) : Minimum flow/capacity for transporting (from node 1 to node 2)
+            max_cap (float, str, StartEndValueDict) : Minimum flow/capacity for transporting (from node 1 to node 2)
+            efficiency (float, str, StartEndValueDict): efficiency of transport. May be any positive float. Defaults to 1.
             costs_time_series (str): Name of cost vector for transporting. Defaults to None
             costs_const (float, optional): extra costs added to price vector (in or out). Defaults to 0.
 
