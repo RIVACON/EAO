@@ -338,6 +338,52 @@ class TransportTest(unittest.TestCase):
         op = portf.setup_optim_problem(prices, timegrid)
         res = op.optimize()
         self.assertAlmostEqual(res.value, 10*(9.5-1), 5) # buy one (at price 1), get 0.95 out (at price 10) for each day
+        
+    def test_transport_vector(self):
+        """ Unit test. Setting up transport with random costs. Vectorized capa
+        """
+        node1a = eao.assets.Node('N1a')
+        node1b = eao.assets.Node('N1b')
+        node2 = eao.assets.Node('N2')
+        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,1,11), freq = 'd', main_time_unit='d')
+        prices ={'buy': np.ones(timegrid.T), 
+                 'sell': 10.*np.ones(timegrid.T),
+                 'capa': np.linspace(1,2,timegrid.T) }
+        trans = eao.assets.Transport(name = 'TrA', nodes = [node1a, node2],
+                        min_cap= "capa", max_cap="capa", efficiency = 1)
+        buy  = eao.assets.SimpleContract(name = 'buya', price = 'buy', max_cap = 100, nodes = node1a  )
+        sell = eao.assets.SimpleContract(name = 'sell', price = 'sell', min_cap = -100, nodes = node2  )
+
+        portf = eao.portfolio.Portfolio([trans, buy, sell])
+        #op = portf.setup_optim_problem(prices, timegrid)
+        #res = op.optimize()
+        out = eao.optimize(portf, timegrid, prices)
+        # I should get back the capa
+        np.testing.assert_almost_equal(out['dispatch']["TrA (N2)"],prices['capa'],2)
+        
+    def test_transport_vector_eff(self):
+        """ Unit test. Setting up transport with random costs. Vectorized capa
+        """
+        node1a = eao.assets.Node('N1a')
+        node1b = eao.assets.Node('N1b')
+        node2 = eao.assets.Node('N2')
+        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,1,11), freq = 'd', main_time_unit='d')
+        prices ={'buy': np.ones(timegrid.T), 
+                 'sell': 10.*np.ones(timegrid.T),
+                 'eff': np.linspace(1,2,timegrid.T) }
+        trans = eao.assets.Transport(name = 'TrA', nodes = [node1a, node2],
+                        min_cap= 0, max_cap=1, efficiency = "eff")
+        buy  = eao.assets.SimpleContract(name = 'buya', price = 'buy', max_cap = 100, nodes = node1a  )
+        sell = eao.assets.SimpleContract(name = 'sell', price = 'sell', min_cap = -100, nodes = node2  )
+
+        portf = eao.portfolio.Portfolio([trans, buy, sell])
+        #op = portf.setup_optim_problem(prices, timegrid)
+        #res = op.optimize()
+        out = eao.optimize(portf, timegrid, prices)
+        # I should get back the capa
+        np.testing.assert_almost_equal(out['dispatch']["TrA (N2)"],prices['eff'],2)   
+        np.testing.assert_almost_equal(out['dispatch']["TrA (N1a)"],-np.ones(timegrid.T),2)   
+        
 
 class ContractTest(unittest.TestCase):
     def test_max_cap_vector(self):
@@ -762,6 +808,49 @@ class TestOrderOrderBooks(unittest.TestCase):
         out = eao.io.extract_output(portf= portf, op=op, res=res)
         self.assertAlmostEqual(out['dispatch'].abs().sum().sum(), 192, 3) # recursion test
 
+
+class TestVarious(unittest.TestCase):
+    def test_availability(self):
+        """ Unit test. Test partly unavailable plant
+        """
+        node_power = eao.assets.Node('node_power')
+        node_heat = eao.assets.Node('node_heat')
+        node_gas = eao.assets.Node('node_gas')
+
+        Start = dt.date(2021, 1, 1)
+        End = dt.date(2021, 1, 10)
+        timegrid = eao.assets.Timegrid(Start, End, freq='h')
+
+        # simple case, no min run time
+        a = eao.assets.CHPAsset(name='CHP',
+                                nodes=(node_power, node_heat, node_gas),
+                                min_cap="min_capa",
+                                max_cap="max_capa",
+                                start_costs=1.,
+                                running_costs=5.,
+                                conversion_factor_power_heat= 0.2,
+                                max_share_heat= 1,
+                                start_fuel = 10,
+                                fuel_efficiency= .5,
+                                consumption_if_on= .1)
+        b = eao.assets.SimpleContract(name = 'powerMarket', price='price', nodes = node_power, min_cap=-100, max_cap=100)
+        c = eao.assets.SimpleContract(name = 'gasMarket', price='priceGas', nodes = node_gas, min_cap=-100, max_cap=100)
+        d = eao.assets.SimpleContract(name = 'heatMarket', price='priceGas', nodes = node_heat, min_cap=-100, max_cap=100)
+        data ={'price': 50.*np.ones(timegrid.T), 
+               'priceGas': 0.1*np.ones(timegrid.T),
+               'max_capa': 10*np.ones(timegrid.T),
+               'min_capa': 1*np.ones(timegrid.T)}
+        data['min_capa'][20:30] = 0
+        data['max_capa'][20:30] = 0
+        #prices['price'][0:5] = -100.
+        portf = eao.portfolio.Portfolio([a, b, c, d])
+        out = eao.optimize(portf, timegrid, data)
+        # op = portf.setup_optim_problem(prices, timegrid=timegrid)
+        # res = op.optimize()
+        # out = eao.io.extract_output(portf, op, res, prices)
+        self.assertTrue( all(out['dispatch']['CHP (node_power)'].iloc[20:30]==0))
+        all(out['dispatch']['CHP (node_power)'].iloc[0:20]==10)
+        all(out['dispatch']['CHP (node_power)'].iloc[31:]==10)
 
 ###########################################################################################################
 ###########################################################################################################

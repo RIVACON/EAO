@@ -1182,6 +1182,9 @@ class CHP_PQ_diagram(CHPAsset):
             OptimProblem: Optimization problem to be used by optimizer
         """
         op = super().setup_optim_problem(prices=prices, timegrid=timegrid, costs_only=costs_only)
+        if costs_only:
+            return op
+        
         if self.pq_polygon is None:
             return op    # return as is - no polygon given
         poly_type = self._check_polygon(self.pq_polygon)
