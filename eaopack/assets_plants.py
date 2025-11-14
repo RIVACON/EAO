@@ -339,8 +339,8 @@ class CHPAsset(ea.Contract):
         assert np.all(min_cap >= 0.), 'min_cap has to be greater or equal to 0. Asset: ' + self.name
         assert np.all(max_cap >= 0.), 'max_cap has to be greater or equal to 0. Asset: ' + self.name
 
-        # Check that if include_on_variables is True, the minimum capacity is not 0. Otherwise the "on" variables cannot be computed correctly.
-        if np.any(min_cap == 0) and include_on_variables:
+        # Check that if include_on_variables is True, the minimum capacity is not 0 (while max_cap is not also 0). Otherwise the "on" variables cannot be computed correctly.
+        if np.any((min_cap == 0)&(min_cap > 0)) and include_on_variables:
             print("Warning for asset " + self.name + ": The minimum capacity is 0 at some point and 'on'-variables are included" 
                   ". This can lead to incorrect 'on' and 'start' variables. "
                   "To prevent this either set min_cap>0 or set min_runtime=0 and start_costs=0 and start_fuel=0"
@@ -361,7 +361,7 @@ class CHPAsset(ea.Contract):
             op = self._add_dispatch_variables(op, conversion_factor_power_heat, max_cap, max_share_heat)
 
         # Add on-, start-, and shutdown-variables:
-        op = self._add_bool_variables(op, include_on_variables, include_start_variables, include_shutdown_variables)
+        op = self._add_bool_variables(op, include_on_variables, include_start_variables, include_shutdown_variables, max_cap)
 
         # Minimum and maximum capacity:
         op = self._add_constraints_for_min_and_max_cap(op, min_cap, max_cap, time_already_running,
@@ -466,7 +466,7 @@ class CHPAsset(ea.Contract):
 
         return op
 
-    def _add_bool_variables(self, op, include_on_variables, include_start_variables, include_shutdown_variables):
+    def _add_bool_variables(self, op, include_on_variables, include_start_variables, include_shutdown_variables, max_cap):
         """ Add the bool variables for 'on', 'start' and 'shutdown' to the OptimProblem op if needed """
         # Add on variables
         if include_on_variables:
@@ -485,8 +485,12 @@ class CHPAsset(ea.Contract):
             op.A = sp.hstack((op.A, sp.lil_matrix((op.A.shape[0], len(map_bool)))))
 
             # set lower and upper bounds:
+            ## upper and lower bounds are (0,1)
+            ## exception: where max_cap = 0 enforce "off" mode (no avoiding of start costs, running at 0)
             op.l = np.hstack((op.l, np.zeros(self.timegrid.restricted.T)))
-            op.u = np.hstack((op.u, np.ones(self.timegrid.restricted.T)))
+            u = np.ones(self.timegrid.restricted.T)
+            u[max_cap==0] = 0
+            op.u = np.hstack((op.u, u))
 
             # Add start variables
             if include_start_variables:
