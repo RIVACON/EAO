@@ -463,7 +463,7 @@ class SplitOptimProblem(OptimProblem):
         for op in self.ops:
             res_tmp = op.optimize(*args, **kwargs)
             if isinstance(res_tmp, str):
-                raise ValueError("Problem infeasible on one of the defined time blocks.")
+                return res_tmp # return only "infeasible" message
             else:
                 res.value += res_tmp.value            
             res.x = np.hstack((res.x, res_tmp.x))
