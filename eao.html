@@ -1095,7 +1095,8 @@ dict[‘values”] = array</p>
 <li><p><strong>periodicity</strong> (<em>str</em><em>, </em><em>pd freq style</em>) – Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)</p></li>
 <li><p><strong>periodicity_duration</strong> (<em>str</em><em>, </em><em>pd freq style</em>) – Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)</p></li>
 <li><p><strong>conversion_factor_power_heat</strong> (<em>float</em><em>, </em><em>dict</em><em>, </em><em>str</em>) – Conversion efficiency from heat to power. Defaults to 1.</p></li>
-<li><p><strong>max_share_heat</strong> (<em>float</em><em>, </em><em>dict</em><em>, </em><em>str</em>) – Defines upper bound for the heat dispatch as a percentage of the power dispatch. Defaults to 1.</p></li>
+<li><p><strong>max_share_heat</strong> (<em>float</em><em>, </em><em>dict</em><em>, </em><em>str</em>) – Defines upper bound for the heat dispatch as a percentage of the power dispatch.
+I.e. max dispatch heat = max_share_heat * power dispatch. Defaults to None (no restriction).</p></li>
 <li><p><strong>ramp</strong> (<em>float</em>) – Maximum increase/decrease of virtual dispatch (power + conversion_factor_power_heat * heat) in one main time unit). Defaults to None.</p></li>
 <li><p><strong>start_costs</strong> (<em>float</em>) – Costs for starting. Defaults to 0.</p></li>
 <li><p><strong>running_costs</strong> (<em>float</em>) – Costs when on. Defaults to 0.</p></li>
