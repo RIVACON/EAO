@@ -95,7 +95,8 @@ class CHPAsset(ea.Contract):
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
             conversion_factor_power_heat (float, dict, str): Conversion efficiency from heat to power. Defaults to 1.
-            max_share_heat (float, dict, str): Defines upper bound for the heat dispatch as a percentage of the power dispatch. Defaults to 1.
+            max_share_heat (float, dict, str): Defines upper bound for the heat dispatch as a percentage of the power dispatch. 
+                                               I.e. max dispatch heat = max_share_heat * power dispatch. Defaults to None (no restriction).
             ramp (float): Maximum increase/decrease of virtual dispatch (power + conversion_factor_power_heat * heat) in one main time unit). Defaults to None.
             start_costs (float): Costs for starting. Defaults to 0.
             running_costs (float): Costs when on. Defaults to 0.
@@ -297,7 +298,9 @@ class CHPAsset(ea.Contract):
         heat_price     = self.make_vector(heat_price,     prices, default_value=0.)
         start_costs    = self.make_vector(self.start_costs,    prices, default_value=0.)
         running_costs  = self.make_vector(self.running_costs,  prices, default_value=0., convert=True)
-        max_share_heat = self.make_vector(self.max_share_heat, prices, default_value=1.)
+        max_share_heat = self.max_share_heat
+        if max_share_heat is not None:
+            max_share_heat = self.make_vector(max_share_heat, prices, default_value=1.)
         conversion_factor_power_heat = self.make_vector(self.conversion_factor_power_heat, prices, default_value=1.)
         if (self.idx_nodes['heat'] is not None): # heat note given
             assert np.all(conversion_factor_power_heat != 0), 'conversion_factor_power_heat must not be zero. Asset: ' + self.name
@@ -1192,7 +1195,7 @@ class CHP_PQ_diagram(CHPAsset):
         if self.pq_polygon is None:
             return op    # return as is - no polygon given
         poly_type = self._check_polygon(self.pq_polygon)
-        assert poly_type != 0, 'Implementation error - polygon not convex, should have been caught before'
+        assert poly_type != 0, 'Error - PQ diagram polygon is not convex'
         # add polygon restriction
         n_poly = len(self.pq_polygon)
         # get node names and indices of dispatch variables
@@ -1201,42 +1204,92 @@ class CHP_PQ_diagram(CHPAsset):
         ind_power = op.mapping.loc[(op.mapping['node'] == n_power) & (op.mapping['type'] == 'd')].index
         ind_heat  = op.mapping.loc[(op.mapping['node'] == n_heat)  & (op.mapping['type'] == 'd')].index
         assert len(ind_power) == len(ind_heat) == self.timegrid.restricted.T, 'Implementation error - number of dispatch variables not correct'
-        n = len(ind_power) 
+        n = len(ind_power)
         m = op.A.shape[1]-2*n
         assert op.A.shape[1]-2*n >=0, 'Implementation error - number of variables not correct'
-
-        for i in range(n_poly):  # loop over all edges
+        # take care of the "on" variables if existing
+        ### plant may have dispatch of zero (even if polygon given)
+        has_on = hasattr(self, "on_idx")
+#        if has_on: raise NotImplementedError('In development')
+            # A_lower_bounds = sp.lil_matrix((self.n, op.A.shape[1]))
+            # A_lower_bounds[i, i] = 1
+            # var = op.mapping.iloc[i]
+            # if include_on_variables:
+            #     A_lower_bounds[i, self.on_idx + var["time_step"] - starting_timestep] = - min_cap[i]        
+        # if has_on variables --> the pq restriction could have been integrated in the restrictions built with CHPAsset
+        # we may lose performance, but integration will be very cumbersome
+        if has_on: 
+            # min_cap = self.make_vector(self.min_cap, prices, convert=True)
+            ind_on  = range(self.on_idx, self.n+self.on_idx)
+        for iP in range(n_poly):  # loop over all edges
             # looking at the restriction given by edge p(i) and p(i+1)
-            a = self.pq_polygon[i]
-            b = self.pq_polygon[(i+1) % n_poly]
+            a = self.pq_polygon[iP]
+            b = self.pq_polygon[(iP+1) % n_poly]
             if (b[1]-a[1]) == 0:     # vertical in PQ, Q constant
                 #### effectively new minimum or maximum heat
                 if      ((a[0] < b[0]) and (poly_type == -1)) \
                     or  ((a[0] > b[0]) and (poly_type ==  1)) :  # increase minimum heat
-                    op.l[ind_heat] = np.maximum(op.l[ind_heat], np.ones(n)*a[1])
+                    if not has_on:
+                        op.l[ind_heat] = np.maximum(op.l[ind_heat], np.ones(n)*a[1])
+                    else:
+                        A_lower_bounds = sp.lil_matrix((self.n, op.A.shape[1]))
+                        for i in range(0, self.n):
+                            A_lower_bounds[i, ind_heat[i]] = 1
+                            A_lower_bounds[i, ind_on[i]] = - a[1]
+                        op.A = sp.vstack((op.A, A_lower_bounds))
+                        op.cType += 'L'*self.n
+                        op.b = np.hstack((op.b, np.zeros(self.n)))
                 else:           #  reduce maximum heat
                     op.u[ind_heat] = np.minimum(op.u[ind_heat], np.ones(n)*a[1])
             elif (b[0]-a[0]) == 0:   # horizontal in PQ, P constant)
-                    #### effectively new minimum or maximum power
-                    if      ((a[1] < b[1]) and (poly_type == -1)) \
-                        or  ((a[1] > b[1]) and (poly_type ==  1)) :  # decrease maximum power
-                        op.u[ind_power] = np.minimum(op.u[ind_power], np.ones(n)*a[0])
-                    else:           #  increase minimum power
+                #### effectively new minimum or maximum power
+                if      ((a[1] < b[1]) and (poly_type == -1)) \
+                    or  ((a[1] > b[1]) and (poly_type ==  1)) :  # decrease maximum power
+                    op.u[ind_power] = np.minimum(op.u[ind_power], np.ones(n)*a[0])
+                else:           #  increase minimum power
+                    if not has_on:
                         op.l[ind_power] = np.maximum(op.l[ind_power], np.ones(n)*a[0])
-            else:  # determine line equation:  P = m_eq * Q + b_eq    
+                    else:
+                        A_lower_bounds = sp.lil_matrix((self.n, op.A.shape[1]))
+                        for i in range(0, self.n):
+                            A_lower_bounds[i, ind_power[i]] = 1
+                            A_lower_bounds[i, ind_on[i]] = - a[0]
+                        op.A = sp.vstack((op.A, A_lower_bounds))
+                        op.cType += 'L'*self.n
+                        op.b = np.hstack((op.b, np.zeros(self.n)))
+            else:  # determine line equation:  P = m_eq * Q + b_eq
                 m_eq = (b[0]-a[0])/(b[1]-a[1])
                 b_eq = a[0] - m_eq*a[1]  # b = P1-mQ1
-                #### extend restrictions
-                myA = sp.hstack([sp.eye(n), -m_eq*sp.eye(n), sp.lil_matrix((n, m))])
-                myb = np.ones(n)*b_eq
-                if      ((a[1] < b[1]) and (poly_type == -1)) \
-                    or  ((a[1] > b[1]) and (poly_type ==  1)) :
-                    mytype = 'U'*n
-                else:
-                    mytype = 'L'*n
-                #### stack
-                op.A      = sp.vstack((op.A, myA))
-                op.cType +=  mytype
-                op.b = np.hstack((op.b, myb))
+                if not has_on: # no on variables 
+                    #### extend restrictions
+                    myA = sp.hstack([sp.eye(n), -m_eq*sp.eye(n), sp.lil_matrix((n, m))])
+                    myb = np.ones(n)*b_eq
+                    if      ((a[1] < b[1]) and (poly_type == -1)) \
+                        or  ((a[1] > b[1]) and (poly_type ==  1)) :
+                        mytype = 'U'*n
+                    else:
+                        mytype = 'L'*n
+                    #### stack
+                    op.A      = sp.vstack((op.A, myA))
+                    op.cType +=  mytype
+                    op.b = np.hstack((op.b, myb))                                                       
+                else: # nas on-variables
+                    #### extend restrictions
+                    if      ((a[1] < b[1]) and (poly_type == -1)) \
+                        or  ((a[1] > b[1]) and (poly_type ==  1)) :
+                        mytype = 'U'*n
+                        myA = sp.hstack([sp.eye(n), -m_eq*sp.eye(n), sp.lil_matrix((n, m))])
+                        myb = np.ones(n)*b_eq
+                    else: # for minimum also include on variable
+                        mytype = 'L'*n
+                        myA = sp.lil_matrix((self.n, op.A.shape[1]))
+                        for i in range(0, self.n):
+                            myA[i, ind_power[i]] = 1
+                            myA[i, ind_heat[i]]  = -m_eq
+                            myA[i, ind_on[i]]    = -b_eq
+                        myb = np.zeros(n)
+                    #### stack
+                    op.A      = sp.vstack((op.A, myA))
+                    op.cType +=  mytype
+                    op.b      = np.hstack((op.b, myb))
         return op
-    

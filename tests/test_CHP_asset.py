@@ -32,6 +32,43 @@ class CHPAssetTest(unittest.TestCase):
         check = check and (tot_dcf == np.around(res.value , decimals = 3))
         self.assertTrue(check)
 
+    def test_max_share_heat(self):
+        """ Unit test. Test max_share_heat parameter of CHPAsset
+        """
+        #### check given max_share
+        node_power = eao.assets.Node('node_power')
+        node_heat  = eao.assets.Node('node_heat')
+        timegrid   = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,1,3), freq = 'h')
+        heat_price = -5
+        chp = eao.assets.CHPAsset(name='CHP', nodes = (node_power, node_heat),
+                                min_cap=0, max_cap=10.,
+                                extra_costs=.1,
+                                max_share_heat=100,
+                                conversion_factor_power_heat=0.1,
+                                heat_price=heat_price)
+        power = eao.assets.SimpleContract(name='powerMarket', price='priceP', nodes = node_power, min_cap=-100, max_cap=100)
+        heat  = eao.assets.SimpleContract(name='heatMarket',  price='priceH', nodes = node_heat, min_cap=-100, max_cap=100)
+        portf = eao.portfolio.Portfolio([chp, power, heat])
+        prices ={'priceP': np.ones(timegrid.T),
+                 'priceH': np.ones(timegrid.T)}
+        # check for correct costs
+        out = eao.optimize(portf=portf, data=prices, timegrid=timegrid)
+        disp = out['dispatch']
+        ### assertions
+        share_heat = disp['CHP (node_heat)']/disp['CHP (node_power)']
+        ## heat is more attractive - check always close to max
+        self.assertAlmostEqual(share_heat.min(), 100, 2)
+        self.assertAlmostEqual(share_heat.max(), 100, 2)
+        #### check without max_share
+        portf.get_asset('CHP').max_share_heat = None
+        out = eao.optimize(portf=portf, data=prices, timegrid=timegrid)
+        disp = out['dispatch']
+        self.assertAlmostEqual(disp['CHP (node_heat)'].max(), 100, 2)
+        self.assertAlmostEqual(disp['CHP (node_heat)'].min(), 100, 2)
+        self.assertAlmostEqual(disp['CHP (node_power)'].max(), 0, 2)
+        self.assertAlmostEqual(disp['CHP (node_power)'].min(), 0, 2)
+        pass        
+
     def test_heat_price_parameter(self):
         """ Unit test. Setting up a CHPAsset with random prices
             and check that it generates full load at negative prices and nothing at positive prices.
@@ -42,12 +79,13 @@ class CHPAssetTest(unittest.TestCase):
         heat_price = 5
         a = eao.assets.CHPAsset(name='CHP', price='rand_price', nodes = (node_power, node_heat),
                                 min_cap=0, max_cap=10.,
+                                extra_costs=.1,
                                 heat_price=heat_price)
         prices ={'rand_price': np.ones(timegrid.T)}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
         # check for correct costs
-        assert all(op.c[0:timegrid.T]==1.)
-        assert all(op.c[timegrid.T:]==6.)
+        assert all(op.c[0:timegrid.T]==1.1)
+        assert all(op.c[timegrid.T:]==6.1)
 
     def test_min_cap_vector(self):
         """ Unit test. Setting up a CHPAsset with positive prices and a simple contract with a minimum demand that is
@@ -1443,6 +1481,57 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
         s = eao.serialization.to_json(portf)
         pp = eao.serialization.load_from_json(s)
         self.assertEqual(a.pq_polygon, pp.assets[1].pq_polygon)
+
+
+    def test_polygon_basics(self):
+        """ Unit test. PQ diagram given as polygon """
+        # most basic asset
+        node_power = eao.assets.Node('node_power')
+        node_heat  = eao.assets.Node('node_heat')
+        timegrid   = eao.assets.Timegrid(dt.date(2024,1,1), dt.date(2024,1,2), freq = 'h')
+        data = {'price': np.sin(np.linspace(0,20*np.pi, timegrid.T)),
+                'heat' : -6-22*(np.linspace(0,1, timegrid.T)),
+                'maxcap': 500*np.ones(timegrid.T)}
+        
+        # square
+        #        [P, Q]
+        poly = [[ 5, 5],
+                [10, 5],
+                [ 8, 25],
+                [ 6, 30]]
+        poly_eps = [[ 4.99, 4.99], # making it a bit bigger to avoid numerical issues
+                    [10.01, 4.99],
+                    [ 8.01, 25.01],
+                    [ 5.99, 30.03]]               
+        # no further restriction - instantaneous reaction to prices
+        m = eao.assets.SimpleContract(name = 'market', price='price', nodes = node_power, min_cap=-1000, max_cap=1000)
+        h = eao.assets.SimpleContract(name = 'heat', nodes = node_heat, min_cap='heat', max_cap='heat')
+        h1= eao.assets.SimpleContract(name = 'kessel', nodes = node_heat, min_cap=0, max_cap=10, extra_costs=5)
+        a = eao.assets.CHP_PQ_diagram(name='poly',
+                                      nodes = (node_power, node_heat),
+                                      min_cap=10,
+                                      max_cap='maxcap',
+                                      extra_costs=50,
+                                      conversion_factor_power_heat=0.2,
+                                      pq_polygon =poly)
+        portf = eao.portfolio.Portfolio([m, a, h, h1])
+        ##### optimize
+        out   = eao.optimize(portf, timegrid, data)
+        print(out)
+        h = out['dispatch']["poly (node_heat)"].values
+        p = out['dispatch']["poly (node_power)"].values
+        ## not running ok
+        I = (p!=0)
+        p = p[I]
+        h = h[I]
+        #### test: any dispatch outside polygon?
+        import matplotlib.path as mplPath
+        poly_path = mplPath.Path(poly_eps)
+        for i in range(len(h)):
+            point = np.array([p[i], h[i]])
+            # print(point, " is in polygon: ", poly_path.contains_point(point))
+            self.assertTrue(poly_path.contains_point(point), msg=f"point {point} not in polygon")        
+        pass
 
 
 #     def test_PQ_CHP_with_start_ramps(self):
