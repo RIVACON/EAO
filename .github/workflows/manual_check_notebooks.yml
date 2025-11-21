@@ -54,6 +54,7 @@ jobs:
           git clone https://x-access-token:${GITHUB_TOKEN}@github.com/RIVACON/EAO.git --branch gh-pages --single-branch gh-pages
           rm -f gh-pages/badges/notebook-badge.svg
           mv .github/badges/notebook-badge.svg gh-pages/badges/notebook-badge.svg
+          mv notebook_status.json gh-pages/badges/notebook_status.json
           cd gh-pages
           touch .nojekyll
           echo $(date) > last_build.txt
@@ -61,7 +62,7 @@ jobs:
           git add .
           git commit -m "Update Notebook Badge" -a || true
           git push
-          if grep -q "failed" ../notebook_status.json; then
+          if grep -q "failed" .badges/notebook_status.json; then
             echo "At least one notebook failed."
             exit 1 
           else
