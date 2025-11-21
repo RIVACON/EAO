@@ -3,7 +3,6 @@ name: RunNotebooks [push main, manual]
 on:
   push:
     branches:
-      - main
   workflow_dispatch:
       
 jobs:
