@@ -1,0 +1,34 @@
+name: Unittests_NoBadges_NoNotebooks [push in develop, manual]
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          miniconda-version: "latest"
+          python-version: "3.13.7"
+          activate-environment: eao_env
+          environment-file: environment.yml
+          channels: conda-forge
+          conda-remove-defaults: "true"          
+
+      - name: Run tests and coverage...
+        id: run_tests_and_coverage
+        run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate eao_env
+          pytest --cov=. --cov-report=json:coverage.json
