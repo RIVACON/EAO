@@ -1,4 +1,4 @@
-name: Documentation gh-pages [auto, push in main]
+name: Documentation gh-pages [push main, manual]
 
 on:
   push:

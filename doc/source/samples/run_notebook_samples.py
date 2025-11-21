@@ -119,9 +119,6 @@ def test_notebook_execution():
 #---
 
 if __name__ == "__main__":
-    # DEBUG: FORCING A FAIL TO CHECK RED MARK. REMOVE THIS AFTERWARDS
-    sys.exit(1) # <- REMOVE THIS
-    #------------------------------------------------------#
     folder_file_pairs = find_all_notebooks()
     res = test_notebook_execution()
     print(res)
