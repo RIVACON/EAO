@@ -62,12 +62,13 @@ jobs:
           git commit -m "Update Notebook Badge" -a || true
           git push
 
-      - name: Produce a red mark if the notebook tests failed
+
+      - name: Check Test Status and exit with 1 in case of failures
         run: |
-            if [ "${{ steps.run_notebooks.outcome }}" != "success" ]; then
-              echo "Notebook successfully executed"
-              exit 0
-            else
-              echo "At least one notebook failed."
-              exit 1
-            fi
+          if grep -q "failed" notebook_status.json; then
+            echo "At least one notebook failed."
+            exit 1 
+          else
+            echo "All notebooks were successfull."
+            exit 0
+          fi
