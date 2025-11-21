@@ -54,9 +54,9 @@ jobs:
           git config --global user.email "actions@github.com"          
           git clone https://x-access-token:${GITHUB_TOKEN}@github.com/RIVACON/EAO.git --branch gh-pages --single-branch gh-pages
           rm -f gh-pages/badges/coverage-badge.svg
-          rm -f gh-pages/badges/test-badge.svg
+          rm -f gh-pages/badges/tests-badge.svg
           mv .github/badges/coverage-badge.svg gh-pages/badges/coverage-badge.svg
-          mv .github/badges/test-badge.svg gh-pages/badges/test-badge.svg
+          mv .github/badges/tests-badge.svg gh-pages/badges/tests-badge.svg
           mv test_status.json gh-pages/badges/test_status.json
           cd gh-pages
           touch .nojekyll
