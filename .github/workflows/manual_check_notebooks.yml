@@ -45,11 +45,29 @@ jobs:
         run: python .github/badges/generate_notebook_badge.py
 
 
-      - name: Commit Badge to Repository
+      - name: Commit Notebook Badge in gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "actions-user"
+          git config --global user.email "actions@github.com"          
+          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/RIVACON/EAO.git --branch gh-pages --single-branch gh-pages
+          rm -f gh-pages/badges/notebook-badge.svg
+          mv .github/badges/notebook-badge.svg gh-pages/badges/notebook-badge.svg
+          cd gh-pages
+          touch .nojekyll
+          echo $(date) > last_build.txt
           git pull
-          git add .github/badges/notebook-badge.svg
-          git commit -m "Updating notebook badge" || true 
+          git add .
+          git commit -m "Update Notebook Badge" -a || true
           git push
+
+      - name: Produce a red mark if the notebook tests failed
+        run: |
+            if [ "${{ steps.run_notebooks.outcome }}" != "success" ]; then
+              echo "Notebook successfully executed"
+              exit 0
+            else
+              echo "At least one notebook failed."
+              exit 1
+            fi
