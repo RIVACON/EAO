@@ -1,4 +1,4 @@
-name: Documentation gh-pages [manual]
+name: Documentation gh-pages [push main, manual]
 
 on:
   workflow_dispatch:

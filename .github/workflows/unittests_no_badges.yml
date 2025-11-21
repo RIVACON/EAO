@@ -32,14 +32,3 @@ jobs:
           source ~/.bashrc
           conda activate eao_env
           pytest --cov=. --cov-report=json:coverage.json
-
-
-      - name: Run the notebooks...
-        id: run_notebooks
-        run: |
-          conda init bash
-          source ~/.bashrc
-          conda activate eao_env
-          python -m ipykernel install --user --name=eao_env
-          pip install eaopack
-          python doc/source/samples/run_notebook_samples.py

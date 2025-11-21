@@ -1,4 +1,4 @@
-name: TestsBadgesDocs [push main, manual]
+name: TestsAndBadges [push main, manual]
 
 on:
   push:
@@ -46,39 +46,6 @@ jobs:
         run: python .github/badges/generate_cov_and_test_badges.py
 
 
-      - name: Run the notebooks...
-        id: run_notebooks
-        continue-on-error: true
-        run: |
-          conda init bash
-          source ~/.bashrc
-          conda activate eao_env
-          python -m ipykernel install --user --name=eao_env
-          pip install eaopack
-          python doc/source/samples/run_notebook_samples.py
-
-      - name: Check if all notebooks run with no issues...
-        run: |
-            if [ "${{ steps.run_notebooks.outcome }}" == "success" ]; then
-              echo '{"status": "passed"}' > notebooks_status.json
-            else
-              echo '{"status": "failed"}' > notebooks_status.json
-            fi
-
-      - name: Badge creation (notebooks)
-        run: python .github/badges/generate_notebook_badge.py
-
-
-      - name: Build the docs
-        run: |
-          conda init bash
-          source ~/.bashrc
-          conda activate eao_env
-          conda install pandoc
-          pip install sphinx nbsphinx sphinx_rtd_theme
-          sphinx-build -b html doc/source/ doc/build
-
-
       - name: Commit Notebook Badge in gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -88,29 +55,20 @@ jobs:
           git clone https://x-access-token:${GITHUB_TOKEN}@github.com/RIVACON/EAO.git --branch gh-pages --single-branch gh-pages
           rm -f gh-pages/badges/coverage-badge.svg
           rm -f gh-pages/badges/tests-badge.svg
-          rm -f gh-pages/badges/notebook-badge.svg
-          mv .github/badges/notebook-badge.svg gh-pages/badges/notebook-badge.svg
           mv .github/badges/coverage-badge.svg gh-pages/badges/coverage-badge.svg
           mv .github/badges/tests-badge.svg gh-pages/badges/tests-badge.svg
-          mv notebooks_status.json gh-pages/badges/notebooks_status.json
           mv test_status.json gh-pages/badges/test_status.json
-          cp -r doc/build/* gh-pages/
           cd gh-pages
           touch .nojekyll
           echo $(date) > last_build.txt
           git pull
           git add .
-          git commit -m "Updating Badges and Documentation" -a || true
+          git commit -m "Update Coverage and Unittest Badge" -a || true
           git push
           if grep -q "failed" badges/test_status.json; then
             echo "At least one unittest failed."
             exit 1 
           else
             echo "All tests were successfull."
-          fi
-          if grep -q "failed" badges/notebooks_status.json; then
-            echo "At least one notebook failed."
-            exit 1 
-          else
-            echo "All notebooks were successfull."
+            exit 0
           fi
