@@ -62,7 +62,7 @@ jobs:
           git add .
           git commit -m "Update Notebook Badge" -a || true
           git push
-          if grep -q "failed" .badges/notebooks_status.json; then
+          if grep -q "failed" badges/notebooks_status.json; then
             echo "At least one notebook failed."
             exit 1 
           else
