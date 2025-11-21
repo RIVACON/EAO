@@ -61,12 +61,7 @@ jobs:
           git add .
           git commit -m "Update Notebook Badge" -a || true
           git push
-          cd ../
-
-
-      - name: Check Test Status and exit with 1 in case of failures
-        run: |
-          if grep -q "failed" notebook_status.json; then
+          if grep -q "failed" ../notebook_status.json; then
             echo "At least one notebook failed."
             exit 1 
           else
