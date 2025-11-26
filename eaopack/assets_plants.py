@@ -76,10 +76,10 @@ class CHPAsset(ea.Contract):
                                     The more granular frequency of portf & asset is used
             profile (pd.Series, optional):  If freq(asset) > freq(portf) assuming this profile for granular dispatch (e.g. scaling hourly profile to week).
                                             Defaults to None, only relevant if freq is not none
-            min_cap (float) : Minimum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
-            max_cap (float) : Maximum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
-            min_take (float) : Minimum volume within given period. Defaults to None
-            max_take (float) : Maximum volume within given period. Defaults to None
+            min_cap (float, StartEndValueDict, str, sequence) : Minimum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
+            max_cap (float, StartEndValueDict, str, sequence) : Maximum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
+            min_take (StartEndValueDict) : Minimum volume within given period. Defaults to None
+            max_take (StartEndValueDict) : Maximum volume within given period. Defaults to None
                               float: constant value
                               dict:  dict['start'] = np.array
                                      dict['end']   = np.array
@@ -577,7 +577,7 @@ class CHPAsset(ea.Contract):
             op.b = np.hstack((op.b, np.zeros(self.n - start)))
         else:
             op.b = np.hstack((op.b, max_cap[start:]))
-        # Minimum and maximum capacity for HEAT during start  -  an heat node given:
+        # Minimum and maximum capacity for HEAT during start  -  a heat node given:
         if (shutdown_ramp_lower_bounds_heat is not None) and (self.idx_nodes['heat'] is not None):
             start = max(0, start_ramp_time - time_already_running) if time_already_running > 0 else 0
             A_lower_bounds = sp.lil_matrix((self.n, op.A.shape[1]))
@@ -1029,10 +1029,10 @@ class Plant(CHPAsset):
                                     The more granular frequency of portf & asset is used
             profile (pd.Series, optional):  If freq(asset) > freq(portf) assuming this profile for granular dispatch (e.g. scaling hourly profile to week).
                                             Defaults to None, only relevant if freq is not none
-            min_cap (float) : Minimum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
-            max_cap (float) : Maximum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
-            min_take (float) : Minimum volume within given period. Defaults to None
-            max_take (float) : Maximum volume within given period. Defaults to None
+            min_cap (float, StartEndValueDict, str, sequence) : Minimum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
+            max_cap (float, StartEndValueDict, str, sequence) : Maximum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
+            min_take (StartEndValueDict) : Minimum volume within given period. Defaults to None
+            max_take (StartEndValueDict) : Maximum volume within given period. Defaults to None
                               float: constant value
                               dict:  dict['start'] = np.array
                                      dict['end']   = np.array
