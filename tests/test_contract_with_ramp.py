@@ -31,13 +31,13 @@ class Test_Contract_Ramp(unittest.TestCase):
         return out
 
     def test_simple_case_without_ramp(self):
-        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq='15min')
+        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="15min")
         prices = {
             "price_1": np.ones(timegrid.T) * 2,
             "price_2": -100 * np.ones(timegrid.T),
         }
         prices["price_2"][5:10] = 5  ## here, we will see dispatch c1 ---> c2
-        out = self.simple_case_with_ramp(timegrid, prices,None, None)
+        out = self.simple_case_with_ramp(timegrid, prices, None, None)
         np.testing.assert_almost_equal(out["dispatch"]["c1"].values[5:10], 2.5, 4)
         np.testing.assert_almost_equal(out["dispatch"]["c2"].values[5:10], -2.5, 4)
         np.testing.assert_almost_equal(out["dispatch"]["c1"].values[0:5], 0, 4)
@@ -46,7 +46,7 @@ class Test_Contract_Ramp(unittest.TestCase):
         np.testing.assert_almost_equal(out["dispatch"]["c2"].values[10:], 0, 4)
 
     def test_simple_case_with_ramp(self):
-        for freq in ('15min', '30min', '1h'):
+        for freq in ("15min", "30min", "1h"):
             timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq=freq)
             prices = {
                 "price_1": np.ones(timegrid.T) * 2,
@@ -58,48 +58,152 @@ class Test_Contract_Ramp(unittest.TestCase):
                     out = self.simple_case_with_ramp(timegrid, prices, ramp1, ramp2)
 
                     ramp = ramp1 if ramp2 is None else min(ramp1, ramp2)
-                    r = float(pd.Timedelta(freq) / pd.Timedelta('1h'))
-                    expected = np.array([r*ramp, 2*r*ramp ,3*r*ramp, 2*r*ramp , r*ramp])
-                    np.testing.assert_almost_equal(out["dispatch"]["c1"].values[5:10], expected, 4)
+                    r = float(pd.Timedelta(freq) / pd.Timedelta("1h"))
+                    expected = np.array(
+                        [r * ramp, 2 * r * ramp, 3 * r * ramp, 2 * r * ramp, r * ramp]
+                    )
+                    np.testing.assert_almost_equal(
+                        out["dispatch"]["c1"].values[5:10], expected, 4
+                    )
                     expected *= -1
-                    np.testing.assert_almost_equal(out["dispatch"]["c2"].values[5:10], expected, 4)
+                    np.testing.assert_almost_equal(
+                        out["dispatch"]["c2"].values[5:10], expected, 4
+                    )
 
-                    np.testing.assert_almost_equal(out["dispatch"]["c1"].values[0:5], 0, 4)
-                    np.testing.assert_almost_equal(out["dispatch"]["c1"].values[10:], 0, 4)
-                    np.testing.assert_almost_equal(out["dispatch"]["c2"].values[0:5], 0, 4)
-                    np.testing.assert_almost_equal(out["dispatch"]["c2"].values[10:], 0, 4)
+                    np.testing.assert_almost_equal(
+                        out["dispatch"]["c1"].values[0:5], 0, 4
+                    )
+                    np.testing.assert_almost_equal(
+                        out["dispatch"]["c1"].values[10:], 0, 4
+                    )
+                    np.testing.assert_almost_equal(
+                        out["dispatch"]["c2"].values[0:5], 0, 4
+                    )
+                    np.testing.assert_almost_equal(
+                        out["dispatch"]["c2"].values[10:], 0, 4
+                    )
 
     def test_simple_case_no_time_offset(self):
-        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq='15min')
+        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="15min")
         prices = {
             "price_1": np.ones(timegrid.T) * 2,
             "price_2": -100 * np.ones(timegrid.T),
         }
         prices["price_2"][0:5] = 5  ## here, we will see dispatch c1 ---> c2
-        out = self.simple_case_with_ramp(timegrid, prices,0.5, None)
-        np.testing.assert_almost_equal(out["dispatch"]["c1"].values[0:5], np.array([0.125, 0.250, 0.375, 0.250, 0.125]), 4)
-        np.testing.assert_almost_equal(out["dispatch"]["c2"].values[0:5], np.array([-0.125, -0.250, -0.375, -0.250, -0.125]), 4)
+        out = self.simple_case_with_ramp(timegrid, prices, 0.5, None)
+        np.testing.assert_almost_equal(
+            out["dispatch"]["c1"].values[0:5],
+            np.array([0.125, 0.250, 0.375, 0.250, 0.125]),
+            4,
+        )
+        np.testing.assert_almost_equal(
+            out["dispatch"]["c2"].values[0:5],
+            np.array([-0.125, -0.250, -0.375, -0.250, -0.125]),
+            4,
+        )
         np.testing.assert_almost_equal(out["dispatch"]["c1"].values[5:], 0, 4)
         np.testing.assert_almost_equal(out["dispatch"]["c2"].values[5:], 0, 4)
 
     def test_simple_case_no_time_trailing(self):
-        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq='15min')
+        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="15min")
         T = timegrid.T
         prices = {
             "price_1": np.ones(T) * 2,
             "price_2": -100 * np.ones(T),
         }
-        prices["price_2"][T-5:T] = 5  ## here, we will see dispatch c1 ---> c2
-        out = self.simple_case_with_ramp(timegrid, prices,0.5, None)
-        np.testing.assert_almost_equal(out["dispatch"]["c1"].values[T-5:T], np.array([0.125, 0.250, 0.375, 0.500, 0.625]), 4)
-        np.testing.assert_almost_equal(out["dispatch"]["c2"].values[T-5:T], np.array([-0.125, -0.250, -0.375, -0.5, -0.625]), 4)
-        np.testing.assert_almost_equal(out["dispatch"]["c1"].values[0:T-5], 0, 4)
-        np.testing.assert_almost_equal(out["dispatch"]["c2"].values[0:T-5], 0, 4)
+        prices["price_2"][T - 5 : T] = 5  ## here, we will see dispatch c1 ---> c2
+        out = self.simple_case_with_ramp(timegrid, prices, 0.5, None)
+        np.testing.assert_almost_equal(
+            out["dispatch"]["c1"].values[T - 5 : T],
+            np.array([0.125, 0.250, 0.375, 0.500, 0.625]),
+            4,
+        )
+        np.testing.assert_almost_equal(
+            out["dispatch"]["c2"].values[T - 5 : T],
+            np.array([-0.125, -0.250, -0.375, -0.5, -0.625]),
+            4,
+        )
+        np.testing.assert_almost_equal(out["dispatch"]["c1"].values[0 : T - 5], 0, 4)
+        np.testing.assert_almost_equal(out["dispatch"]["c2"].values[0 : T - 5], 0, 4)
 
+    def test_ramp_with_CHP_asset_or_multi(self):
+        """CHP Asset does ramps differently, but in simple case should be identical"""
+        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="2h")
+        T = timegrid.T
+        prices = {
+            "price_1": np.ones(T) * 2,
+            "price_2": -100 * np.ones(T),
+        }
+        prices["price_2"][5:10] = 5  ## here, we will see dispatch c1 ---> c2
+        node = eao.Node("power_node")
 
-###########################################################################################################
-###########################################################################################################
-###########################################################################################################
+        ## case only contracts
+        c1 = eao.assets.Contract(
+            name="c1", price="price_1", nodes=node, min_cap=0, max_cap=10.0, ramp=2
+        )
+        c2 = eao.assets.Contract(
+            name="c2", price="price_2", nodes=node, min_cap=-10.0, max_cap=0
+        )
+        portf = eao.portfolio.Portfolio([c1, c2])
+        out_c = eao.optimize(portf, timegrid, prices)
+        a = out_c["dispatch"]["c1"][5:10]
+        b = np.array([4, 8, 12, 8, 4])
+        np.testing.assert_almost_equal(a, b, 4)
+        ### case with Plant instead of c1
+        p1 = eao.assets.Plant(
+            name="c1", price="price_1", nodes=node, min_cap=0, max_cap=10.0, ramp=2
+        )
+        portf = eao.portfolio.Portfolio([p1, c2])
+        out_p = eao.optimize(portf, timegrid, prices)
+        a = out_p["dispatch"]["c1"][5:10]
+        np.testing.assert_almost_equal(a, b, 4)
+        ### case with multi
+        node2 = eao.Node("extra")
+        m1 = eao.assets.MultiCommodityContract(
+            name="c1",
+            price="price_1",
+            nodes=[node, node2],
+            min_cap=0,
+            max_cap=10.0,
+            factors_commodities=[1, 0],
+            ramp=2,
+        )
+        portf = eao.portfolio.Portfolio([m1, c2])
+        out_m = eao.optimize(portf, timegrid, prices)
+        a = out_m["dispatch"]["c1 (power_node)"][5:10]
+        np.testing.assert_almost_equal(a, b, 4)
+        self.assertAlmostEqual(
+            (out_m["dispatch"]["c1 (extra)"][5:10]).abs().sum(), 0, 3
+        )
 
-if __name__ == "__main__":
-    unittest.main()
+    def test_batterie_mit_rampen(self):
+        """Test and illustration: Create a ramp for a battery via a contract"""
+        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="h")
+        T = timegrid.T
+        prices = {"price": np.ones(T)}
+        prices["price"][2::2] = 0
+        ## portf
+        ramp = 0.5
+        node = eao.Node("power_node")
+        c = eao.assets.Contract(
+            name="markt",
+            price="price",
+            nodes=node,
+            min_cap=-10,
+            max_cap=10.0,
+            ramp=ramp,
+        )
+        b = eao.assets.Storage(
+            name="bat",
+            nodes=node,
+            cap_in=1,
+            cap_out=1,
+            size=4,
+            start_level=2,
+            end_level=2,
+        )
+        portf = eao.portfolio.Portfolio([c, b])
+        out = eao.optimize(portf, timegrid, prices)
+        a = out["dispatch"]["markt"].values
+        diffs = abs(a[:-1] - a[1:])
+        np.testing.assert_array_less(diffs, 0.5, ramp + 1e-4)
