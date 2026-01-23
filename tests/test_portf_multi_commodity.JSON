@@ -87,6 +87,7 @@
             "min_cap": 0,
             "min_take": null,
             "name": "CHP",
+            "ramp": null,
             "nodes": [
                 {
                     "__class__": "Node",
@@ -145,6 +146,7 @@
             "asset_type": "Contract",
             "end": null,
             "extra_costs": -20,
+            "ramp": null,
             "max_cap": {
                 "start": {
                     "__class__": "np_array",
