@@ -125,14 +125,15 @@ class IOTests(unittest.TestCase):
 
     def test_create_network(self):
         """ simple test to create network graph """
-        myf = 'tests/demo_portf.json'
+        myf = os.path.join(os.path.join(os.path.dirname(__file__)),'demo_portf.json')
         portf = load_from_json(file_name= myf)
-        create_graph(portf = portf, file_name='tests/test_graph.pdf')
+        graphf = os.path.join(os.path.join(os.path.dirname(__file__)),'test_graph.pdf')
+        create_graph(portf = portf, file_name=graphf)
         return True
 
     def test_create_network_output_no_image(self):
         """ simple test to create network graph """
-        myf = 'tests/demo_portf.json'
+        myf = os.path.join(os.path.join(os.path.dirname(__file__)),'demo_portf.json')
         portf = load_from_json(file_name= myf)
         res = create_graph(portf = portf, no_image_output=True)
         assert res['nodes'][0]['id'] == 'location A'

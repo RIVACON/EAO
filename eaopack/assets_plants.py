@@ -148,7 +148,8 @@ class CHPAsset(ea.Contract):
                                        min_take=min_take,
                                        max_take=max_take,
                                        periodicity=periodicity,
-                                       periodicity_duration=periodicity_duration)
+                                       periodicity_duration=periodicity_duration,
+                                       ramp=ramp)
         self._no_heat = _no_heat
         # check and record meaning of nodes
         self.idx_nodes = {}
@@ -170,7 +171,6 @@ class CHPAsset(ea.Contract):
         self.conversion_factor_power_heat   = conversion_factor_power_heat
         self.max_share_heat                 = max_share_heat
         self.heat_price           = heat_price
-        self.ramp                 = ramp
         self.start_costs          = start_costs
         self.running_costs        = running_costs
         self.min_runtime          = min_runtime
@@ -230,7 +230,10 @@ class CHPAsset(ea.Contract):
         Returns:
             OptimProblem: Optimization problem to be used by optimizer
         """
+        ramp = self.ramp
+        self.ramp = None  # Don't let base-class contract.setup_optim_problem set ramp constraints
         op = super().setup_optim_problem(prices=prices, timegrid=timegrid, costs_only=costs_only)
+        self.ramp = ramp
 
         if self.freq is not None and self.freq != self.timegrid.freq:
             raise ValueError('Freq of asset' + self.name + ' is ' + str(self.freq) + ' which is unequal to freq ' + self.timegrid.freq + ' of timegrid. Asset: ' + self.name)

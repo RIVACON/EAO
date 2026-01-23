@@ -42,7 +42,7 @@ class OptimProblem:
             c (np.array): cost vector
             l (np.array): lower bound (per time step)
             u (np.array): upper bound (per time step)
-            A (np.array): restiction matrix. Optional. Defaults to None (no restrictions given)
+            A (np.array): restriction matrix. Optional. Defaults to None (no restrictions given)
             b (np.array): bound of restriction. Optional. Defaults to None (no restrictions given)
             cType (str - one letter per restriction): Logic to define type of restriction: U-pper, L-ower, S-equal or other 
                                                       here specific types may be defined:
@@ -72,7 +72,7 @@ class OptimProblem:
         # make periodic
         if periodic_period_length is not None:
             assert timegrid is not None, 'for periodic optim problem need timegrid'
-            self.__make_periodic__(freq_period = periodic_period_length , freq_duration = periodic_duration, timegrid = timegrid)
+            self.__make_periodic__(freq_period = periodic_period_length, freq_duration = periodic_duration, timegrid = timegrid)
 
     def __make_periodic__(self, freq_period:str, freq_duration:str, timegrid:Timegrid):
         """ Make the optimization problem periodic main purpose is to save resources when optimizing 

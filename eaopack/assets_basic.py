@@ -1059,7 +1059,9 @@ class Contract(SimpleContract):
                 freq: str = None,
                 profile: pd.Series = None,
                 periodicity: str = None,
-                periodicity_duration: str = None):
+                periodicity_duration: str = None,
+                ramp: float = None
+                 ):
         """ Contract: buy or sell (consume/produce) given price and limited capacity in/out
             Restrictions
             - time dependent capacity restrictions
@@ -1069,7 +1071,7 @@ class Contract(SimpleContract):
             - with MinTake & MaxTake, implement structured gas contracts
         Args:
             name (str): Unique name of the asset                                              (asset parameter)
-            node (Node): Node, the constract is located in                                    (asset parameter)
+            node (Node): Node, the contract is located in                                    (asset parameter)
             start (dt.datetime) : start of asset being active. defaults to none (-> timegrid start relevant)
             end (dt.datetime)   : end of asset being active. defaults to none (-> timegrid start relevant)
             timegrid (Timegrid): Timegrid for discretization                                  (asset parameter)
@@ -1101,7 +1103,7 @@ class Contract(SimpleContract):
 
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
-
+            ramp (float): Maximum increase/decrease of virtual dispatch. Defaults to None.
         """
         super(Contract, self).__init__(name=name,
                                        nodes=nodes,
@@ -1136,6 +1138,8 @@ class Contract(SimpleContract):
                 max_take['end'] = [max_take['end']]
         self.min_take = min_take
         self.max_take = max_take
+        self.ramp = ramp
+
 
     @abc.abstractmethod
     def setup_optim_problem(self, prices: dict, timegrid:Timegrid = None, costs_only:bool = False) -> OptimProblem:
@@ -1155,6 +1159,8 @@ class Contract(SimpleContract):
         op = super().setup_optim_problem(prices= prices, timegrid=timegrid, costs_only = costs_only)
         if costs_only:
             return op
+        # scale ramp in case timegrid.freq and timegrid.main_time_unit are not equal
+        ramp = self.ramp * self.timegrid.restricted.dt[0] if self.ramp is not None else None
         # add restrictions min/max take
         min_take = self.min_take
         max_take = self.max_take
@@ -1187,10 +1193,36 @@ class Contract(SimpleContract):
                 op.cType = op.cType+cType
         if self.periodicity is not None:
             op.__make_periodic__(freq_period = self.periodicity, freq_duration = self.periodicity_duration, timegrid = timegrid)
+
+        # Ramp constraints:
+        if ramp is None:
+            return op
+        if op.A is None:
+            op.A = A
+        if op.cType is None:
+            op.cType = ''
+        if op.b is None:
+            op.b = np.empty(shape=(0))
+
+        T = self.timegrid.restricted.T
+        n = A.shape[1]
+        D = sp.diags(
+            diagonals=[-np.ones(T), np.ones(T)],
+            offsets=[-1, 0],
+            shape=(T, n),
+            format="csr"
+        )
+        op.A = sp.vstack([op.A, D, D])  # stack lower and upper constraints onto op.A
+        op.cType += "L" * T + "U" * T
+        op.b = np.hstack([
+            op.b,
+            -ramp * np.ones(T),
+            ramp * np.ones(T)
+        ])
         return op
 
 class MultiCommodityContract(Contract):
-    """ Multi commodity contract class - implements a Contract that generates two or more commoditites at a time.
+    """ Multi commodity contract class - implements a Contract that generates two or more commodities at a time.
         The main idea is to implement a CHP generating unit that would generate power and heat at the same time.
         Overall costs and prices relate directly (and only) to the dispatch variable.
         The simplest way of defining the asset is to think of the main commodity as the main variable. In this case
@@ -1211,7 +1243,8 @@ class MultiCommodityContract(Contract):
                 freq: str = None,
                 profile: pd.Series = None,
                 periodicity: str = None,
-                periodicity_duration: str = None):
+                periodicity_duration: str = None,
+                ramp: float = None):
         """ Contract: buy or sell (consume/produce) given price and limited capacity in/out
             Restrictions
             - time dependent capacity restrictions
@@ -1251,7 +1284,8 @@ class MultiCommodityContract(Contract):
                                             str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
-
+            ramp (float): Maximum increase/decrease of virtual dispatch
+        
             New in comparison to contract:
             nodes (Node): different nodes the contract delivers to (one node per commodity)
             factors_commodities: list of floats - One factor for each commodity/node.
@@ -1271,7 +1305,8 @@ class MultiCommodityContract(Contract):
                                        min_take = min_take,
                                        max_take = max_take,
                                        periodicity= periodicity,
-                                       periodicity_duration=periodicity_duration)
+                                       periodicity_duration=periodicity_duration,
+                                       ramp=ramp)
 
         if not factors_commodities is None:
             assert isinstance(factors_commodities, (list, np.array)), 'factors_commodities must be given as list'

@@ -15,7 +15,7 @@ class StartEndValueDict(TypedDict):
 
 class Unit:
     def __init__(self, volume:str='MWh', flow:str='MW', factor:float=1.):
-        """ Defines the units used in a node and how to convert between volums and flows (volume/time)
+        """ Defines the units used in a node and how to convert between volumes and flows (volume/time)
 
         Args:
             volume (str, optional):'volume' is a quantity unit, typically MWh or MJ for energy. Defaults to 'MWh'.
