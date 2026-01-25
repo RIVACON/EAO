@@ -93,12 +93,12 @@ class Test_Contract_Ramp(unittest.TestCase):
         out = self.simple_case_with_ramp(timegrid, prices, 0.5, None)
         np.testing.assert_almost_equal(
             out["dispatch"]["c1"].values[0:5],
-            np.array([0.125, 0.250, 0.375, 0.250, 0.125]),
+            np.array([0.625, 0.50, 0.375, 0.250, 0.125]),
             4,
         )
         np.testing.assert_almost_equal(
             out["dispatch"]["c2"].values[0:5],
-            np.array([-0.125, -0.250, -0.375, -0.250, -0.125]),
+            np.array([-0.625, -0.50, -0.375, -0.250, -0.125]),
             4,
         )
         np.testing.assert_almost_equal(out["dispatch"]["c1"].values[5:], 0, 4)
@@ -207,3 +207,89 @@ class Test_Contract_Ramp(unittest.TestCase):
         a = out["dispatch"]["markt"].values
         diffs = abs(a[:-1] - a[1:])
         np.testing.assert_array_less(diffs, 0.5, ramp + 1e-4)
+
+    def test_ramp_with_extra_cost(self):
+        """extra_cost will lead to 2x the disp variables"""
+        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="2h")
+        T = timegrid.T
+        prices = {
+            "price_1": np.ones(T) * 2,
+            "price_2": -100 * np.ones(T),
+        }
+        prices["price_2"][10:15] = 5  ## here, we will see dispatch c1 ---> c2
+        node = eao.Node("power_node")
+
+        ## case only contracts
+        c1 = eao.assets.Contract(
+            name="c1",
+            price="price_1",
+            nodes=node,
+            min_cap=-10,
+            max_cap=10.0,
+            ramp=3,
+            extra_costs=0.1,  ### !!!
+        )
+        c2 = eao.assets.Contract(
+            name="c2", price="price_2", nodes=node, min_cap=-10.0, max_cap=10
+        )
+        portf = eao.portfolio.Portfolio([c1, c2])
+        out_c = eao.optimize(portf, timegrid, prices)
+        a = out_c["dispatch"]["c1"]
+        b = -20 * np.ones(12)
+        b[-2] = -14
+        b[-1] = -8
+        ### Achtung: Am Anfang darf es keine Rampe geben. Im Code mit Matrizen ist die erste Zeile
+        # 1, 0, .... ---> darf nicht sein
+        # Shape ist T x T ---> darf nicht sein
+        # .....> erste Zeile löschen (implementiert)
+        np.testing.assert_almost_equal(a, b, 3)
+
+    def test_ramp_with_extra_cost_2(self):
+        """extra_cost will lead to 2x the disp variables"""
+        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="h")
+        T = timegrid.T
+        prices = {
+            "price_1": np.ones(T) * 2,
+            "price_2": -100 * np.ones(T),
+        }
+        prices["price_2"][10:15] = 5  ## here, we will see dispatch c1 ---> c2
+        node = eao.Node("power_node")
+
+        ## case only contracts
+        c1 = eao.assets.Contract(
+            name="c1",
+            price="price_1",
+            nodes=node,
+            min_cap=-10,
+            max_cap=10.0,
+            ramp=5,
+            extra_costs=0.1,  ### !!!
+        )
+        c2 = eao.assets.Contract(
+            name="c2", price="price_2", nodes=node, min_cap=-10.0, max_cap=10
+        )
+        #### with extra_costs --> double the number of vars
+        for ec in [0, 1]:
+            c1.extra_costs = ec
+            prices = {"price_1": np.ones(T) * 100, "price_2": 0 * np.ones(T)}
+            prices["price_1"][5:] = 0
+            prices["price_2"][5:] = 2
+            portf = eao.portfolio.Portfolio([c1, c2])
+            out_c = eao.optimize(portf, timegrid, prices)
+            a = out_c["dispatch"]["c1"]
+            b = np.array(
+                [
+                    -10.0,
+                    -10.0,
+                    -10.0,
+                    -10.0,
+                    -10.0,
+                    -5.0,
+                    0.0,
+                    5.0,
+                    10.0,
+                    10.0,
+                ]
+            )
+            np.testing.assert_almost_equal(a[0:10], b, 3)
+            pass
