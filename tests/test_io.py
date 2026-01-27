@@ -110,8 +110,7 @@ class IOTests(unittest.TestCase):
         xx = load_from_json(mys)
 
         run_from_json(file_name_in = myf, prices = prices, file_name_out = 'test_results.xlsx')
-        run_from_json(file_name_in = myf, prices = prices, file_name_out = 'test_results.csv',\
-                          format_out='csv', csv_ger= True)
+        run_from_json(file_name_in = myf, prices = prices, file_name_out = 'test_results.csv', csv_ger= True)
         res = run_from_json(file_name_in = myf, prices = prices)
 
         # array

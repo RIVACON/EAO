@@ -3,6 +3,7 @@ import pandas as pd
 import datetime as dt
 import copy
 from typing import Union, List, Dict
+from pathlib import Path
 
 from eaopack.portfolio import Portfolio
 from eaopack.optimization import Results, OptimProblem
@@ -169,14 +170,13 @@ def extract_output(portf: Portfolio, op: OptimProblem, res:Results, prices: dict
 
     return output
 
-def output_to_file(output, file_name:str, format_output:str = 'xlsx',csv_ger:bool = False):
+def output_to_file(output, file_name:str, csv_ger:bool = False):
     """ write extracted output to file(s)
 
     Args:
         output ([type]): Target file (excel)
         file_name (str): file name
-        format_output (str)    : xlsx, csv. format of output file. Defaults to 'xlsx'
-        csv_ger (bool)      : English (False) or German (True) csv format. Defaults to False.            
+        csv_ger (bool)      : English (False) or German (True) csv format. Defaults to False.
     """
     for myk in output:
         if not isinstance(output[myk], pd.DataFrame):
@@ -184,7 +184,8 @@ def output_to_file(output, file_name:str, format_output:str = 'xlsx',csv_ger:boo
                 output[myk] = pd.DataFrame() 
             elif isinstance(output[myk], dict):
                 output[myk] = pd.DataFrame.from_dict(output[myk], orient = 'index')
-    if (format_output.lower() == 'xlsx') or (format_output.lower() == 'xls'):
+    file_extension = Path(file_name).suffix.lower()
+    if file_extension in (".xlsx", ".xls"):
         writer = pd.ExcelWriter(file_name)
         for myk in output:
             if isinstance(output[myk].index, pd.DatetimeIndex):
@@ -192,7 +193,7 @@ def output_to_file(output, file_name:str, format_output:str = 'xlsx',csv_ger:boo
                     output[myk].index = output[myk].index.tz_localize(None)
             output[myk].to_excel(writer, sheet_name = myk)
         writer.close()
-    elif (format_output.lower() == 'csv'):
+    elif file_extension == ".csv":
         if not csv_ger:
             sep = ','
             decimal = '.'
@@ -202,7 +203,7 @@ def output_to_file(output, file_name:str, format_output:str = 'xlsx',csv_ger:boo
         for myk in output:
             output[myk].to_csv(myk+'_'+file_name, sep = sep, decimal = decimal)                
     else:
-        raise NotImplementedError('output format - '+format_output+' - not implemented')
+        raise NotImplementedError('output format - '+file_extension+' - not implemented')
 
 #### easy access to object parameters e.g. for assets & portfolio
 ## get tree, get parameter, set parameter

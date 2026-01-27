@@ -172,7 +172,6 @@ def run_from_json(
     prices: dict = None,
     timegrid: Timegrid = None,
     file_name_out: str = None,
-    format_out: str = "xlsx",
     csv_ger: bool = False,
 ):
     """(1) create object from JSON in file or string
@@ -186,7 +185,6 @@ def run_from_json(
         timegrid (Timegrid) : timegrid to be used for optimization.
                               Defaults to None (if portfolio comes with timegrid)
         file_name_out (str) : file name for output
-        format_out (str)    : xlsx, csv. format of output file. Defaults to 'xlsx'
         csv_ger (bool)      : English (False) or German (True) csv format. Defaults to False.
     Returns:
         file_name_out given:    Optimization run successfully (bool)
@@ -208,7 +206,7 @@ def run_from_json(
         # (3) extract and write output
         out = extract_output(portf, op, res, prices)
         if not file_name_out is None:
-            output_to_file(out, file_name_out, format_out, csv_ger)
+            output_to_file(out, file_name_out, csv_ger)
             return not isinstance(res, str)  # opt successful?
         else:
             # return dict with results
