@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 import copy
+import os
 from typing import Union, List, Dict
 from pathlib import Path
 
@@ -111,7 +112,7 @@ def extract_output(portf: Portfolio, op: OptimProblem, res:Results, prices: dict
         # extract duals from nodal restrictions
         # looping through nodes and their recorded nodal restrictions and extract dual
         if not res.duals is None and not res.duals['N'] is None:
-            ### new version withour nodal_restr column in mapping, rather explicit reference to time and node in OP
+            ### new version without nodal_restr column in mapping, rather explicit reference to time and node in OP
             for ii, id in enumerate(op.map_nodal_restr):
                 name_nodal_price = 'nodal price: '+ id[1]
                 duals.loc[times[id[0]], name_nodal_price] = -res.duals['N'][ii]
@@ -194,6 +195,8 @@ def output_to_file(output, file_name:str, csv_ger:bool = False):
             output[myk].to_excel(writer, sheet_name = myk)
         writer.close()
     elif file_extension == ".csv":
+        # output filename without extension:
+        out_file_name = os.path.join(Path(file_name).parent, Path(file_name).stem)
         if not csv_ger:
             sep = ','
             decimal = '.'
@@ -201,7 +204,7 @@ def output_to_file(output, file_name:str, csv_ger:bool = False):
             sep = ';'
             decimal = ','
         for myk in output:
-            output[myk].to_csv(myk+'_'+file_name, sep = sep, decimal = decimal)                
+            output[myk].to_csv(out_file_name + '_' + myk + file_extension, sep = sep, decimal = decimal)
     else:
         raise NotImplementedError('output format - '+file_extension+' - not implemented')
 

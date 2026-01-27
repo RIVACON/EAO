@@ -111,6 +111,11 @@ class IOTests(unittest.TestCase):
 
         run_from_json(file_name_in = myf, prices = prices, file_name_out = 'test_results.xlsx')
         run_from_json(file_name_in = myf, prices = prices, file_name_out = 'test_results.csv', csv_ger= True)
+        for output_file in ("test_results.xlsx",
+                             "test_results_DCF.csv", "test_results_dispatch.csv",
+                             "test_results_internal_variables.csv", "test_results_prices.csv",
+                             "test_results_special.csv", "test_results_summary.csv"):
+            assert(os.path.isfile(output_file))
         res = run_from_json(file_name_in = myf, prices = prices)
 
         # array
