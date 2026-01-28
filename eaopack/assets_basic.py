@@ -4,6 +4,7 @@ import abc
 import numpy as np
 import pandas as pd
 import scipy.sparse as sp
+from copy import deepcopy
 
 from eaopack.basic_classes import (
     Timegrid,
@@ -291,6 +292,10 @@ class Asset:
             vec = vec * self.timegrid.restricted.dt
         return vec
 
+    @property
+    def copy(self):
+        return deepcopy(self)
+
 
 ##########################
 
@@ -422,12 +427,15 @@ class Storage(Asset):
         self.periodicity_duration = periodicity_duration
 
     def setup_optim_problem(
-        self, prices: dict, timegrid: Timegrid = None, costs_only: bool = False
+        self,
+        prices: Union[dict, None] = None,
+        timegrid: Timegrid = None,
+        costs_only: bool = False,
     ) -> OptimProblem:
         """Set up optimization problem for asset
 
         Args:
-            prices (dict): Dictionary of price arrays needed by assets in portfolio
+            prices (dict, optional): Dictionary of price arrays needed by assets in portfolio. Defaults to None
             timegrid (Timegrid, optional): Discretization grid for asset. Defaults to None,
                                            in which case it must have been set previously
             costs_only (bool): Only create costs vector (speed up e.g. for sampling prices). Defaults to False
@@ -550,62 +558,51 @@ class Storage(Asset):
             # Minimum: empty
             b_min = -self.start_level * np.ones(n, float) - inflow
             b_min[-1] = self.end_level - self.start_level - inflow[-1]
-        else:
+        else:  ## creating block matrices on the diagonal
             A = sp.lil_matrix((n, n))
             b = np.empty(n)
             b.fill(np.nan)
             b_min = np.empty(n)
             b_min.fill(np.nan)
             ### identify blocks in time grid
-            try:
-                buffer = pd.Timedelta(self.block_size)
-            except:
-                buffer = pd.Timedelta(1, self.block_size)
             indBlocks = pd.date_range(
-                start=self.timegrid.restricted.start - buffer,
+                start=self.timegrid.restricted.start,
                 end=self.timegrid.restricted.end,
                 freq=self.block_size,
             )
-            aa = []  # collects last element of each block
-            for myd in indBlocks:
-                my_bool = self.timegrid.restricted.timepoints <= myd
-                if any(my_bool):
-                    aa.append(np.argwhere(my_bool)[-1, -1])  # last element of block
-                else:
-                    aa.append(0)
-                if all(my_bool):
-                    break  # stop early
-            aa = np.unique(np.asarray(aa))
-            if (
-                aa[-1] != n
-            ):  # last block not full - last element defined to be last time step
-                aa = np.append(aa, n)
-            for i, a in enumerate(aa[0:-1]):  # go through the blocks
-                diff = aa[i + 1] - a  # number of elements to next block
-                A[a : a + diff, a : a + diff] = -sp.tril(
-                    np.ones((diff, diff), float)
+            # ensure start & end are included
+            indBlocks = indBlocks.union([self.timegrid.restricted.start])
+            indBlocks = indBlocks.union([self.timegrid.restricted.end])
+            ### via bools indicating weather timepoint is in interval
+            ti = self.timegrid.restricted.I
+            tp = self.timegrid.restricted.timepoints
+            block_ind = []
+            for i in range(0, (len(indBlocks) - 1)):
+                new_block = ti[(tp >= indBlocks[i]) & (tp < indBlocks[i + 1])]
+                if len(new_block) > 0:
+                    block_ind.append(new_block)
+            ### for i, a in enumerate(aa[0:-1]):  # go through the blocks
+            for ib, block in enumerate(block_ind):
+                len_block = len(block)
+                a = block[0]
+                A[np.ix_(block, block)] = -sp.tril(
+                    np.ones((len_block, len_block), float)
                 )  # triangle matrix for time block
 
-                ### for first block start value is start_level
-                # for subsequent blocks, start value is end value (of the last block)
-                not_last = (
-                    diff + a < n
-                )  # the last timepoint is not included -- > start of next block is end of last
-                not_first = (
-                    a > 0
-                )  # first timepoint is not included --> end of last block is start of next
-                if not_first:
-                    my_start = self.end_level
-                else:
+                ### for first block start value is start_level - for others we start with the end level
+                if ib == 0:
                     my_start = self.start_level
+                else:
+                    my_start = self.end_level
+
                 # Maximum: max volume not exceeded
-                parts_b = (size[a : a + diff] - my_start) - inflow[a : a + diff]
-                parts_b[-1] = self.end_level - my_start - inflow[a + diff - 1]
-                b[a : a + diff] = parts_b
+                parts_b = (size[block] - my_start) - inflow[block]
+                parts_b[-1] = self.end_level - my_start - inflow[block[-1]]
+                b[block] = parts_b
                 # Minimum: empty
-                parts_b_min = -my_start * np.ones(diff) - inflow[a : a + diff]
-                parts_b_min[-1] = self.end_level - my_start - inflow[a + diff - 1]
-                b_min[a : a + diff] = parts_b_min
+                parts_b_min = -my_start * np.ones(len_block) - inflow[block]
+                parts_b_min[-1] = self.end_level - my_start - inflow[block[-1]]
+                b_min[block] = parts_b_min
         if sep_needed:
             A = sp.hstack((A * self.eff_in, A / self.eff_out))  # for in and out
         # join restrictions for in, out, full, empty
@@ -886,12 +883,15 @@ class SimpleContract(Asset):
 
     @abc.abstractmethod
     def setup_optim_problem(
-        self, prices: dict, timegrid: Timegrid = None, costs_only: bool = False
+        self,
+        prices: Union[dict, None] = None,
+        timegrid: Timegrid = None,
+        costs_only: bool = False,
     ) -> OptimProblem:
         """Set up optimization problem for asset
 
         Args:
-            prices (dict): Dictionary of price arrays needed by assets in portfolio
+            prices (dict, optional): Dictionary of price arrays needed by assets in portfolio. Defaults to None
             timegrid (Timegrid, optional): Discretization grid for asset. Defaults to None,
                                            in which case it must have been set previously
             costs_only (bool): Only create costs vector (speed up e.g. for sampling prices). Defaults to False
@@ -1116,12 +1116,15 @@ class Transport(Asset):
 
     @abc.abstractmethod
     def setup_optim_problem(
-        self, prices: dict, timegrid: Timegrid = None, costs_only: bool = False
+        self,
+        prices: Union[dict, None] = None,
+        timegrid: Timegrid = None,
+        costs_only: bool = False,
     ) -> OptimProblem:
         """Set up optimization problem for asset
 
         Args:
-            prices (dict): Dictionary of price arrays needed by assets in portfolio
+            prices (dict, optional): Dictionary of price arrays needed by assets in portfolio. Defaults to None
             timegrid (Timegrid, optional): Discretization grid for asset. Defaults to None,
                                            in which case it must have been set previously
             costs_only (bool): Only create costs vector (speed up e.g. for sampling prices). Defaults to False
@@ -1445,12 +1448,15 @@ class Contract(SimpleContract):
 
     @abc.abstractmethod
     def setup_optim_problem(
-        self, prices: dict, timegrid: Timegrid = None, costs_only: bool = False
+        self,
+        prices: Union[dict, None] = None,
+        timegrid: Timegrid = None,
+        costs_only: bool = False,
     ) -> OptimProblem:
         """Set up optimization problem for asset
 
         Args:
-            prices (dict): Dictionary of price arrays needed by assets in portfolio
+            prices (dict, optional): Dictionary of price arrays needed by assets in portfolio. Defaults to None
             timegrid (Timegrid, optional): Discretization grid for asset. Defaults to None,
                                            in which case it must have been set previously
             costs_only (bool): Only create costs vector (speed up e.g. for sampling prices). Defaults to False
@@ -1654,12 +1660,15 @@ class MultiCommodityContract(Contract):
 
     @abc.abstractmethod
     def setup_optim_problem(
-        self, prices: dict, timegrid: Timegrid = None, costs_only: bool = False
+        self,
+        prices: Union[dict, None],
+        timegrid: Timegrid = None,
+        costs_only: bool = False,
     ) -> OptimProblem:
         """Set up optimization problem for asset
 
         Args:
-            prices (dict): Dictionary of price arrays needed by assets in portfolio
+            prices (dict, optional): Dictionary of price arrays needed by assets in portfolio. Defaults to None
             timegrid (Timegrid, optional): Discretization grid for asset. Defaults to None,
                                            in which case it must have been set previously
             costs_only (bool): Only create costs vector (speed up e.g. for sampling prices). Defaults to False
@@ -1809,12 +1818,15 @@ class ExtendedTransport(Transport):
 
     @abc.abstractmethod
     def setup_optim_problem(
-        self, prices: dict, timegrid: Timegrid = None, costs_only: bool = False
+        self,
+        prices: Union[dict, None] = None,
+        timegrid: Timegrid = None,
+        costs_only: bool = False,
     ) -> OptimProblem:
         """Set up optimization problem for asset
 
         Args:
-            prices (dict): Dictionary of price arrays needed by assets in portfolio
+            prices (dict, optional): Dictionary of price arrays needed by assets in portfolio. Defaults to None
             timegrid (Timegrid, optional): Discretization grid for asset. Defaults to None,
                                            in which case it must have been set previously
             costs_only (bool): Only create costs vector (speed up e.g. for sampling prices). Defaults to False
@@ -1939,12 +1951,15 @@ class ScaledAsset(Asset):
 
     @abc.abstractmethod
     def setup_optim_problem(
-        self, prices: dict, timegrid: Timegrid = None, costs_only: bool = False
+        self,
+        prices: Union[dict, None] = None,
+        timegrid: Timegrid = None,
+        costs_only: bool = False,
     ) -> OptimProblem:
         """Set up optimization problem for asset
 
         Args:
-            prices (dict): Dictionary of price arrays needed by assets in portfolio
+            prices (dict, optional): Dictionary of price arrays needed by assets in portfolio. Defaults to None
             timegrid (Timegrid, optional): Discretization grid for asset. Defaults to None,
                                            in which case it must have been set previously
             costs_only (bool): Only create costs vector (speed up e.g. for sampling prices). Defaults to False
@@ -2100,12 +2115,15 @@ class OrderBook(Asset):
 
     @abc.abstractmethod
     def setup_optim_problem(
-        self, prices: dict = None, timegrid: Timegrid = None, costs_only: bool = False
+        self,
+        prices: Union[dict, None] = None,
+        timegrid: Timegrid = None,
+        costs_only: bool = False,
     ) -> OptimProblem:
         """Set up optimization problem for asset
 
         Args:
-            prices (dict): Dictionary of price arrays needed by assets in portfolio --> not required here, for compatibility
+            prices (dict, optional): Dictionary of price arrays needed by assets in portfolio. Defaults to None. Not used here (only to keep comparable to other assets)
             timegrid (Timegrid, optional): Discretization grid for asset. Defaults to None,
                                            in which case it must have been set previously
             costs_only (bool): Only create costs vector (speed up e.g. for sampling prices). Defaults to False
