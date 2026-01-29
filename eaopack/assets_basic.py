@@ -316,6 +316,7 @@ class Storage(Asset):
         max_cycles_freq: str = "d",
         periodicity: Union[None, str] = None,
         periodicity_duration: Union[None, str] = None,
+        ramp: Union[float, None] = None,
     ):
         """Specific storage asset. A storage has the basic capability to
             (1) take in a commodity within a limited flow rate (capacity)
@@ -356,6 +357,7 @@ class Storage(Asset):
 
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
+            ramp (float): Maximum increase/decrease of virtual dispatch. Defaults to None. First point in time is unrestricted
         """
         super(Storage, self).__init__(
             name=name,
@@ -407,6 +409,7 @@ class Storage(Asset):
         ), "Cannot have periodicity duration not none and periodicity none"
         self.periodicity = periodicity
         self.periodicity_duration = periodicity_duration
+        self.ramp = ramp
 
     def setup_optim_problem(
         self,
@@ -583,12 +586,28 @@ class Storage(Asset):
                 parts_b_min = -my_start * np.ones(len_block) - inflow[block]
                 parts_b_min[-1] = self.end_level - my_start - inflow[block[-1]]
                 b_min[block] = parts_b_min
-        if sep_needed:
-            A = sp.hstack((A * self.eff_in, A / self.eff_out))  # for in and out
+
         # join restrictions for in, out, full, empty
         b = np.hstack((b, b_min))
         A = sp.vstack((A, A))
         cType = "U" * n + "L" * n
+
+        ### Ramp constraints
+        if self.ramp is not None:
+            D = sp.diags(
+                diagonals=[-np.ones(n), np.ones(n)],
+                offsets=[-1, 0],
+                shape=(n, n),
+                format="csr",
+            )
+            # first row 1, .... deleted -- assuming first element has no restriction
+            D = D[1:, :]
+            A = sp.vstack([A, D, D])  # stack lower and upper constraints onto A
+            cType += "L" * (n - 1) + "U" * (n - 1)
+            b = np.hstack([b, -self.ramp * np.ones(n - 1), self.ramp * np.ones(n - 1)])
+
+        if sep_needed:
+            A = sp.hstack((A * self.eff_in, A / self.eff_out))  # for in and out
 
         ## add restrictions for max_cycles
         # quantity behind no of cycles

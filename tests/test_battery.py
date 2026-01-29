@@ -543,6 +543,51 @@ class BatteryTest(unittest.TestCase):
         pass
 
 
+class TestBatteryWithRamp(unittest.TestCase):
+
+    def contract_and_battery(self, timegrid, ramp_battery, ramp_contract):
+        node = eao.assets.Node("testNode")
+        a = eao.assets.Storage(
+            "STORAGE1",
+            node,
+            size=50,
+            cap_in=100,
+            cap_out=100,
+            start_level=50,
+            end_level=0,
+            cost_out=0,
+            eff_in=0.8,
+            ramp=ramp_battery,
+        )
+        c = eao.assets.Contract(
+            name="c2", price="price", nodes=node, min_cap=-100.0, max_cap=100, ramp=ramp_contract
+        )
+        prices = {
+            "price": np.linspace(1, 100, timegrid.T)
+        }
+        portf = eao.portfolio.Portfolio([a, c])
+        return eao.optimize(portf, timegrid, prices)
+
+    def test_battery_with_ramp(self):
+        timegrid = eao.assets.Timegrid(
+            dt.date(2021, 1, 1), dt.date(2021, 1, 10), freq="h"
+        )
+        T = timegrid.T
+        # ramp in battery: At largest t the maximal d(dispatch)/dt = 5 is observed:
+        out = self.contract_and_battery(timegrid, 5, None)
+        np.testing.assert_almost_equal(out["dispatch"]["STORAGE1"].values[0:T-4], 0.0, 4)
+        np.testing.assert_almost_equal(out["dispatch"]["STORAGE1"].values[T-4:T], [5, 10, 15, 20], 4)
+
+        # ramp in contract: At largest t the same maximal d(dispatch)/dt = 5 is observed:
+        out = self.contract_and_battery(timegrid, None, 5)
+        np.testing.assert_almost_equal(out["dispatch"]["STORAGE1"].values[0:T-4], 0.0, 4)
+        np.testing.assert_almost_equal(out["dispatch"]["STORAGE1"].values[T-4:T], [5, 10, 15, 20], 4)
+
+        # No ramps: At largest t the same maximal d(dispatch)/dt = capacity is observed:
+        out = self.contract_and_battery(timegrid, None, None)
+        np.testing.assert_almost_equal(out["dispatch"]["STORAGE1"].values[0:T-1], 0.0, 4)
+        np.testing.assert_almost_equal(out["dispatch"]["STORAGE1"].values[T:], 50, 4)
+
 ###########################################################################################################
 ###########################################################################################################
 ###########################################################################################################
