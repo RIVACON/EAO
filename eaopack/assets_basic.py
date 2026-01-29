@@ -30,7 +30,6 @@ class Asset:
         end: Union[dt.datetime, None] = None,
         wacc: float = 0,
         freq: Union[str, None] = None,
-        profile: Union[pd.Series, None] = None,
     ):
         """The base class to define an asset.
 
@@ -43,8 +42,6 @@ class Asset:
             wacc (float, optional): WACC to discount the cash flows as the optimization target. Defaults to 0.
             freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq)
                                     The more granular frequency of portf & asset is used
-            profile (pd.Series, optional):  If freq(asset) > freq(portf) assuming this profile for granular dispatch (e.g. scaling hourly profile to week).
-                                            Defaults to None, only relevant if freq is not none
         """
         if not isinstance(name, str):
             name = str(name)
@@ -66,14 +63,6 @@ class Asset:
         self.end = end
 
         self.freq = freq
-        if freq is None:
-            self.profile = None
-        else:
-            self.profile = profile
-            if profile is not None:
-                assert isinstance(
-                    profile, pd.Series
-                ), "Profile must be np.Series. Asset:" + str(name)
 
     def set_timegrid(self, timegrid: Timegrid):
         """Set the timegrid for the asset
@@ -167,9 +156,6 @@ class Asset:
         """
         mymap = mapping.copy()
         mapping = pd.DataFrame()
-        # profile not yet implemented
-        if self.profile is not None:
-            raise NotImplementedError("No profiles can be defined (yet)")
         # iterate over all rows of orig. mapping (variable --> first minor grid item)
         # and generate remaining minor grid items
         for i, r in mymap.iterrows():
@@ -328,7 +314,6 @@ class Storage(Asset):
         freq: Union[None, str] = None,
         max_cycles_no: Union[None, float] = None,
         max_cycles_freq: str = "d",
-        profile: Union[None, pd.Series] = None,
         periodicity: Union[None, str] = None,
         periodicity_duration: Union[None, str] = None,
     ):
@@ -345,8 +330,6 @@ class Storage(Asset):
             wacc (float): Weighted average cost of capital to discount cash flows in target (asset parameter)
             freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq)
                                     The more granular frequency of portf & asset is used
-            profile (pd.Series, optional):  If freq(asset) > freq(portf) assuming this profile for granular dispatch (e.g. scaling hourly profile to week).
-                                            Defaults to None, only relevant if freq is not none
 
             size (float, str, StartEndValueDict): Maximum volume of commodity in storage. Use str or StartEndValueDict for time dependency
             cap_in (float, str, StartEndValueDict): Maximum flow rate for taking in a commodity. Use str or StartEndValueDict for time dependency
@@ -381,7 +364,6 @@ class Storage(Asset):
             end=end,
             wacc=wacc,
             freq=freq,
-            profile=profile,
         )
         assert size is not None, "Storage --" + self.name + "--: size must be given"
         self.size = size
@@ -481,8 +463,6 @@ class Storage(Asset):
             # to do average over prices across minor grids
             if hasattr(self.timegrid.restricted, "I_minor_in_major"):
                 myprice = []
-                if self.profile is not None:
-                    raise NotImplementedError("Need to extend to non flat profiles")
                 for myI in self.timegrid.restricted.I_minor_in_major:
                     myprice.append(price[myI].mean())
                 price = np.asarray(myprice)
@@ -818,7 +798,6 @@ class SimpleContract(Asset):
         min_cap: Union[float, StartEndValueDict, str] = 0.0,
         max_cap: Union[float, StartEndValueDict, str] = 0.0,
         freq: str = None,
-        profile: pd.Series = None,
         periodicity: str = None,
         periodicity_duration: str = None,
     ):
@@ -834,8 +813,6 @@ class SimpleContract(Asset):
             wacc (float): Weighted average cost of capital to discount cash flows in target   (asset parameter)
             freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq)
                                     The more granular frequency of portf & asset is used
-            profile (pd.Series, optional):  If freq(asset) > freq(portf) assuming this profile for granular dispatch (e.g. scaling hourly profile to week).
-                                            Defaults to None, only relevant if freq is not none
 
             min_cap (float, dict) : Minimum flow/capacity for buying (negative)
             max_cap (float, dict) : Maximum flow/capacity for selling (positive)
@@ -862,7 +839,6 @@ class SimpleContract(Asset):
             end=end,
             wacc=wacc,
             freq=freq,
-            profile=profile,
         )
         if isinstance(min_cap, (float, int)) and isinstance(max_cap, (float, int)):
             if min_cap > max_cap:
@@ -942,8 +918,6 @@ class SimpleContract(Asset):
         # to do average over prices across minor grids
         if hasattr(self.timegrid.restricted, "I_minor_in_major"):
             myprice = []
-            if self.profile is not None:
-                raise NotImplementedError("Need to extend to non flat profiles")
             for myI in self.timegrid.restricted.I_minor_in_major:
                 myprice.append(price[myI].mean())
             price = np.asarray(myprice)
@@ -1055,7 +1029,6 @@ class Transport(Asset):
         max_cap: Union[float, StartEndValueDict, str] = 0.0,
         efficiency: Union[float, StartEndValueDict, str] = 1.0,
         freq: str = None,
-        profile: pd.Series = None,
         periodicity: str = None,
         periodicity_duration: str = None,
     ):
@@ -1070,8 +1043,6 @@ class Transport(Asset):
             wacc (float): Weighted average cost of capital to discount cash flows in target   (asset parameter)
             freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq)
                                     The more granular frequency of portf & asset is used
-            profile (pd.Series, optional):  If freq(asset) > freq(portf) assuming this profile for granular dispatch (e.g. scaling hourly profile to week).
-                                            Defaults to None, only relevant if freq is not none
 
             min_cap (float, str, StartEndValueDict) : Minimum flow/capacity for transporting (from node 1 to node 2)
             max_cap (float, str, StartEndValueDict) : Minimum flow/capacity for transporting (from node 1 to node 2)
@@ -1089,7 +1060,6 @@ class Transport(Asset):
             end=end,
             wacc=wacc,
             freq=freq,
-            profile=profile,
         )
         assert len(self.nodes) == 2, (
             "Transport asset mus link exactly 2 nodes. Asset name: " + name
@@ -1168,8 +1138,6 @@ class Transport(Asset):
             # to do average over prices across minor grids
             if hasattr(self.timegrid.restricted, "I_minor_in_major"):
                 myprice = []
-                if self.profile is not None:
-                    raise NotImplementedError("Need to extend to non flat profiles")
                 for myI in self.timegrid.restricted.I_minor_in_major:
                     myprice.append(costs_time_series[myI].mean())
                 costs_time_series = np.asarray(myprice)
@@ -1343,7 +1311,6 @@ class Contract(SimpleContract):
         min_take: StartEndValueDict = None,
         max_take: StartEndValueDict = None,
         freq: str = None,
-        profile: pd.Series = None,
         periodicity: str = None,
         periodicity_duration: str = None,
         ramp: Union[float, None] = None,
@@ -1364,8 +1331,6 @@ class Contract(SimpleContract):
             wacc (float): Weighted average cost of capital to discount cash flows in target   (asset parameter)
             freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq)
                                     The more granular frequency of portf & asset is used
-            profile (pd.Series, optional):  If freq(asset) > freq(portf) assuming this profile for granular dispatch (e.g. scaling hourly profile to week).
-                                            Defaults to None, only relevant if freq is not none
 
             min_cap (float, dict, str) : Minimum flow/capacity for buying (negative) or selling (positive). Float or time series. Defaults to 0
             max_cap (float, dict, str) : Maximum flow/capacity for selling (positive). Float or time series. Defaults to 0
@@ -1398,7 +1363,6 @@ class Contract(SimpleContract):
             end=end,
             wacc=wacc,
             freq=freq,
-            profile=profile,
             price=price,
             extra_costs=extra_costs,
             min_cap=min_cap,
@@ -1574,7 +1538,6 @@ class MultiCommodityContract(Contract):
         max_take: StartEndValueDict = None,
         factors_commodities: list = [1, 1],
         freq: str = None,
-        profile: pd.Series = None,
         periodicity: str = None,
         periodicity_duration: str = None,
         ramp: Union[float, None] = None,
@@ -1594,8 +1557,6 @@ class MultiCommodityContract(Contract):
             wacc (float): Weighted average cost of capital to discount cash flows in target   (asset parameter)
             freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq)
                                     The more granular frequency of portf & asset is used
-            profile (pd.Series, optional):  If freq(asset) > freq(portf) assuming this profile for granular dispatch (e.g. scaling hourly profile to week).
-                                            Defaults to None, only relevant if freq is not none
 
             min_cap (float, dict, str) : Minimum flow/capacity for buying (negative) or selling (positive). Defaults to 0
             max_cap (float, dict, str) : Maximum flow/capacity for selling (positive). Defaults to 0
@@ -1632,7 +1593,6 @@ class MultiCommodityContract(Contract):
             end=end,
             wacc=wacc,
             freq=freq,
-            profile=profile,
             price=price,
             extra_costs=extra_costs,
             min_cap=min_cap,
@@ -1738,7 +1698,6 @@ class ExtendedTransport(Transport):
         min_take: StartEndValueDict = None,
         max_take: StartEndValueDict = None,
         freq: str = None,
-        profile: pd.Series = None,
         periodicity: str = None,
         periodicity_duration: str = None,
     ):
@@ -1752,8 +1711,6 @@ class ExtendedTransport(Transport):
             wacc (float): Weighted average cost of capital to discount cash flows in target   (asset parameter)
             freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq)
                                     The more granular frequency of portf & asset is used
-            profile (pd.Series, optional):  If freq(asset) > freq(portf) assuming this profile for granular dispatch (e.g. scaling hourly profile to week).
-                                            Defaults to None, only relevant if freq is not none
 
             min_cap (float, str, StartEndValueDict) : Minimum flow/capacity for transporting (from node 1 to node 2)
             max_cap (float, str, StartEndValueDict) : Minimum flow/capacity for transporting (from node 1 to node 2)
@@ -1786,7 +1743,6 @@ class ExtendedTransport(Transport):
             end=end,
             wacc=wacc,
             freq=freq,
-            profile=profile,
             costs_const=costs_const,
             costs_time_series=costs_time_series,
             min_cap=min_cap,
@@ -2080,7 +2036,6 @@ class OrderBook(Asset):
             end=None,
             wacc=wacc,
             freq=None,
-            profile=None,
         )
         if isinstance(orders, pd.DataFrame):
             myorders = dict()

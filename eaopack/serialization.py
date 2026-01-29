@@ -64,6 +64,15 @@ def json_serialize_objects(obj) -> dict:
             res.pop("end", None)
             res.pop("freq", None)
             res.pop("profile", None)
+        if res["asset_type"] in (
+            "CHPAsset",
+            "CHPAsset_with_min_load_costs",
+            "CHP_PQ_diagram",
+            "Plant",
+        ):  # some parameters not relevant for Plant-Type assets (could be done inheriting from contract, but not tested)
+            res.pop("periodicity", None)
+            res.pop("periodicity_duration", None)
+
     elif isinstance(obj, Portfolio):
         res = {"assets": obj.assets}
         if hasattr(obj, "timegrid"):

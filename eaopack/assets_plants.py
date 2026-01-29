@@ -43,9 +43,6 @@ class CHPAsset(ea.Contract):
         min_take: StartEndValueDict = None,
         max_take: StartEndValueDict = None,
         freq: str = None,
-        profile: pd.Series = None,
-        periodicity: str = None,
-        periodicity_duration: str = None,
         conversion_factor_power_heat: Union[float, StartEndValueDict, str] = 1.0,
         max_share_heat: Union[float, StartEndValueDict, str] = None,
         ramp: float = None,
@@ -87,8 +84,6 @@ class CHPAsset(ea.Contract):
             wacc (float): Weighted average cost of capital to discount cash flows in target   (asset parameter)
             freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq)
                                     The more granular frequency of portf & asset is used
-            profile (pd.Series, optional):  If freq(asset) > freq(portf) assuming this profile for granular dispatch (e.g. scaling hourly profile to week).
-                                            Defaults to None, only relevant if freq is not none
             min_cap (float) : Minimum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
             max_cap (float) : Maximum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
             min_take (float) : Minimum volume within given period. Defaults to None
@@ -105,8 +100,6 @@ class CHPAsset(ea.Contract):
                                                    dict['end']   = array
                                                    dict['values"] = array
                                             str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
-            periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
-            periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
             conversion_factor_power_heat (float, dict, str): Conversion efficiency from heat to power. Defaults to 1.
             max_share_heat (float, dict, str): Defines upper bound for the heat dispatch as a percentage of the power dispatch.
                                                I.e. max dispatch heat = max_share_heat * power dispatch. Defaults to None (no restriction).
@@ -154,15 +147,12 @@ class CHPAsset(ea.Contract):
             end=end,
             wacc=wacc,
             freq=freq,
-            profile=profile,
             price=price,
             extra_costs=extra_costs,
             min_cap=min_cap,
             max_cap=max_cap,
             min_take=min_take,
             max_take=max_take,
-            periodicity=periodicity,
-            periodicity_duration=periodicity_duration,
             ramp=ramp,
         )
         self._no_heat = _no_heat
@@ -1366,9 +1356,6 @@ class Plant(CHPAsset):
         min_take: StartEndValueDict = None,
         max_take: StartEndValueDict = None,
         freq: str = None,
-        profile: pd.Series = None,
-        periodicity: str = None,
-        periodicity_duration: str = None,
         ramp: float = None,
         start_costs: Union[float, Sequence[float], StartEndValueDict] = 0.0,
         running_costs: Union[float, StartEndValueDict, str] = 0.0,
@@ -1404,8 +1391,6 @@ class Plant(CHPAsset):
             wacc (float): Weighted average cost of capital to discount cash flows in target   (asset parameter)
             freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq)
                                     The more granular frequency of portf & asset is used
-            profile (pd.Series, optional):  If freq(asset) > freq(portf) assuming this profile for granular dispatch (e.g. scaling hourly profile to week).
-                                            Defaults to None, only relevant if freq is not none
             min_cap (float) : Minimum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
             max_cap (float) : Maximum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
             min_take (float) : Minimum volume within given period. Defaults to None
@@ -1421,8 +1406,6 @@ class Plant(CHPAsset):
                                                    dict['end']   = array
                                                    dict['values"] = array
                                             str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
-            periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
-            periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
             ramp (float): Maximum increase/decrease of virtual dispatch (power + conversion_factor_power_heat * heat) in one main time unit. Defaults to None.
             start_costs (float): Costs for starting. Defaults to 0.
             running_costs (float): Costs when on. Defaults to 0.
@@ -1461,15 +1444,12 @@ class Plant(CHPAsset):
             end=end,
             wacc=wacc,
             freq=freq,
-            profile=profile,
             price=price,
             extra_costs=extra_costs,
             min_cap=min_cap,
             max_cap=max_cap,
             min_take=min_take,
             max_take=max_take,
-            periodicity=periodicity,
-            periodicity_duration=periodicity_duration,
             ramp=ramp,
             start_costs=start_costs,
             running_costs=running_costs,

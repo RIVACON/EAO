@@ -381,7 +381,6 @@ class BatteryTest(unittest.TestCase):
                         "periodicity": null,
                         "periodicity_duration": null,
                         "price": "dah",
-                        "profile": null,
                         "start": null,
                         "wacc": 0
                     },
@@ -421,7 +420,6 @@ class BatteryTest(unittest.TestCase):
                         "periodicity": null,
                         "periodicity_duration": null,
                         "price": null,
-                        "profile": null,
                         "size": 400.0,
                         "start": null,
                         "start_level": 200.0,

@@ -44,8 +44,8 @@ class test_setting_params(unittest.TestCase):
         k, d = eao.io.get_params_tree(a)
         # d is a dictionary of all parameters (nested)
         # k is a list of parameter names (pointing downwards into nested objects)
-        self.assertEqual(len(d), 15)
-        self.assertEqual(len(k), 23)
+        self.assertEqual(len(d), 14)
+        self.assertEqual(len(k), 22)
         ### get parameter
         self.assertEqual(eao.io.get_param(a, "name"), "SC")
         self.assertEqual(eao.io.get_param(a, ["nodes", 0, "unit", "volume"]), "MWh")
