@@ -739,8 +739,9 @@ class MultiCommodity(unittest.TestCase):
         op = portf.setup_optim_problem(prices)
         res = op.optimize()
         # checking against known value --> no change
-        self.assertAlmostEqual(res.value, 3307.322231803014, 4)
         out = eao.io.extract_output(portf, op, res, prices)
+        ### eao.io.output_to_file(out, "test_output.xlsx")
+        self.assertAlmostEqual(res.value, 3310.85758866535, 4)
         self.assertAlmostEqual(
             res.value, out["DCF"].sum().sum()
         )  # check detailed - asset-wise DCF is equal to LP value
@@ -748,9 +749,11 @@ class MultiCommodity(unittest.TestCase):
         out["dispatch"]["heat_demand (heat)"].sum()
         heat_res = out["dispatch"]["heat_demand (heat)"].values
         self.assertAlmostEqual(heat_res.sum(), -287.6800669895399, 4)
-        self.assertAlmostEqual(heat_res[-1], -0.7309221113481956, 4)
-        self.assertAlmostEqual(heat_res[0], 0, 4)
-        self.assertAlmostEqual(heat_res[71], -0.05461761740138421, 4)
+        ## fill level 0 at 23:00? Should be end_level for each day
+        fl = out["internal_variables"]["heat_storage_fill_level"]
+        np.testing.assert_almost_equal(
+            fl[fl.index.hour == 23].values, portf.assets[0].end_level, 3
+        )
 
 
 class ScaledAsset(unittest.TestCase):

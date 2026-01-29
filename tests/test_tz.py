@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 import pandas as pd
 import datetime as dt
-import json
+import os
 from os.path import dirname, join
 import sys
 mypath = (dirname(__file__))
@@ -201,7 +201,7 @@ class TimeZones(unittest.TestCase):
         Start = pd.Timestamp(Start).tz_localize('CET')
         End   = pd.Timestamp(End).tz_localize('CET')
 
-        data      = pd.read_pickle('./tests/data_DAH_ID.pkl')
+        data      = pd.read_pickle(os.path.join(os.path.join(os.path.dirname(__file__)),'data_DAH_ID.pkl'))
         tg_dah = eao.basic_classes.Timegrid(start=Start, end=End, freq='h', timezone='CET')
         #### cast to grid: there was an issue here:
         p = tg_dah.prices_to_grid(data)   
