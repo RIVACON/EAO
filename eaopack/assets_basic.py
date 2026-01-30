@@ -594,6 +594,9 @@ class Storage(Asset):
 
         ### Ramp constraints
         if self.ramp is not None:
+            # scale ramp in case timegrid.freq and timegrid.main_time_unit are not equal
+            ramp = self.ramp * self.timegrid.restricted.dt[0]
+
             D = sp.diags(
                 diagonals=[-np.ones(n), np.ones(n)],
                 offsets=[-1, 0],
@@ -604,7 +607,7 @@ class Storage(Asset):
             D = D[1:, :]
             A = sp.vstack([A, D, D])  # stack lower and upper constraints onto A
             cType += "L" * (n - 1) + "U" * (n - 1)
-            b = np.hstack([b, -self.ramp * np.ones(n - 1), self.ramp * np.ones(n - 1)])
+            b = np.hstack([b, -ramp * np.ones(n - 1), ramp * np.ones(n - 1)])
 
         if sep_needed:
             A = sp.hstack((A * self.eff_in, A / self.eff_out))  # for in and out
