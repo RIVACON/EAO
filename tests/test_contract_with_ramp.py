@@ -322,6 +322,7 @@ class Test_Contract_Ramp(unittest.TestCase):
             ramp=ramp,
             cost_in=1.1,
             block_size="d",
+            no_simult_in_out=True,
         )
         portfA = eao.portfolio.Portfolio([c, b])
         bb = b.copy
