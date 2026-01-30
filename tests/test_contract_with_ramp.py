@@ -293,3 +293,50 @@ class Test_Contract_Ramp(unittest.TestCase):
             )
             np.testing.assert_almost_equal(a[0:10], b, 3)
             pass
+
+    def test_batterie_mit_rampen_edge_cases(self):
+        """Test and illustration: Create a ramp for a battery via a contract"""
+        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 4), freq="15min")
+        T = timegrid.T
+        prices = {"price": np.linspace(1, 10, T)}
+        prices["price"][0] = -1000
+        ## portf
+        ramp = 0.5
+        node = eao.Node("power_node")
+        c = eao.assets.Contract(
+            name="markt",
+            price="price",
+            nodes=node,
+            min_cap=-100,
+            max_cap=100.0,
+            ramp=None,
+        )
+        b = eao.assets.Storage(
+            name="bat",
+            nodes=node,
+            cap_in=100,
+            cap_out=100,
+            size=200,
+            start_level=2,
+            end_level=10,
+            ramp=ramp,
+            cost_in=1.1,
+            block_size="d",
+        )
+        portfA = eao.portfolio.Portfolio([c, b])
+        bb = b.copy
+        cc = c.copy
+        bb.ramp = None
+        cc.ramp = ramp
+        portfB = eao.portfolio.Portfolio([cc, bb])
+        outA = eao.optimize(portfA, timegrid, prices)
+        outB = eao.optimize(portfB, timegrid, prices)
+        flA = outA["internal_variables"]["bat_fill_level"].values
+        flB = outB["internal_variables"]["bat_fill_level"].values
+        dA = outA["dispatch"]["bat"].values
+        dB = outB["dispatch"]["bat"].values
+        diffA = abs(dA[1:] - dA[:-1])
+        diffB = abs(dB[1:] - dB[:-1])
+        np.testing.assert_almost_equal(dA, dB, 3)
+        self.assertAlmostEqual(max(diffA), ramp / 4, 4)  # end level is min
+        pass

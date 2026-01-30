@@ -360,6 +360,7 @@ class OptimProblem:
             )
 
             if not self.A is None:
+                print(f"len(b)={len(self.b)}, len(cType)={len(self.cType)}, A.shape={self.A.shape}")
                 assert (
                     (len(self.b) == len(self.cType))
                     and (len(self.b) == self.A.shape[0])
