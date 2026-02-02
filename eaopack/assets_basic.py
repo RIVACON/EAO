@@ -234,7 +234,7 @@ class Asset:
     def make_vector(
         self,
         value: Union[float, StartEndValueDict, str],
-        prices: Union[None, dict],
+        prices: Union[None, dict, pd.DataFrame] = None,
         default_value: Union[None, float] = None,
         convert=False,
     ):
@@ -247,16 +247,21 @@ class Asset:
                                              dict['end']   = array
                                              dict['values'] = array
                                       str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
-            prices (dict): Dictionary of price arrays needed by assets in portfolio
+            prices (dict, pd.DataFrame): Dictionary of price arrays needed by assets in portfolio
             default_value (float): The value that is used if any of the entries of the resulting vector are not specified
 
         Returns: vector in time grid
 
         """
+        if prices is None:
+            prices = {}
         I = self.timegrid.restricted.I  # indices of restricted time grid
         T = self.timegrid.restricted.T
         if value is None:
-            return value
+            if default_value is None:
+                return value
+            else:
+                return default_value * np.ones(T)
         elif isinstance(value, (float, int, np.ndarray)):
             vec = value * np.ones(T)
         elif isinstance(value, str):
@@ -1045,8 +1050,8 @@ class Transport(Asset):
         start: dt.datetime = None,
         end: dt.datetime = None,
         wacc: float = 0,
-        costs_const: float = 0.0,
-        costs_time_series: str = None,
+        # cost: float = 0.0,
+        costs: Union[float, StartEndValueDict, str] = None,
         min_cap: Union[float, StartEndValueDict, str] = 0.0,
         max_cap: Union[float, StartEndValueDict, str] = 0.0,
         efficiency: Union[float, StartEndValueDict, str] = 1.0,
@@ -1069,8 +1074,7 @@ class Transport(Asset):
             min_cap (float, str, StartEndValueDict) : Minimum flow/capacity for transporting (from node 1 to node 2)
             max_cap (float, str, StartEndValueDict) : Minimum flow/capacity for transporting (from node 1 to node 2)
             efficiency (float, str, StartEndValueDict): efficiency of transport. May be any positive float. Defaults to 1.
-            costs_time_series (str): Name of cost vector for transporting. Defaults to None
-            costs_const (float, optional): extra costs added to price vector (in or out). Defaults to 0.
+            costs (float, optional): costs for transport. Defaults to None.
 
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
@@ -1092,8 +1096,8 @@ class Transport(Asset):
         )
         self.min_cap = min_cap
         self.max_cap = max_cap
-        self.costs_const = costs_const
-        self.costs_time_series = costs_time_series
+        self.costs = costs
+        # self.costs_time_series = costs_time_series
         if isinstance(efficiency, float):
             assert efficiency > 0.0, (
                 "efficiency of transport must be chosen to be positive (" + name + ")"
@@ -1133,21 +1137,7 @@ class Transport(Asset):
                 + self.name
             )
 
-        if self.costs_time_series is None:
-            costs_time_series = np.zeros(self.timegrid.T)
-        else:
-            if not (self.costs_time_series in prices):
-                raise ValueError(
-                    "Costs not found in given price time series. Asset: " + self.name
-                )
-            costs_time_series = prices[self.costs_time_series].copy()
-            if not (
-                len(costs_time_series) == self.timegrid.T
-            ):  # vector must have right size for discretization
-                raise ValueError(
-                    "Length of costs array must be equal to length of time grid. Asset: "
-                    + self.name
-                )
+        costs = self.make_vector(self.costs, prices, default_value=0.0, convert=False)
 
         ##### using restricted timegrid for asset lifetime (save resources)
         I = self.timegrid.restricted.I  # indices of restricted time grid
@@ -1155,16 +1145,6 @@ class Transport(Asset):
         discount_factors = (
             self.timegrid.restricted.discount_factors
         )  # disc fctrs of restr. grid
-        if not len(costs_time_series) == 1:  # if not  scalar, restrict to time window
-            # check: if the restricted timegrid has minor and major grids, need
-            # to do average over prices across minor grids
-            if hasattr(self.timegrid.restricted, "I_minor_in_major"):
-                myprice = []
-                for myI in self.timegrid.restricted.I_minor_in_major:
-                    myprice.append(costs_time_series[myI].mean())
-                costs_time_series = np.asarray(myprice)
-            else:  # simply restrict prices to  asset time window
-                costs_time_series = costs_time_series[I]
         # Make vector of single min/max capacities.
         max_cap = self.make_vector(
             self.max_cap, prices, default_value=0.0, convert=True
@@ -1175,20 +1155,9 @@ class Transport(Asset):
         efficiency = self.make_vector(
             self.efficiency, prices, default_value=1.0, convert=False
         )
-        # if isinstance(self.max_cap, (float, int)):
-        #     max_cap = self.max_cap*np.ones(T)
-        # else: # given in form of dict (start/end/values)
-        #     max_cap = timegrid.restricted.values_to_grid(self.max_cap)
-        # if isinstance(self.min_cap, (float, int)):
-        #     min_cap = self.min_cap*np.ones(T)
-        # else: # given in form of dict (start/end/values)
-        #     min_cap = timegrid.restricted.values_to_grid(self.min_cap)
-        # # need to scale to discretization step since: flow * dT = volume in time step
-        # min_cap = min_cap * self.timegrid.restricted.dt
-        # max_cap = max_cap * self.timegrid.restricted.dt
 
         mapping = pd.DataFrame()  ## mapping of variables for use in portfolio
-        c = costs_time_series + self.costs_const
+        c = costs  #  + self.costs_const
         if ((all(max_cap <= 0.0)) or (all(min_cap >= 0.0))) or (all(c == 0)):
             # in this case  one variable per time step and node needed
             # upper / lower bound for dispatch Node1 / Node2
@@ -1712,8 +1681,8 @@ class ExtendedTransport(Transport):
         start: dt.datetime = None,
         end: dt.datetime = None,
         wacc: float = 0,
-        costs_const: float = 0.0,
-        costs_time_series: str = None,
+        # costs_const: float = 0.0,
+        costs: Union[float, StartEndValueDict, str] = None,
         min_cap: Union[float, StartEndValueDict, str] = 0.0,
         max_cap: Union[float, StartEndValueDict, str] = 0.0,
         efficiency: Union[float, StartEndValueDict, str] = 1.0,
@@ -1737,8 +1706,7 @@ class ExtendedTransport(Transport):
             min_cap (float, str, StartEndValueDict) : Minimum flow/capacity for transporting (from node 1 to node 2)
             max_cap (float, str, StartEndValueDict) : Minimum flow/capacity for transporting (from node 1 to node 2)
             efficiency (float, str, StartEndValueDict): efficiency of transport. May be any positive float. Defaults to 1.
-            costs_time_series (str): Name of cost vector for transporting. Defaults to None
-            costs_const (float, optional): extra costs added to price vector (in or out). Defaults to 0.
+            costs (float, str, StartEndValueDict): Name of cost vector for transporting. Defaults to None
 
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
@@ -1765,8 +1733,7 @@ class ExtendedTransport(Transport):
             end=end,
             wacc=wacc,
             freq=freq,
-            costs_const=costs_const,
-            costs_time_series=costs_time_series,
+            costs=costs,
             min_cap=min_cap,
             max_cap=max_cap,
             efficiency=efficiency,

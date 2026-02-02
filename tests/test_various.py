@@ -343,7 +343,7 @@ class various(unittest.TestCase):
             end=dt.date(2021, 1, 25),
         )
         a4 = eao.assets.Transport(
-            name="Tr", costs_const=5.0, nodes=[node1, node2], min_cap=0.0, max_cap=1.0
+            name="Tr", costs=5.0, nodes=[node1, node2], min_cap=0.0, max_cap=1.0
         )
 
         # a3.set_timegrid(timegrid)

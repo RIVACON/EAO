@@ -247,8 +247,14 @@ class Timegrid:
                 "Error: Data provided ends before timegrid -- check input data"
             )
         prices = prices.reindex(prices.index.union(self.timepoints))
-        prices = prices.interpolate(method="time", limit_direction="both")
+        if prices.isnull().values.any():
+            prices = prices.interpolate(method="time", limit_direction="both")
+            print("!! WARNING: NULL values in dataframe have been interpolated")
         prices = prices.loc[self.timepoints]
+        if prices.isnull().values.any():
+            raise ValueError(
+                "!! ERROR: Null values in data (after trying to interpolate)"
+            )
         return prices
 
     def set_restricted_grid(

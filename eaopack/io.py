@@ -10,7 +10,7 @@ from eaopack.portfolio import Portfolio
 from eaopack.optimization import Results, OptimProblem
 from eaopack import serialization
 from eaopack.assets import Storage
-from eaopack.basic_classes import Timegrid
+from eaopack.basic_classes import Timegrid, StartEndValueDict
 
 
 def extract_output(
@@ -23,7 +23,7 @@ def extract_output(
         portf (Portfolio): Portfolio optimized
         op (OptimProblem): Optimization problem
         res (Results):     Optization result
-        prices (dict): used prices. Defaults to None if not to be added to output
+        prices (dict): used prices and other input data. Defaults to None if not to be added to output
 
     Returns: dictionary with results
         disp:    dataframe with dispatch per asset
@@ -105,7 +105,7 @@ def extract_output(
                 I = (
                     (op.mapping["asset"] == a.name)
                     & (op.mapping["type"] == "d")
-                    & (op.mapping["node"] == n.name)
+                    # & (op.mapping["node"] == a.nodes[0].name)   ### no node filter required - storage only with one node
                 )
                 my_mapping = op.mapping.loc[I, :]
                 ### extract ... disp in
@@ -177,6 +177,17 @@ def extract_output(
         if not prices is None:
             for myc in prices:
                 duals["input data: " + myc] = prices[myc]
+        # extract StartEndDict input data
+        for a in portf.assets:
+            for key in a.__dict__.keys():
+                if isinstance(getattr(a, key), dict):
+                    if (
+                        ("start" in getattr(a, key).keys())
+                        and ("end" in getattr(a, key).keys())
+                        and ("values" in getattr(a, key).keys())
+                    ):
+                        vals = a.make_vector(getattr(a, key))
+                        duals["input data (from dict): " + key] = vals
 
         # In case the result comes from an SLP, we cannot sum up the dispatch across samples.
         # rather it should be the average. Therefore divide summed dispatch by number of samples
@@ -192,7 +203,6 @@ def extract_output(
         output["internal_variables"] = internal_variables
         output["prices"] = duals
         output["special"] = special
-
     return output
 
 
@@ -382,6 +392,8 @@ def optimize(
                - asset internal variables
                - special variables
     """
+    assert data is not None, 'Data input "data" must be given, was None'
+
     if data is not None:
         my_data = timegrid.prices_to_grid(data)
     else:
