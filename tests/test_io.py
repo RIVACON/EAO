@@ -124,7 +124,7 @@ class IOTests(unittest.TestCase):
             end=dt.date(2021, 1, 25),
         )
         a4 = eao.assets.Transport(
-            name="Tr", costs_const=1.0, nodes=[node1, node2], min_cap=0.0, max_cap=1.0
+            name="Tr", costs=1.0, nodes=[node1, node2], min_cap=0.0, max_cap=1.0
         )
         a5 = eao.assets.Storage(
             "storage",
@@ -400,6 +400,23 @@ class OptimizeShortcutTests(unittest.TestCase):
         price = pd.DataFrame(index=ind, data=np.linspace(0, 1, len(ind)))
         myp = tg.prices_to_grid(price).copy()
         pass
+
+    def test_heat_portfolio(self):
+        """given portfolio. test behaviour"""
+
+        tg = eao.serialization.load_from_json(file_name="tests/tg_heat.json")
+        portf = eao.serialization.load_from_json(file_name="tests/portf_heat.json")
+        ### shorten
+        data = pd.read_pickle("tests/data_heat.pkl")
+        # check index is correct
+        out = eao.optimize(portf=portf, timegrid=tg, data=data, split_interval_size="d")
+        out["internal_variables"].head()
+        np.testing.assert_almost_equal(
+            -out["dispatch"]["heat_storage (heat_net)"].values,
+            out["internal_variables"]["heat_storage_charge"].values
+            + out["internal_variables"]["heat_storage_discharge"].values,
+            4,
+        )
 
 
 if __name__ == "__main__":

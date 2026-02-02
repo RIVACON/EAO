@@ -105,7 +105,7 @@ def extract_output(
                 I = (
                     (op.mapping["asset"] == a.name)
                     & (op.mapping["type"] == "d")
-                    & (op.mapping["node"] == n.name)
+                    # & (op.mapping["node"] == a.nodes[0].name)   ### no node filter required - storage only with one node
                 )
                 my_mapping = op.mapping.loc[I, :]
                 ### extract ... disp in
