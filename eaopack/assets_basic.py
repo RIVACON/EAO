@@ -234,7 +234,7 @@ class Asset:
     def make_vector(
         self,
         value: Union[float, StartEndValueDict, str],
-        prices: Union[None, dict],
+        prices: Union[None, dict, pd.DataFrame] = None,
         default_value: Union[None, float] = None,
         convert=False,
     ):
@@ -247,12 +247,14 @@ class Asset:
                                              dict['end']   = array
                                              dict['values'] = array
                                       str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
-            prices (dict): Dictionary of price arrays needed by assets in portfolio
+            prices (dict, pd.DataFrame): Dictionary of price arrays needed by assets in portfolio
             default_value (float): The value that is used if any of the entries of the resulting vector are not specified
 
         Returns: vector in time grid
 
         """
+        if prices is None:
+            prices = {}
         I = self.timegrid.restricted.I  # indices of restricted time grid
         T = self.timegrid.restricted.T
         if value is None:

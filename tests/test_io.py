@@ -388,6 +388,19 @@ class OptimizeShortcutTests(unittest.TestCase):
         with self.assertRaises(Exception):
             df = tg.prices_to_grid(data)
 
+    def test_warning_interpolate(self):
+        """given portfolio. test behaviour"""
+
+        ### shorten
+        start = pd.Timestamp(2026, 1, 28, tz="CET")
+        end = pd.Timestamp(2026, 1, 31, tz="CET")
+        tg = eao.Timegrid(start, end, freq="15min")
+        #### basic test
+        ind = pd.date_range(start=start, end=end, freq="2h")
+        price = pd.DataFrame(index=ind, data=np.linspace(0, 1, len(ind)))
+        myp = tg.prices_to_grid(price).copy()
+        pass
+
 
 if __name__ == "__main__":
     unittest.main()
