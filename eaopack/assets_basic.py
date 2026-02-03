@@ -1695,15 +1695,13 @@ class ExtendedTransport(Transport):
         """ExtendedTransport: Link two nodes, transporting the commodity at given efficiency and costs. Extends (simple) Transport
 
         Args:
-
             name (str): Unique name of the asset                                              (asset parameter)
             nodes (Node): 2 nodes, the transport links                                        (asset parameter)
             timegrid (Timegrid): Timegrid for discretization                                  (asset parameter)
             start (dt.datetime) : start of asset being active. defaults to none (-> timegrid start relevant)
             end (dt.datetime)   : end of asset being active. defaults to none (-> timegrid start relevant)
             wacc (float): Weighted average cost of capital to discount cash flows in target   (asset parameter)
-            freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq)
-                                    The more granular frequency of portf & asset is used
+            freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq). The more granular frequency of portf & asset is used
 
             min_cap (float, str, StartEndValueDict) : Minimum flow/capacity for transporting (from node 1 to node 2)
             max_cap (float, str, StartEndValueDict) : Minimum flow/capacity for transporting (from node 1 to node 2)
@@ -1713,20 +1711,22 @@ class ExtendedTransport(Transport):
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
 
+            min_take (dict) : Minimum volume within given period. Defaults to None
+            max_take (dict) : Maximum volume within given period. Defaults to None
+                                dict:  dict['start'] = np.array
+                                        dict['end']   = np.array
+                                        dict['values"] = np.array
+
+
             Extension of transport with more complex restrictions:
 
             - time dependent capacity restrictions
             - MinTake & MaxTake for a list of periods. With efficiency, min/maxTake refer to the quantity delivered FROM node 1
 
-        Examples
-            - with min_cap = max_cap and a detailed time series
-            - with MinTake & MaxTake, implement structured gas contracts
-        Additional args:
-            min_take (dict) : Minimum volume within given period. Defaults to None
-            max_take (dict) : Maximum volume within given period. Defaults to None
-                              dict:  dict['start'] = np.array
-                                     dict['end']   = np.array
-                                     dict['values"] = np.array
+            Examples
+                - with min_cap = max_cap and a detailed time series
+                - with MinTake & MaxTake, implement structured gas contracts
+
         """
         super(ExtendedTransport, self).__init__(
             name=name,
