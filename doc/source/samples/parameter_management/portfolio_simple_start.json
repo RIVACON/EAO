@@ -56,7 +56,7 @@
             "asset_type": "SimpleContract",
             "end": null,
             "extra_costs": 1.0,
-            "max_cap":  0.0,
+            "max_cap": 0.0,
             "min_cap": -2.0,
             "name": "sales b",
             "nodes": [
@@ -79,8 +79,7 @@
         {
             "__class__": "Asset",
             "asset_type": "Transport",
-            "costs_const": 1.0,
-            "costs_time_series": null,
+            "costs": 1.0,
             "efficiency": 1.0,
             "start": null,
             "end": null,
