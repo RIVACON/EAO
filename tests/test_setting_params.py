@@ -94,7 +94,7 @@ class test_setting_params(unittest.TestCase):
             extra_costs=1.0,
         )
         a4 = eao.assets.Transport(
-            name="Tr", costs_const=5.0, nodes=[node2, node1], min_cap=0.0, max_cap=100.0
+            name="Tr", costs=5.0, nodes=[node2, node1], min_cap=0.0, max_cap=100.0
         )
 
         portf = eao.portfolio.Portfolio([a1, a2, a3, a4, a1a])

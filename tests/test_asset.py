@@ -388,14 +388,13 @@ class TransportTest(unittest.TestCase):
         )
         a = eao.assets.Transport(
             name="Tr",
-            costs_const=5.0,
-            costs_time_series="rand_price",
+            costs="rand_price",
             nodes=[node1, node2],
             min_cap=0.0,
             max_cap=10.0,
         )
         # a.set_timegrid(timegrid)
-        prices = {"rand_price": np.random.rand(timegrid.T) - 0.5}
+        prices = {"rand_price": np.random.rand(timegrid.T) - 0.5 + 5}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
         res = op.optimize()
         # check for this case if result makes sense. Easy: are signs correct?
