@@ -1711,17 +1711,12 @@ class ExtendedTransport(Transport):
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
 
-            min_take (dict) : Minimum volume within given period. Defaults to None
-            max_take (dict) : Maximum volume within given period. Defaults to None
-                                dict:  dict['start'] = np.array
-                                        dict['end']   = np.array
-                                        dict['values"] = np.array
-
+            min_take (dict, optional): Minimum volume within given period. Defaults to None
+            max_take (dict, optional): Maximum volume within given period. Defaults to None
 
             Extension of transport with more complex restrictions:
-
-            - time dependent capacity restrictions
-            - MinTake & MaxTake for a list of periods. With efficiency, min/maxTake refer to the quantity delivered FROM node 1
+                - time dependent capacity restrictions
+                - MinTake & MaxTake for a list of periods. With efficiency, min/maxTake refer to the quantity delivered FROM node 1
 
             Examples
                 - with min_cap = max_cap and a detailed time series
