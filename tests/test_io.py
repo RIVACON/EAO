@@ -418,6 +418,25 @@ class OptimizeShortcutTests(unittest.TestCase):
             4,
         )
 
+    def test_io_with_signature(self):
+        """try out signature to help filtering parameters when serializing"""
+        ###### sample code to show principle
+        tg = eao.serialization.load_from_json(file_name="tests/tg_heat.json")
+        portf = eao.serialization.load_from_json(file_name="tests/portf_heat.json")
+        import inspect
+
+        a = portf.assets[0]
+        # Get the signature object
+        sig = inspect.signature(a.__init__)
+        allowed_keys = sig.parameters.keys()
+        # 2. Filter the dictionary
+        test_dict = {"name": "ss", "price": "s", "min_cap": None, "other": 1}
+        filtered_dict = {k: v for k, v in test_dict.items() if k in allowed_keys}
+        #### do serialization
+        s = eao.serialization.to_json(a)
+        aa = eao.serialization.load_from_json(s)
+        pass
+
 
 if __name__ == "__main__":
     unittest.main()

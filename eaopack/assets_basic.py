@@ -1692,7 +1692,9 @@ class ExtendedTransport(Transport):
         periodicity: str = None,
         periodicity_duration: str = None,
     ):
-        """Transport:
+        """ExtendedTransport: Link two nodes, transporting the commodity at given efficiency and costs. Extends (simple) Transport
+
+        Args:
 
             name (str): Unique name of the asset                                              (asset parameter)
             nodes (Node): 2 nodes, the transport links                                        (asset parameter)
