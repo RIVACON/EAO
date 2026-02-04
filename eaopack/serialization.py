@@ -7,6 +7,7 @@ import pytz
 from eaopack.assets import *  # need to import to be able to deserialize
 from eaopack.portfolio import *  # need to import to be able to deserialize
 from eaopack.io import extract_output, output_to_file
+import inspect
 
 
 def json_serialize_objects(obj) -> dict:
@@ -48,14 +49,24 @@ def json_serialize_objects(obj) -> dict:
         }
     elif isinstance(obj, Asset):
         res = obj.__dict__.copy()
+
+        ### only serialize parameters from __init__
+        sig = inspect.signature(obj.__init__)
+        sig = sig.parameters.keys()
+        res = {k: v for k, v in res.items() if k in sig}
+
+        ### specific rules  --- we should be able to delete most of these rules
         res.pop("timegrid", None)
         res.pop("asset_names", None)
         res.pop("_no_separate_disp_vars", None)  # helper for contract
-        res.pop("start_ramp_time", None)  # only relevant for class CHPAsset, calculated
-        res.pop(
-            "shutdown_ramp_time", None
-        )  # only relevant for class CHPAsset, calculated
-        res.pop("idx_nodes", None)  # only relevant for class CHPAsset, calculated
+        # res.pop("start_ramp_time", None)  # only relevant for class CHPAsset, calculated
+        # res.pop(
+        #     "shutdown_ramp_time", None
+        # )  # only relevant for class CHPAsset, calculated
+        # res.pop("idx_nodes", None)  # only relevant for class CHPAsset, calculated
+        # res.pop("heat_idx", None)  # only relevant for class CHPAsset, calculated
+        # res.pop("on_idx", None)  # only relevant for class CHPAsset, calculated
+        # res.pop("n", None)  # only relevant for class CHPAsset, calculated
         # res.pop('timegrid', None) # not to be serialized
         res["__class__"] = "Asset"  # super class Asset
         res["asset_type"] = obj.__class__.__name__  # store child class

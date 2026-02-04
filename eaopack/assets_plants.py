@@ -1228,25 +1228,164 @@ class CHPAsset(ea.Contract):
 
 
 class CHPAsset_with_min_load_costs(CHPAsset):
+
     def __init__(
         self,
         min_load_threshhold: Union[float, Sequence[float], StartEndValueDict] = 0.0,
         min_load_costs: Union[float, Sequence[float], StartEndValueDict, None] = None,
-        **kwargs
+        name: str = "default_name_contract",
+        nodes: List[Node] = [
+            Node(name="default_node_power"),
+            Node(name="default_node_heat"),
+            Node(name="default_node_gas_optional"),
+        ],
+        start: dt.datetime = None,
+        end: dt.datetime = None,
+        wacc: float = 0,
+        price: str = None,
+        heat_price: Union[float, StartEndValueDict, str] = None,
+        extra_costs: Union[float, StartEndValueDict, str] = 0.0,
+        min_cap: Union[float, StartEndValueDict, str] = 0.0,
+        max_cap: Union[float, StartEndValueDict, str] = 0.0,
+        min_take: StartEndValueDict = None,
+        max_take: StartEndValueDict = None,
+        freq: str = None,
+        conversion_factor_power_heat: Union[float, StartEndValueDict, str] = 1.0,
+        max_share_heat: Union[float, StartEndValueDict, str] = None,
+        ramp: float = None,
+        start_costs: Union[float, Sequence[float], StartEndValueDict] = 0.0,
+        running_costs: Union[float, StartEndValueDict, str] = 0.0,
+        min_runtime: float = 0,
+        time_already_running: float = 0,
+        min_downtime: float = 0,
+        time_already_off: float = 0,
+        last_dispatch: float = 0,
+        start_ramp_lower_bounds: Sequence = None,
+        start_ramp_upper_bounds: Sequence = None,
+        shutdown_ramp_lower_bounds: Sequence = None,
+        shutdown_ramp_upper_bounds: Sequence = None,
+        start_ramp_lower_bounds_heat: Sequence = None,
+        start_ramp_upper_bounds_heat: Sequence = None,
+        shutdown_ramp_lower_bounds_heat: Sequence = None,
+        shutdown_ramp_upper_bounds_heat: Sequence = None,
+        ramp_freq: str = None,
+        start_fuel: Union[float, StartEndValueDict, str] = 0.0,
+        fuel_efficiency: Union[float, StartEndValueDict, str] = 1.0,
+        consumption_if_on: Union[float, StartEndValueDict, str] = 0.0,
+        _no_heat=False,
     ):
         """CHPContract with additional Min Load costs:
             adding costs when running below a threshhold capacity
         Args:
 
-        CHPAsset arguments
+            min_load_threshhold (float: optional): capacity below which additional costs apply
+            min_load_costs      (float: optional): costs that apply below a threshhold (fixed costs "is below * costs" independend of capacity)
 
-        additional:
+            name (str): Unique name of the asset                                              (asset parameter)
+            nodes (Node): One node each for generated power and heat                          (asset parameter)
+                          optional: node for fuel (e.g. gas)
+            start (dt.datetime) : start of asset being active. defaults to none (-> timegrid start relevant)
+            end (dt.datetime)   : end of asset being active. defaults to none (-> timegrid start relevant)
+            timegrid (Timegrid): Timegrid for discretization                                  (asset parameter)
+            wacc (float): Weighted average cost of capital to discount cash flows in target   (asset parameter)
+            freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq)
+                                    The more granular frequency of portf & asset is used
+            min_cap (float) : Minimum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
+            max_cap (float) : Maximum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
+            min_take (float) : Minimum volume within given period. Defaults to None
+            max_take (float) : Maximum volume within given period. Defaults to None
+                              float: constant value
+                              dict:  dict['start'] = np.array
+                                     dict['end']   = np.array
+                                     dict['values"] = np.array
+            price (str): Name of price vector for power equivalent (power + conversion_factor*heat) produced
+            heat_price (float, dict, str): Price for heat produced. Defaults to None
+            extra_costs (float, dict, str): extra costs added to price vector (in or out). Defaults to 0.
+                                            float: constant value
+                                            dict:  dict['start'] = array
+                                                   dict['end']   = array
+                                                   dict['values"] = array
+                                            str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
+            conversion_factor_power_heat (float, dict, str): Conversion efficiency from heat to power. Defaults to 1.
+            max_share_heat (float, dict, str): Defines upper bound for the heat dispatch as a percentage of the power dispatch.
+                                               I.e. max dispatch heat = max_share_heat * power dispatch. Defaults to None (no restriction).
+            ramp (float): Maximum increase/decrease of virtual dispatch (power + conversion_factor_power_heat * heat) in one main time unit). Defaults to None.
+            start_costs (float): Costs for starting. Defaults to 0.
+            running_costs (float): Costs when on. Defaults to 0.
+            min_runtime (int): Minimum runtime in timegrids main_time_unit. (start ramp time and shutdown ramp time do not count towards the min runtime.) Defaults to 0.
+            time_already_running (int): The number of timesteps the asset is already running in timegrids main_time_unit. Defaults to 0.
+            min_downtime (int): Minimum downtime in timegrids main_time_unit. Defaults to 0.
+            time_already_off (int): The number of timesteps the asset has already been off in timegrids main_time_unit. Defaults to 0.
+            last_dispatch (float): Previous virtual dispatch (power + conversion_factor_power_heat * heat). Defaults to 0.
+            start_ramp_lower_bounds (Sequence): The i-th element of this sequence specifies a lower bound of the
+                                                virtual dispatch (power + conversion_factor_power_heat * heat) at i timesteps
+                                                of freq ramp_freq after starting.  Defaults to None.
+            start_ramp_upper_bounds (Sequence): The i-th element of this sequence specifies an upper bound of the
+                                                virtual dispatch (power + conversion_factor_power_heat * heat) at i timesteps
+                                                of freq ramp_freq after starting.  Defaults to None.
+            shutdown_ramp_lower_bounds (Sequence): The i-th element of this sequence specifies a lower bound of the
+                                                   virtual dispatch (power + conversion_factor_power_heat * heat) at i timesteps
+                                                   of freq ramp_freq before turning off. Defaults to None.
+            shutdown_ramp_upper_bounds (Sequence): The i-th element of this sequence specifies an upper bound of the
+                                                   virtual dispatch (power + conversion_factor_power_heat * heat) at i timesteps
+                                                   of freq ramp_freq before turning off. If it is None, it is set equal to shutdown_ramp_upper_bounds.
+                                                   Defaults to None.
+            start_ramp_lower_bounds_heat (Sequence): The i-th element of this sequence specifies a lower bound of heat dispatch at i timesteps
+            start_ramp_upper_bounds_heat (Sequence): as above
+            shutdown_ramp_lower_bounds_heat (Sequence): as above
+            shutdown_ramp_upper_bounds_heat (Sequence): as above
+            ramp_freq (str): A string specifying the frequency of the start-and shutdown ramp specification.
+                             If this is None, the timegrids main_time_unit is used. Otherwise the start and shutdown ramps are
+                             interpolated to get values in the timegrids freq.
 
-        min_load_threshhold (float: optional): capacity below which additional costs apply
-        min_load_costs      (float: optional): costs that apply below a threshhold (fixed costs "is below * costs" independend of capacity)
+
+            Optional fuel: Explicit fuel consumption (e.g. gas) for multi-commodity simulation
+                 start_fuel (float, dict, str): detaults to  0
+                 fuel_efficiency (float, dict, str): defaults to 1
+                 consumption_if_on (float, dict, str): defaults to 0
+
+            _no_heat (optional):  No heat node given (making CHP a plain power plant). Defaults to False
+
 
         """
-        super().__init__(**kwargs)
+        super().__init__(
+            name=name,
+            nodes=nodes,
+            start=start,
+            end=end,
+            wacc=wacc,
+            price=price,
+            heat_price=heat_price,
+            extra_costs=extra_costs,
+            min_cap=min_cap,
+            max_cap=max_cap,
+            min_take=min_take,
+            max_take=max_take,
+            freq=freq,
+            conversion_factor_power_heat=conversion_factor_power_heat,
+            max_share_heat=max_share_heat,
+            ramp=ramp,
+            start_costs=start_costs,
+            running_costs=running_costs,
+            min_runtime=min_runtime,
+            time_already_running=time_already_running,
+            min_downtime=min_downtime,
+            time_already_off=time_already_off,
+            last_dispatch=last_dispatch,
+            start_ramp_lower_bounds=start_ramp_lower_bounds,
+            start_ramp_upper_bounds=start_ramp_upper_bounds,
+            shutdown_ramp_lower_bounds=shutdown_ramp_lower_bounds,
+            shutdown_ramp_upper_bounds=shutdown_ramp_upper_bounds,
+            start_ramp_lower_bounds_heat=start_ramp_lower_bounds_heat,
+            start_ramp_upper_bounds_heat=start_ramp_upper_bounds_heat,
+            shutdown_ramp_lower_bounds_heat=shutdown_ramp_lower_bounds_heat,
+            shutdown_ramp_upper_bounds_heat=shutdown_ramp_upper_bounds_heat,
+            ramp_freq=ramp_freq,
+            start_fuel=start_fuel,
+            fuel_efficiency=fuel_efficiency,
+            consumption_if_on=consumption_if_on,
+            _no_heat=_no_heat,
+        )
         self.min_load_threshhold = min_load_threshhold
         self.min_load_costs = min_load_costs
 
@@ -1372,7 +1511,6 @@ class Plant(CHPAsset):
         start_fuel: Union[float, StartEndValueDict, str] = 0.0,
         fuel_efficiency: Union[float, StartEndValueDict, str] = 1.0,
         consumption_if_on: Union[float, StartEndValueDict, str] = 0.0,
-        **kwargs
     ):
         """Plant: Generate power (or another commodity) from fuel (fuel optional). Derived from more complex CHP, taking out heat
             Restrictions
@@ -1474,19 +1612,154 @@ class CHP_PQ_diagram(CHPAsset):
     def __init__(
         self,
         pq_polygon: Union[List[Union[List[float], np.ndarray]], None] = None,
-        **kwargs
+        name: str = "default_name_contract",
+        nodes: List[Node] = [
+            Node(name="default_node_power"),
+            Node(name="default_node_heat"),
+            Node(name="default_node_gas_optional"),
+        ],
+        start: dt.datetime = None,
+        end: dt.datetime = None,
+        wacc: float = 0,
+        price: str = None,
+        heat_price: Union[float, StartEndValueDict, str] = None,
+        extra_costs: Union[float, StartEndValueDict, str] = 0.0,
+        min_cap: Union[float, StartEndValueDict, str] = 0.0,
+        max_cap: Union[float, StartEndValueDict, str] = 0.0,
+        min_take: StartEndValueDict = None,
+        max_take: StartEndValueDict = None,
+        freq: str = None,
+        conversion_factor_power_heat: Union[float, StartEndValueDict, str] = 1.0,
+        max_share_heat: Union[float, StartEndValueDict, str] = None,
+        ramp: float = None,
+        start_costs: Union[float, Sequence[float], StartEndValueDict] = 0.0,
+        running_costs: Union[float, StartEndValueDict, str] = 0.0,
+        min_runtime: float = 0,
+        time_already_running: float = 0,
+        min_downtime: float = 0,
+        time_already_off: float = 0,
+        last_dispatch: float = 0,
+        start_ramp_lower_bounds: Sequence = None,
+        start_ramp_upper_bounds: Sequence = None,
+        shutdown_ramp_lower_bounds: Sequence = None,
+        shutdown_ramp_upper_bounds: Sequence = None,
+        start_ramp_lower_bounds_heat: Sequence = None,
+        start_ramp_upper_bounds_heat: Sequence = None,
+        shutdown_ramp_lower_bounds_heat: Sequence = None,
+        shutdown_ramp_upper_bounds_heat: Sequence = None,
+        ramp_freq: str = None,
+        start_fuel: Union[float, StartEndValueDict, str] = 0.0,
+        fuel_efficiency: Union[float, StartEndValueDict, str] = 1.0,
+        consumption_if_on: Union[float, StartEndValueDict, str] = 0.0,
     ):
         """CHPContract using a convex polygon to define feasible (P,Q) operating points:
 
         Args:
-        * CHPAsset arguments
+            pq_polygon (list of 2-element lists or arrays): 2D points [P, Q] in convex polygon - given as lists or arrays of 2 elements
+                                                            e.g. [[0,0], [1,0], [1,1], [0,1]] for a square
+                                                            Order of points is relevant! Polygon has to be convex
 
-        additional:
-        pq_polygon (list of 2-element lists or arrays): 2D points [P, Q] in convex polygon - given as lists or arrays of 2 elements
-                                                        e.g. [[0,0], [1,0], [1,1], [0,1]] for a square
-                                                        Order of points is relevant! Polygon has to be convex
+            name (str): Unique name of the asset                                              (asset parameter)
+            nodes (Node): One node each for generated power and heat                          (asset parameter)
+                          optional: node for fuel (e.g. gas)
+            start (dt.datetime) : start of asset being active. defaults to none (-> timegrid start relevant)
+            end (dt.datetime)   : end of asset being active. defaults to none (-> timegrid start relevant)
+            timegrid (Timegrid): Timegrid for discretization                                  (asset parameter)
+            wacc (float): Weighted average cost of capital to discount cash flows in target   (asset parameter)
+            freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq)
+                                    The more granular frequency of portf & asset is used
+            min_cap (float) : Minimum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
+            max_cap (float) : Maximum capacity for generating virtual dispatch (power + conversion_factor_power_heat * heat). Has to be greater or equal to 0. Defaults to 0.
+            min_take (float) : Minimum volume within given period. Defaults to None
+            max_take (float) : Maximum volume within given period. Defaults to None
+                              float: constant value
+                              dict:  dict['start'] = np.array
+                                     dict['end']   = np.array
+                                     dict['values"] = np.array
+            price (str): Name of price vector for power equivalent (power + conversion_factor*heat) produced
+            heat_price (float, dict, str): Price for heat produced. Defaults to None
+            extra_costs (float, dict, str): extra costs added to price vector (in or out). Defaults to 0.
+                                            float: constant value
+                                            dict:  dict['start'] = array
+                                                   dict['end']   = array
+                                                   dict['values"] = array
+                                            str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
+            conversion_factor_power_heat (float, dict, str): Conversion efficiency from heat to power. Defaults to 1.
+            max_share_heat (float, dict, str): Defines upper bound for the heat dispatch as a percentage of the power dispatch.
+                                               I.e. max dispatch heat = max_share_heat * power dispatch. Defaults to None (no restriction).
+            ramp (float): Maximum increase/decrease of virtual dispatch (power + conversion_factor_power_heat * heat) in one main time unit). Defaults to None.
+            start_costs (float): Costs for starting. Defaults to 0.
+            running_costs (float): Costs when on. Defaults to 0.
+            min_runtime (int): Minimum runtime in timegrids main_time_unit. (start ramp time and shutdown ramp time do not count towards the min runtime.) Defaults to 0.
+            time_already_running (int): The number of timesteps the asset is already running in timegrids main_time_unit. Defaults to 0.
+            min_downtime (int): Minimum downtime in timegrids main_time_unit. Defaults to 0.
+            time_already_off (int): The number of timesteps the asset has already been off in timegrids main_time_unit. Defaults to 0.
+            last_dispatch (float): Previous virtual dispatch (power + conversion_factor_power_heat * heat). Defaults to 0.
+            start_ramp_lower_bounds (Sequence): The i-th element of this sequence specifies a lower bound of the
+                                                virtual dispatch (power + conversion_factor_power_heat * heat) at i timesteps
+                                                of freq ramp_freq after starting.  Defaults to None.
+            start_ramp_upper_bounds (Sequence): The i-th element of this sequence specifies an upper bound of the
+                                                virtual dispatch (power + conversion_factor_power_heat * heat) at i timesteps
+                                                of freq ramp_freq after starting.  Defaults to None.
+            shutdown_ramp_lower_bounds (Sequence): The i-th element of this sequence specifies a lower bound of the
+                                                   virtual dispatch (power + conversion_factor_power_heat * heat) at i timesteps
+                                                   of freq ramp_freq before turning off. Defaults to None.
+            shutdown_ramp_upper_bounds (Sequence): The i-th element of this sequence specifies an upper bound of the
+                                                   virtual dispatch (power + conversion_factor_power_heat * heat) at i timesteps
+                                                   of freq ramp_freq before turning off. If it is None, it is set equal to shutdown_ramp_upper_bounds.
+                                                   Defaults to None.
+            start_ramp_lower_bounds_heat (Sequence): The i-th element of this sequence specifies a lower bound of heat dispatch at i timesteps
+            start_ramp_upper_bounds_heat (Sequence): as above
+            shutdown_ramp_lower_bounds_heat (Sequence): as above
+            shutdown_ramp_upper_bounds_heat (Sequence): as above
+            ramp_freq (str): A string specifying the frequency of the start-and shutdown ramp specification.
+                             If this is None, the timegrids main_time_unit is used. Otherwise the start and shutdown ramps are
+                             interpolated to get values in the timegrids freq.
+
+
+            Optional fuel: Explicit fuel consumption (e.g. gas) for multi-commodity simulation
+                 start_fuel (float, dict, str): detaults to  0
+                 fuel_efficiency (float, dict, str): defaults to 1
+                 consumption_if_on (float, dict, str): defaults to 0
+
         """
-        super().__init__(**kwargs)
+        super().__init__(
+            name=name,
+            nodes=nodes,
+            start=start,
+            end=end,
+            wacc=wacc,
+            price=price,
+            heat_price=heat_price,
+            extra_costs=extra_costs,
+            min_cap=min_cap,
+            max_cap=max_cap,
+            min_take=min_take,
+            max_take=max_take,
+            freq=freq,
+            conversion_factor_power_heat=conversion_factor_power_heat,
+            max_share_heat=max_share_heat,
+            ramp=ramp,
+            start_costs=start_costs,
+            running_costs=running_costs,
+            min_runtime=min_runtime,
+            time_already_running=time_already_running,
+            min_downtime=min_downtime,
+            time_already_off=time_already_off,
+            last_dispatch=last_dispatch,
+            start_ramp_lower_bounds=start_ramp_lower_bounds,
+            start_ramp_upper_bounds=start_ramp_upper_bounds,
+            shutdown_ramp_lower_bounds=shutdown_ramp_lower_bounds,
+            shutdown_ramp_upper_bounds=shutdown_ramp_upper_bounds,
+            start_ramp_lower_bounds_heat=start_ramp_lower_bounds_heat,
+            start_ramp_upper_bounds_heat=start_ramp_upper_bounds_heat,
+            shutdown_ramp_lower_bounds_heat=shutdown_ramp_lower_bounds_heat,
+            shutdown_ramp_upper_bounds_heat=shutdown_ramp_upper_bounds_heat,
+            ramp_freq=ramp_freq,
+            start_fuel=start_fuel,
+            fuel_efficiency=fuel_efficiency,
+            consumption_if_on=consumption_if_on,
+        )
         # do some checks and store polygon
         if pq_polygon is None:
             print(

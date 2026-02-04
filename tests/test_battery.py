@@ -542,6 +542,195 @@ class BatteryTest(unittest.TestCase):
         np.testing.assert_almost_equal(x[d.index.hour == 22], 2, 3)
         pass
 
+    def test_specific_battery_output(self):
+        """given portfolio. test behaviour"""
+
+        s = """{"__class__": "Timegrid",
+            "end": {
+                "__class__": "datetime",
+                "__tz__": "CET",
+                "__value__": "2026-02-27 23:00:00"
+            },
+            "freq": "h",
+            "main_time_unit": "h",
+            "start": {
+                "__class__": "datetime",
+                "__tz__": "CET",
+                "__value__": "2026-01-27 23:00:00"
+            }
+        }"""
+        tg = eao.serialization.load_from_json(s)
+        s = """
+            {
+                "__class__": "Portfolio",
+                "assets": [
+                    {
+                        "__class__": "Asset",
+                        "asset_type": "SimpleContract",
+                        "end": null,
+                        "extra_costs": 0.0,
+                        "freq": null,
+                        "max_cap": 1000,
+                        "min_cap": -1000,
+                        "name": "dah",
+                        "nodes": [
+                            {
+                                "__class__": "Node",
+                                "commodity": null,
+                                "name": "power",
+                                "unit": {
+                                    "__class__": "Unit",
+                                    "factor": 1.0,
+                                    "flow": "MW",
+                                    "volume": "MWh"
+                                }
+                            }
+                        ],
+                        "periodicity": null,
+                        "periodicity_duration": null,
+                        "price": "dah",
+                        "start": null,
+                        "wacc": 0
+                    },
+                    {
+                        "__class__": "Asset",
+                        "asset_type": "Storage",
+                        "block_size": "d",
+                        "cap_in": 200.0,
+                        "cap_out": 200.0,
+                        "cost_in": 0.0,
+                        "cost_out": 0.0,
+                        "cost_store": 0.0,
+                        "eff_in": 1,
+                        "eff_out": 1,
+                        "end": null,
+                        "end_level": 200.0,
+                        "freq": null,
+                        "inflow": 0.0,
+                        "max_cycles_freq": "d",
+                        "max_cycles_no": null,
+                        "max_store_duration": null,
+                        "name": "battery",
+                        "no_simult_in_out": false,
+                        "nodes": [
+                            {
+                                "__class__": "Node",
+                                "commodity": null,
+                                "name": "power",
+                                "unit": {
+                                    "__class__": "Unit",
+                                    "factor": 1.0,
+                                    "flow": "MW",
+                                    "volume": "MWh"
+                                }
+                            }
+                        ],
+                        "periodicity": null,
+                        "periodicity_duration": null,
+                        "price": null,
+                        "size": 400.0,
+                        "start": null,
+                        "start_level": 200.0,
+                        "wacc": 0.0
+                    }
+                ]
+            }        """
+        ### shorten
+        start = pd.Timestamp(2026, 1, 28, tz="CET")
+        end = pd.Timestamp(2026, 1, 31, tz="CET")
+        tg = eao.Timegrid(start, end, freq="h")
+        #### basic test
+        portf = eao.serialization.load_from_json(s)
+        data = pd.read_pickle("tests/battery_test_data.pkl")
+        mydata = tg.prices_to_grid(data).copy()
+        # generate start/end dict price data
+        myprice = eao.StartEndValueDict(
+            {
+                "start": [
+                    pd.Timestamp(2026, 1, 28, tz="CET"),
+                    pd.Timestamp(2026, 1, 29, tz="CET"),
+                    pd.Timestamp(2026, 1, 30, tz="CET"),
+                ],
+                "end": [
+                    pd.Timestamp(2026, 1, 29, tz="CET"),
+                    pd.Timestamp(2026, 1, 30, tz="CET"),
+                    pd.Timestamp(2026, 3, 2, tz="CET"),
+                ],
+                "values": [10, 20, 10],
+            }
+        )
+        ### assign a startenddict price
+        portf.get_asset("dah").max_cap = myprice
+        # check index is correct
+        # op = portf.setup_optim_problem(mydata, tg)
+        # res = op.optimize()
+        # out = eao.io.extract_output(portf, op, res, mydata)
+        out = eao.optimize(portf=portf, timegrid=tg, data=mydata, split_interval_size="d")
+        myd = portf.get_asset("dah").make_vector(myprice)
+        np.testing.assert_almost_equal(
+            myd, out["prices"]["input data (from dict): max_cap"], 4
+        )
+        pass
+
+
+class TestBatteryWithRamp(unittest.TestCase):
+
+    def contract_and_battery(self, timegrid, ramp_battery, ramp_contract):
+        node = eao.assets.Node("testNode")
+        a = eao.assets.Storage(
+            "STORAGE1",
+            node,
+            size=50,
+            cap_in=100,
+            cap_out=100,
+            start_level=50,
+            end_level=0,
+            cost_out=0,
+            eff_in=0.8,
+            ramp=ramp_battery,
+        )
+        c = eao.assets.Contract(
+            name="c2",
+            price="price",
+            nodes=node,
+            min_cap=-100.0,
+            max_cap=100,
+            ramp=ramp_contract,
+        )
+        prices = {"price": np.linspace(1, 100, timegrid.T)}
+        portf = eao.portfolio.Portfolio([a, c])
+        return eao.optimize(portf, timegrid, prices)
+
+    def test_battery_with_ramp(self):
+        timegrid = eao.assets.Timegrid(
+            dt.date(2021, 1, 1), dt.date(2021, 1, 10), freq="h"
+        )
+        T = timegrid.T
+        # ramp in battery: At largest t the maximal d(dispatch)/dt = 5 is observed:
+        out = self.contract_and_battery(timegrid, 5, None)
+        np.testing.assert_almost_equal(
+            out["dispatch"]["STORAGE1"].values[0 : T - 4], 0.0, 4
+        )
+        np.testing.assert_almost_equal(
+            out["dispatch"]["STORAGE1"].values[T - 4 : T], [5, 10, 15, 20], 4
+        )
+
+        # ramp in contract: At largest t the same maximal d(dispatch)/dt = 5 is observed:
+        out = self.contract_and_battery(timegrid, None, 5)
+        np.testing.assert_almost_equal(
+            out["dispatch"]["STORAGE1"].values[0 : T - 4], 0.0, 4
+        )
+        np.testing.assert_almost_equal(
+            out["dispatch"]["STORAGE1"].values[T - 4 : T], [5, 10, 15, 20], 4
+        )
+
+        # No ramps: At largest t the same maximal d(dispatch)/dt = capacity is observed:
+        out = self.contract_and_battery(timegrid, None, None)
+        np.testing.assert_almost_equal(
+            out["dispatch"]["STORAGE1"].values[0 : T - 1], 0.0, 4
+        )
+        np.testing.assert_almost_equal(out["dispatch"]["STORAGE1"].values[T:], 50, 4)
+
 
 ###########################################################################################################
 ###########################################################################################################

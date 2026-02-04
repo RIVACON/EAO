@@ -55,7 +55,7 @@ Split optimization (to speed up large problems)
    samples/split_optimization/split_optimization
 
 Mixing long-term (e.g. seasonal) and short-term storages (e.g. battery)
------------------------------------------------
+-----------------------------------------------------------------------
 
 .. toctree:: 
 

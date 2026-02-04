@@ -124,7 +124,7 @@ class IOTests(unittest.TestCase):
             end=dt.date(2021, 1, 25),
         )
         a4 = eao.assets.Transport(
-            name="Tr", costs_const=1.0, nodes=[node1, node2], min_cap=0.0, max_cap=1.0
+            name="Tr", costs=1.0, nodes=[node1, node2], min_cap=0.0, max_cap=1.0
         )
         a5 = eao.assets.Storage(
             "storage",
@@ -387,6 +387,55 @@ class OptimizeShortcutTests(unittest.TestCase):
         )
         with self.assertRaises(Exception):
             df = tg.prices_to_grid(data)
+
+    def test_warning_interpolate(self):
+        """given portfolio. test behaviour"""
+
+        ### shorten
+        start = pd.Timestamp(2026, 1, 28, tz="CET")
+        end = pd.Timestamp(2026, 1, 31, tz="CET")
+        tg = eao.Timegrid(start, end, freq="15min")
+        #### basic test
+        ind = pd.date_range(start=start, end=end, freq="2h")
+        price = pd.DataFrame(index=ind, data=np.linspace(0, 1, len(ind)))
+        myp = tg.prices_to_grid(price).copy()
+        pass
+
+    def test_heat_portfolio(self):
+        """given portfolio. test behaviour"""
+
+        tg = eao.serialization.load_from_json(file_name="tests/tg_heat.json")
+        portf = eao.serialization.load_from_json(file_name="tests/portf_heat.json")
+        ### shorten
+        data = pd.read_pickle("tests/data_heat.pkl")
+        # check index is correct
+        out = eao.optimize(portf=portf, timegrid=tg, data=data, split_interval_size="d")
+        out["internal_variables"].head()
+        np.testing.assert_almost_equal(
+            -out["dispatch"]["heat_storage (heat_net)"].values,
+            out["internal_variables"]["heat_storage_charge"].values
+            + out["internal_variables"]["heat_storage_discharge"].values,
+            4,
+        )
+
+    def test_io_with_signature(self):
+        """try out signature to help filtering parameters when serializing"""
+        ###### sample code to show principle
+        tg = eao.serialization.load_from_json(file_name="tests/tg_heat.json")
+        portf = eao.serialization.load_from_json(file_name="tests/portf_heat.json")
+        import inspect
+
+        a = portf.assets[0]
+        # Get the signature object
+        sig = inspect.signature(a.__init__)
+        allowed_keys = sig.parameters.keys()
+        # 2. Filter the dictionary
+        test_dict = {"name": "ss", "price": "s", "min_cap": None, "other": 1}
+        filtered_dict = {k: v for k, v in test_dict.items() if k in allowed_keys}
+        #### do serialization
+        s = eao.serialization.to_json(a)
+        aa = eao.serialization.load_from_json(s)
+        pass
 
 
 if __name__ == "__main__":

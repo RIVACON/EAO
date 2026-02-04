@@ -1,6 +1,9 @@
 name: Documentation gh-pages [push main, manual]
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -28,6 +31,7 @@ jobs:
           source ~/.bashrc
           conda activate eao_env
           conda install pandoc
+          pip install eaopack
           pip install sphinx nbsphinx sphinx_rtd_theme
           sphinx-build -b html doc/source/ doc/build
 

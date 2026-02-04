@@ -21,15 +21,22 @@ class StructuredAsset(Asset):
     """Structured asset that wraps a portfolio in one asset
     Example: hydro storage with inflow consisting of several linked storage levels"""
 
-    def __init__(self, portfolio: Portfolio, *args, **kwargs):
+    def __init__(
+        self,
+        portfolio: Portfolio,
+        name: str = "default_name",
+        nodes: Union[Node, List[Node]] = Node(name="default_node"),
+    ):
         """Structured asset that wraps a portfolio
 
         Args:
             portf (Portfolio): Portfolio to be wrapped
             nodes (nodes as in std. asset): where to connect the asset to the outside.
                                             Must correspond to (a) node(s) of the internal structure
+            name (str): Name of the asset. Must be unique in a portfolio
+
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(name=name, nodes=nodes)
         self.portfolio = portfolio
 
     @abc.abstractmethod
