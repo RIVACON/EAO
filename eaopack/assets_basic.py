@@ -829,7 +829,7 @@ class SimpleContract(Asset):
                                                    dict['values'] = array
                                             str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
 
-            periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
+            periodicity (str, pd freq style): Makes assets behave periodically with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days over whole weeks)  (defaults to None)
         """
         super(SimpleContract, self).__init__(
