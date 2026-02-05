@@ -33,11 +33,12 @@ class RenewableAsset(ea.SimpleContract):
             wacc: float = 0,
             price: str = None,
             extra_costs: Union[float, StartEndValueDict, str] = 0.0,
-            min_cap: Union[float, StartEndValueDict, str] = 0.0,
-            max_cap: Union[float, StartEndValueDict, str] = 0.0,
             freq: str = None,
-            periodicity: str = None,
-            periodicity_duration: str = None,
+            profile: Union[float, StartEndValueDict, str] = 0.0,
+            subsidy: float = None,
+            fixed_price: float = None,
+            n_hour_rule: int = None,
+            controllable: bool = False,
     ):
         """Renewable Asset: given price and limited capacity in/out. No other constraints
             A renewable asset is able to produce green energy according to a given profile at given prices plus extra subsidies to given capacity limits
@@ -78,12 +79,14 @@ class RenewableAsset(ea.SimpleContract):
             wacc=wacc,
             price=price,
             extra_costs=extra_costs,
-            min_cap=min_cap,
-            max_cap=max_cap,
             freq=freq,
-            periodicity=periodicity,
-            periodicity_duration=periodicity_duration
         )
+        assert ((subsidy is not None) != (fixed_price is not None)), \
+            "Either subsidy or fixed_price must be specified, but not both"
+        self.profile = profile
+        self.subsidy = subsidy
+        self.fixed_price = fixed_price
+        self.n_hour_rule = n_hour_rule
 
 
     @abc.abstractmethod
@@ -93,10 +96,35 @@ class RenewableAsset(ea.SimpleContract):
             timegrid: Timegrid = None,
             costs_only: bool = False,
     ) -> OptimProblem:
+
+
+
+        if self.profile is not None:
+            self.max_cap = self.profile
+
+        if self.subsidy is not None:
+            prices['price'] += self.subsidy
+
+        if self.fixed_price is not None:
+            prices['price'] = self.make_vector(self.fixed_price, prices, convert=True)
+
+        if self.n_hour_rule is not None:
+            n_hour_rule = self.convert_to_timegrid_freq(self.n_hour_rule, "n_hour_rule")
+            mask = prices['price'] <= 0
+            # Pad with False at both ends to catch edge runs
+            padded = np.concatenate(([False], mask, [False]))
+            diff = np.diff(padded.astype(int))
+            starts = np.where(diff == 1)[0]
+            ends = np.where(diff == -1)[0]
+            lengths = ends - starts
+            n_hour_rule_applies = lengths >= n_hour_rule
+            idx = np.concatenate([
+                np.arange(s, e) for s, e in zip(starts[n_hour_rule_applies], ends[n_hour_rule_applies])
+            ])
+            prices['price'][idx] = 0.0
+
         op = super().setup_optim_problem(  # parent: SimpleContract
             prices=prices, timegrid=timegrid, costs_only=costs_only
         )
-
-
 
         return op

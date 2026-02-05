@@ -21,5 +21,7 @@ from eaopack.assets_plants import CHPAsset, \
 from eaopack.assets_structured import StructuredAsset, \
                                       LinkedAsset
 
+from eaopack.assets_renewables import RenewableAsset
+
 ### import other basic classes as well (for convenience)
 from eaopack.basic_classes import Timegrid, Unit, Node
