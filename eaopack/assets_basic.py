@@ -272,7 +272,7 @@ class Asset:
             if isinstance(vec, pd.Series):
                 vec = (
                     vec.values
-                )  # may be given as Series (prices as DataFrame) (not prefered, but sometimes handy)
+                )  # may be given as Series (prices as DataFrame) (not preferred, but sometimes handy)
             vec = vec[I]  # only in asset time window
         else:  # given in form of dict (start/end/values)
             vec = self.timegrid.restricted.values_to_grid(value)

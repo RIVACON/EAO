@@ -96,21 +96,41 @@ class RenewableAsset(ea.SimpleContract):
             timegrid: Timegrid = None,
             costs_only: bool = False,
     ) -> OptimProblem:
-
-
-
+        # profile is effectively the max_cap
         if self.profile is not None:
             self.max_cap = self.profile
+            self.min_cap = 0  # check!
 
+        # Get prices vector
+        if self.price is not None:
+            assert isinstance(self.price, str), (
+                    "Error in asset " + self.name + " --> price must be given as string"
+            )
+            assert self.price in prices, f"Price {self.price} is not available in given prices dict"
+            price = prices[self.price].copy()
+        else:
+            price = None
+
+        # Case constant subsidy: Subsidy is paid on-top of price -> -subsidy are extra-costs
         if self.subsidy is not None:
-            prices['price'] += self.subsidy
+            self.extra_costs = -self.subsidy
 
+        # Case fixed price: price - extra_costs = fixed_price, i.e., extra_costs = price - fixed_price
         if self.fixed_price is not None:
-            prices['price'] = self.make_vector(self.fixed_price, prices, convert=True)
+            if price is not None:
+                if isinstance(price, list):
+                    self.extra_costs = np.asarray(price) - self.fixed_price
+                else:
+                    self.extra_costs = np.asarray(price) - self.fixed_price
+            else:
+                self.extra_costs = -self.fixed_price
 
-        if self.n_hour_rule is not None:
-            n_hour_rule = self.convert_to_timegrid_freq(self.n_hour_rule, "n_hour_rule")
-            mask = prices['price'] <= 0
+        # Find n_hour_rule-long consecutive interval of negative prices and set them to zero
+        if (self.n_hour_rule is not None and
+                price is not None and
+                timegrid is not None):
+            n_hour_rule = self.convert_to_timegrid_freq(self.n_hour_rule, "n_hour_rule", timegrid=timegrid)
+            mask = price <= 0
             # Pad with False at both ends to catch edge runs
             padded = np.concatenate(([False], mask, [False]))
             diff = np.diff(padded.astype(int))
@@ -121,10 +141,15 @@ class RenewableAsset(ea.SimpleContract):
             idx = np.concatenate([
                 np.arange(s, e) for s, e in zip(starts[n_hour_rule_applies], ends[n_hour_rule_applies])
             ])
-            prices['price'][idx] = 0.0
+            price[idx] = 0.0
+            # same for extra_costs -> assumption: if subsidy or fixed_price and n_hour_rule is given there is no dispatch
+            # in the n_hor_rule interval and therefore no subsidy
+            if isinstance(self.extra_costs, (float, int, np.ndarray)):
+                self.extra_costs = self.extra_costs * np.ones(timegrid.T)
+            self.extra_costs[idx] = 0.0
 
+        renewable_prices = {self.price: price}
         op = super().setup_optim_problem(  # parent: SimpleContract
-            prices=prices, timegrid=timegrid, costs_only=costs_only
+            prices=renewable_prices, timegrid=timegrid, costs_only=costs_only
         )
-
         return op

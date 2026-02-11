@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="862e9aa1-bedf-47e5-a40b-9b0f65b75e87" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/eaopack/assets_renewables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/eaopack/assets_basic.py" beforeDir="false" afterPath="$PROJECT_DIR$/eaopack/assets_basic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eaopack/assets_renewables.py" beforeDir="false" afterPath="$PROJECT_DIR$/eaopack/assets_renewables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_renewables.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_renewables.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,8 +18,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Unit Test" />
         <option value="Python Script" />
+        <option value="Python Unit Test" />
       </list>
     </option>
   </component>
@@ -40,6 +42,7 @@
     "Python tests.Python tests in test_battery.py.executor": "Run",
     "Python tests.Python tests in test_contract_with_ramp.py.executor": "Run",
     "Python tests.Python tests in test_io.py.executor": "Run",
+    "Python tests.Python tests in test_renewables.py.executor": "Run",
     "Python tests.Python tests in tests.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -47,22 +50,7 @@
     "last_opened_file_path": "C:/Users/DrChristianAutermann/OneDrive - RIVACON GmbH/Dokumente/GitHub/EAO"
   }
 }]]></component>
-  <component name="RunManager" selected="Python tests.Python tests in test_battery.py">
-    <configuration name="Python tests in test_CHP_asset.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="EAO" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_CHP_asset.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python tests.Python tests in test_renewables.py">
     <configuration name="Python tests in test_asset.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="EAO" />
       <option name="ENV_FILES" value="" />
@@ -108,6 +96,21 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests in test_renewables.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="EAO" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_renewables.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
     <configuration name="Python tests in tests" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="EAO" />
       <option name="ENV_FILES" value="" />
@@ -125,11 +128,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests in test_renewables.py" />
         <item itemvalue="Python tests.Python tests in test_battery.py" />
         <item itemvalue="Python tests.Python tests in tests" />
         <item itemvalue="Python tests.Python tests in test_io.py" />
         <item itemvalue="Python tests.Python tests in test_asset.py" />
-        <item itemvalue="Python tests.Python tests in test_CHP_asset.py" />
       </list>
     </recent_temporary>
   </component>
@@ -159,20 +162,20 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests/test_asset.py</url>
-          <line>739</line>
+          <line>738</line>
           <option name="timeStamp" value="15" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/eaopack/assets_plants.py</url>
-          <line>2</line>
-          <option name="timeStamp" value="17" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/eaopack/assets_structured.py</url>
-          <line>93</line>
-          <option name="timeStamp" value="18" />
+          <url>file://$PROJECT_DIR$/tests/test_renewables.py</url>
+          <line>64</line>
+          <option name="timeStamp" value="20" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="tests">
+        <watch expression="out" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>
