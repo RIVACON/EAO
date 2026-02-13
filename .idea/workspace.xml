@@ -4,53 +4,52 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="862e9aa1-bedf-47e5-a40b-9b0f65b75e87" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eaopack/assets_basic.py" beforeDir="false" afterPath="$PROJECT_DIR$/eaopack/assets_basic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eaopack/assets_renewables.py" beforeDir="false" afterPath="$PROJECT_DIR$/eaopack/assets_renewables.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_renewables.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_renewables.py" afterDir="false" />
+    <list default="true" id="d9d88ad7-70e1-46cf-b4a6-4e9a7e480f96" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/EAO.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Python Script" />
-        <option value="Python Unit Test" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 7
-}</component>
-  <component name="ProjectId" id="38YymeRjhPC94sGjF8kz1o31la6" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 8
+}]]></component>
+  <component name="ProjectId" id="39bnPOdX0ph1aGAg9mbO69Uscl4" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python tests.Python tests in test_CHP_asset.py.executor": "Debug",
-    "Python tests.Python tests in test_asset.py.executor": "Debug",
+    "Python tests.Python tests in test_asset.py.executor": "Run",
     "Python tests.Python tests in test_battery.py.executor": "Run",
-    "Python tests.Python tests in test_contract_with_ramp.py.executor": "Run",
     "Python tests.Python tests in test_io.py.executor": "Run",
-    "Python tests.Python tests in test_renewables.py.executor": "Run",
+    "Python tests.Python tests in test_tz.py.executor": "Run",
     "Python tests.Python tests in tests.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feature/renewables",
-    "last_opened_file_path": "C:/Users/DrChristianAutermann/OneDrive - RIVACON GmbH/Dokumente/GitHub/EAO"
+    "git-widget-placeholder": "feature/renewables"
   }
 }]]></component>
-  <component name="RunManager" selected="Python tests.Python tests in test_renewables.py">
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\DrChristianAutermann\OneDrive - RIVACON GmbH\Dokumente\GitHub\EAO\tests\data\CHP_asset" />
+      <recent name="C:\Users\DrChristianAutermann\OneDrive - RIVACON GmbH\Dokumente\GitHub\EAO\tests\data\tz" />
+      <recent name="C:\Users\DrChristianAutermann\OneDrive - RIVACON GmbH\Dokumente\GitHub\EAO\tests\data\io" />
+      <recent name="C:\Users\DrChristianAutermann\OneDrive - RIVACON GmbH\Dokumente\GitHub\EAO\tests\data\battery" />
+      <recent name="C:\Users\DrChristianAutermann\OneDrive - RIVACON GmbH\Dokumente\GitHub\EAO\tests\data\asset" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python tests.Python tests in tests">
     <configuration name="Python tests in test_asset.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="EAO" />
       <option name="ENV_FILES" value="" />
@@ -96,7 +95,7 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests in test_renewables.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests in test_tz.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="EAO" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -107,7 +106,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_renewables.py&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_tz.py&quot;" />
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
@@ -128,10 +127,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python tests.Python tests in test_renewables.py" />
-        <item itemvalue="Python tests.Python tests in test_battery.py" />
         <item itemvalue="Python tests.Python tests in tests" />
         <item itemvalue="Python tests.Python tests in test_io.py" />
+        <item itemvalue="Python tests.Python tests in test_tz.py" />
+        <item itemvalue="Python tests.Python tests in test_battery.py" />
         <item itemvalue="Python tests.Python tests in test_asset.py" />
       </list>
     </recent_temporary>
@@ -145,11 +144,11 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="862e9aa1-bedf-47e5-a40b-9b0f65b75e87" name="Changes" comment="" />
-      <created>1768990958785</created>
+      <changelist id="d9d88ad7-70e1-46cf-b4a6-4e9a7e480f96" name="Changes" comment="" />
+      <created>1770973614611</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1768990958785</updated>
+      <updated>1770973614611</updated>
     </task>
     <servers />
   </component>
@@ -157,25 +156,11 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/tests/test_tz.py</url>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests/test_asset.py</url>
-          <line>738</line>
-          <option name="timeStamp" value="15" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/tests/test_renewables.py</url>
-          <line>64</line>
-          <option name="timeStamp" value="20" />
+          <line>727</line>
+          <option name="timeStamp" value="31" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
-    <watches-manager>
-      <configuration name="tests">
-        <watch expression="out" />
-      </configuration>
-    </watches-manager>
   </component>
 </project>
