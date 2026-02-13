@@ -46,7 +46,7 @@ class RenewablesTestCase(unittest.TestCase):
         profile["end"] = (restr_times + dt.timedelta(hours=1)).to_list()
         profile["values"] = 10 * np.cos(np.linspace(0, 24, len(profile["start"]))) ** 2
 
-        # Constant positive prices, expectation: dispatch = maximal power = energy profile
+        # Constant positive prices, expectation: dispatch = maximal power = energy profile independent of subsidy or fixed_prices
         prices = {"price":  np.ones(timegrid.T) * 5}
         out_subsidy = self.renewable_and_contract(timegrid, prices, profile, subsidy=2)
         out_fixed_price = self.renewable_and_contract(timegrid, prices, profile, fixed_price=7)

@@ -43,6 +43,11 @@ class RenewableAsset(ea.SimpleContract):
         """Renewable Asset: given price and limited capacity in/out. No other constraints
             A renewable asset is able to produce green energy according to a given profile at given prices plus extra subsidies to given capacity limits
 
+            @@ Assumptions - TO BE REVIEWED @@
+            - If a fixed_price is defined the subsidy must be None. extra_costs = price - fixed_price
+            - If a subsidy is defined the fixed_price must be None. extra_costs = -subsidy
+            - If n_hour_rule is not None, there is no dispatch during periods of zero or negative prices equal or longer than n_hour_rule. This is achieved by setting the price and extra_cost vectors for these periods to zero
+
         Args:
             name (str): Unique name of the asset                                              (asset parameter)
             node (Node): Node, the constract is located in                                    (asset parameter)
@@ -52,14 +57,6 @@ class RenewableAsset(ea.SimpleContract):
             wacc (float): Weighted average cost of capital to discount cash flows in target   (asset parameter)
             freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq)
                                     The more granular frequency of portf & asset is used
-
-            min_cap (float, dict) : Minimum flow/capacity for buying (negative)
-            max_cap (float, dict) : Maximum flow/capacity for selling (positive)
-                                    float: constant value
-                                    dict:  dict['start'] = array
-                                           dict['end']   = array
-                                           dict['values'] = array
-                                    str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
             price (str): Name of price vector for buying / selling. Defaults to None
             extra_costs (float, dict, str): extra costs added to price vector (in or out). Defaults to 0.
                                             float: constant value
@@ -67,9 +64,10 @@ class RenewableAsset(ea.SimpleContract):
                                                    dict['end']   = array
                                                    dict['values'] = array
                                             str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
-
-            periodicity (str, pd freq style): Makes assets behave periodically with given frequency. Periods are repeated up to freq intervals (defaults to None)
-            periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days over whole weeks)  (defaults to None)
+            profile (float, dict, str): Energy profile that the renewable asset converts to electric power, e.g., solar or wind. Defaults to 0.
+            subsidy (float, optional): Subsidy paid on top of the market price, cannot be given together with fixed_price. Defaults to None.
+            fixed_price (float, optional): Fixed price paid instead of the market price, cannot be given together with subsidy. Defaults to None.
+            n_hour_rule (int, optional): Number of time intervals defining a minimum period length. If for this period market prices are zero or negative no energy is dispatched. Defaults to None.
         """
         super().__init__(  # parent: SimpleContract
             name=name,
