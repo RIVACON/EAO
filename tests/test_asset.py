@@ -7,6 +7,7 @@ from os.path import dirname, join
 import sys
 
 mypath = dirname(__file__)
+test_data_path = join(mypath, "data", "asset")
 sys.path.append(join(mypath, ".."))
 
 import eaopack as eao
@@ -723,9 +724,9 @@ class MultiCommodity(unittest.TestCase):
     def test_predefined_multicommodity(self):
         """test to reproduce the results in the sample "capture_heat_portfolio.py"""
         portf = eao.serialization.load_from_json(
-            file_name=join(mypath, "test_portf_multi_commodity.JSON")
+            file_name=join(test_data_path, "test_portf_multi_commodity.JSON")
         )
-        prices = pd.read_csv(join(mypath, "2020_price_sample.csv"))
+        prices = pd.read_csv(join(test_data_path, "2020_price_sample.csv"))
         # cast to timegrid
         prices = {
             "price": portf.timegrid.values_to_grid(

@@ -6,6 +6,7 @@ import json
 from os.path import dirname, join
 import sys
 mypath = (dirname(__file__))
+output_data_path = join(mypath, "data", "output")
 sys.path.append(join(mypath, '..'))
 import eaopack as eao
 
@@ -98,7 +99,7 @@ class MIP(unittest.TestCase):
         out2 = eao.io.extract_output(portf = portf2, op = op2, res = res2)
         self.assertAlmostEqual((out1['dispatch']-out2['dispatch']).sum().sum(), 0, 5)
         ### functionality checks
-        eao.io.output_to_file(out2, file_name= 'test_results.xlsx')
+        eao.io.output_to_file(out2, file_name= join(output_data_path,'test_MIP_results.xlsx'))
         test_string = eao.serialization.json_serialize_objects(portf2)
         # check variable naming (for RI etc)
         map = op2.mapping[op2.mapping['asset']=='STORAGE']

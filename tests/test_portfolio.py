@@ -6,6 +6,7 @@ import unittest
 import os, sys
 
 mypath = os.path.dirname(__file__)
+output_data_path = os.path.join(mypath, "data", "output")
 sys.path.append(os.path.join(mypath, ".."))
 
 import eaopack as eao
@@ -328,7 +329,7 @@ class StructuredAssetsTests(unittest.TestCase):
 
         self.assertAlmostEqual(res_struct.value, res_separate.value, 5)
         outp = eao.io.extract_output(portfStr2, opStr, res_struct)
-        eao.io.output_to_file(output=outp, file_name="test.xlsx")
+        eao.io.output_to_file(output=outp, file_name=os.path.join(output_data_path, "test_portfolio.xlsx"))
 
     def test_linked_asset(self):
         """Unit test. Linked asset with asset 1 having higher costs. Runs before asset 2"""

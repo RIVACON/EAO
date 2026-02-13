@@ -6,6 +6,8 @@ import json
 from os.path import dirname, join
 import sys
 mypath = (dirname(__file__))
+test_data_path = join(mypath, "data", "asset")
+output_data_path = join(mypath, "data", "output")
 sys.path.append(join(mypath, '..'))
 
 import eaopack as eao
@@ -151,8 +153,8 @@ class AssetFrequency(unittest.TestCase):
 
     def test_freq_multi_commodity(self):
         """ Unit test. Test Multi Commodity Asset with own freq """
-        portf = eao.serialization.load_from_json(file_name = join(mypath,'test_portf_multi_commodity.JSON'))
-        prices = pd.read_csv(join(mypath, '2020_price_sample.csv'))
+        portf = eao.serialization.load_from_json(file_name = join(test_data_path,'test_portf_multi_commodity.JSON'))
+        prices = pd.read_csv(join(test_data_path, '2020_price_sample.csv'))
         # timegrid freq is HOURS
         # ******** main part of test: set CHP timegrid to 'd'
         assert portf.asset_names[2] == 'CHP', 'unit test failed as portfolio changed'
@@ -168,7 +170,7 @@ class AssetFrequency(unittest.TestCase):
         disp = out['dispatch']
         check = disp['CHP (heat)']/disp['CHP (power)']
         self.assertAlmostEqual((check-fact).sum(), 0., 4)
-        eao.io.output_to_file(out, 'test.xlsx')
+        eao.io.output_to_file(out, join(output_data_path, 'test_asset_freq.xlsx'))
         self.assertAlmostEqual(res.value, out['DCF'].sum().sum()) # check detailed - asset-wise DCF is equal to LP value
         # values of heat demand
         heat_res = disp['heat_demand (heat)'].values
