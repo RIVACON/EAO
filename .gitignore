@@ -10,6 +10,7 @@ test.xlsx
 *result*.csv
 test_portf.json
 tests/data/output/*
+!tests/data/output/_note.txt
 doc/source/samples/optimal_res_scaling/loop_results50.xlsx
 doc/source/samples/optimal_res_scaling/normed_assets.json
 doc/source/samples/optimal_res_scaling/prices.json
