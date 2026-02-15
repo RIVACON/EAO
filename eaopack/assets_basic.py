@@ -237,6 +237,7 @@ class Asset:
         prices: Union[None, dict, pd.DataFrame] = None,
         default_value: Union[None, float] = None,
         convert=False,
+        full_timegrid: bool = False,
     ):
         """
         Make a vector out of value
@@ -249,14 +250,19 @@ class Asset:
                                       str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
             prices (dict, pd.DataFrame): Dictionary of price arrays needed by assets in portfolio
             default_value (float): The value that is used if any of the entries of the resulting vector are not specified
+            full_timegrid (bool):  Make vector on the full timegrid (portfolio grid). Defaults to False
 
         Returns: vector in time grid
 
         """
         if prices is None:
             prices = {}
-        I = self.timegrid.restricted.I  # indices of restricted time grid
-        T = self.timegrid.restricted.T
+        if full_timegrid:
+            tg = self.timegrid
+        else:
+            tg = self.timegrid.restricted
+        I = tg.I  # indices of time grid
+        T = tg.T  # number of steps
         if value is None:
             if default_value is None:
                 return value
@@ -269,18 +275,20 @@ class Asset:
                 "data for " + value + " not found for asset  " + self.name
             )
             vec = prices[value].copy()
+            if isinstance(vec, list):
+                vec = np.asarray(vec)
             if isinstance(vec, pd.Series):
                 vec = (
                     vec.values
                 )  # may be given as Series (prices as DataFrame) (not preferred, but sometimes handy)
             vec = vec[I]  # only in asset time window
         else:  # given in form of dict (start/end/values)
-            vec = self.timegrid.restricted.values_to_grid(value)
+            vec = tg.values_to_grid(value)
             if default_value is not None:
                 vec[np.isnan(vec)] = default_value
 
         if convert:
-            vec = vec * self.timegrid.restricted.dt
+            vec = vec * tg.dt
         return vec
 
     @property
@@ -820,7 +828,7 @@ class SimpleContract(Asset):
         start: dt.datetime = None,
         end: dt.datetime = None,
         wacc: float = 0,
-        price: str = None,
+        price: Union[str, None] = None,
         extra_costs: Union[float, StartEndValueDict, str] = 0.0,
         min_cap: Union[float, StartEndValueDict, str] = 0.0,
         max_cap: Union[float, StartEndValueDict, str] = 0.0,
@@ -913,43 +921,39 @@ class SimpleContract(Asset):
                 "Set timegrid of asset before creating optim problem. Asset: "
                 + self.name
             )
-        if not self.price is None:
-            assert isinstance(self.price, str), (
-                "Error in asset " + self.name + " --> price must be given as string"
+        # If the restricted timegrid has minor and major grids, need
+        # to average over prices across minor grids
+        if hasattr(self.timegrid.restricted, "I_minor_in_major"):
+            price = self.make_vector(
+                self.price, prices, convert=False, default_value=0.0, full_timegrid=True
             )
-            assert self.price in prices
-            price = prices[self.price].copy()
-            # convert to array
-            if isinstance(price, list):
-                price = np.asarray(price)
-            if isinstance(price, pd.Series):
-                price = price.values
-        else:
-            price = np.zeros(timegrid.T)
+            myprice = []
+            for myI in self.timegrid.restricted.I_minor_in_major:
+                myprice.append(price[myI].mean())
+            price = np.asarray(myprice)
+        else:  # simply restrict prices to asset time window
+            price = self.make_vector(
+                self.price,
+                prices,
+                convert=False,
+                default_value=0.0,
+                full_timegrid=False,
+            )
 
         if not (
-            len(price) == self.timegrid.T
+            len(price) == self.timegrid.restricted.T
         ):  # price vector must have right size for discretization
             raise ValueError(
                 "Length of price array must be equal to length of time grid. Asset: "
                 + self.name
             )
 
-        ##### using restricted timegrid for asset lifetime (save resources)
+        # ##### using restricted timegrid for asset lifetime (save resources)
         I = self.timegrid.restricted.I  # indices of restricted time grid
         T = self.timegrid.restricted.T  # length of restr. grid
         discount_factors = (
             self.timegrid.restricted.discount_factors
         )  # disc fctrs of restr. grid
-        # check: if the restricted timegrid has minor and major grids, need
-        # to do average over prices across minor grids
-        if hasattr(self.timegrid.restricted, "I_minor_in_major"):
-            myprice = []
-            for myI in self.timegrid.restricted.I_minor_in_major:
-                myprice.append(price[myI].mean())
-            price = np.asarray(myprice)
-        else:  # simply restrict prices to  asset time window
-            price = price[I]
 
         ##### important distinction:
         ## if extra costs are given, we need dispatch IN and OUT
