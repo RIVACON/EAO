@@ -233,7 +233,7 @@ class Asset:
 
     def make_vector(
         self,
-        value: Union[float, StartEndValueDict, str],
+        value: Union[float, StartEndValueDict, str, np.ndarray],
         prices: Union[None, dict, pd.DataFrame] = None,
         default_value: Union[None, float] = None,
         convert=False,
@@ -282,11 +282,12 @@ class Asset:
                     vec.values
                 )  # may be given as Series (prices as DataFrame) (not preferred, but sometimes handy)
             vec = vec[I]  # only in asset time window
-        else:  # given in form of dict (start/end/values)
+        elif isinstance(value, dict):  # given in form of dict (start/end/values)
             vec = tg.values_to_grid(value)
             if default_value is not None:
                 vec[np.isnan(vec)] = default_value
-
+        else:
+            raise ValueError("Unknown format of data input " + str(type(value)))
         if convert:
             vec = vec * tg.dt
         return vec
@@ -828,7 +829,7 @@ class SimpleContract(Asset):
         start: dt.datetime = None,
         end: dt.datetime = None,
         wacc: float = 0,
-        price: Union[str, None] = None,
+        price: Union[str, StartEndValueDict, float, np.ndarray, None] = None,
         extra_costs: Union[float, StartEndValueDict, str] = 0.0,
         min_cap: Union[float, StartEndValueDict, str] = 0.0,
         max_cap: Union[float, StartEndValueDict, str] = 0.0,
@@ -856,7 +857,7 @@ class SimpleContract(Asset):
                                            dict['end']   = array
                                            dict['values'] = array
                                     str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
-            price (str): Name of price vector for buying / selling. Defaults to None
+            price (str, StartEndDict, nd.array, None): Name of price vector for buying / selling. Defaults to None (value of 0.)
             extra_costs (float, dict, str): extra costs added to price vector (in or out). Defaults to 0.
                                             float: constant value
                                             dict:  dict['start'] = array
