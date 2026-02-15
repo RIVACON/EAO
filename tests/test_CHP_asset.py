@@ -7,6 +7,7 @@ from os.path import dirname, join
 import sys
 
 mypath = dirname(__file__)
+test_data_path = join(mypath, "data", "CHP_asset")
 sys.path.append(join(mypath, ".."))
 
 import eaopack as eao
@@ -1582,9 +1583,7 @@ class Plant(unittest.TestCase):
         # load test data
         import os
 
-        myfile = os.path.join(
-            os.path.join(os.path.dirname(__file__)), "plant_test_data.csv"
-        )
+        myfile = join(test_data_path, "plant_test_data.csv")
         df = pd.read_csv(myfile)
         df.set_index("date", inplace=True)
         df.index = pd.to_datetime(df.index, format="%m/%d/%y %I:%M %p")
@@ -1650,9 +1649,7 @@ class Plant(unittest.TestCase):
         # load test data
         import os
 
-        myfile = os.path.join(
-            os.path.join(os.path.dirname(__file__)), "plant_test_data.csv"
-        )
+        myfile = join(test_data_path, "plant_test_data.csv")
         df = pd.read_csv(myfile)
         df.set_index("date", inplace=True)
         df = timegrid.prices_to_grid(df)
@@ -1719,9 +1716,7 @@ class Plant(unittest.TestCase):
         # load test data
         import os
 
-        myfile = os.path.join(
-            os.path.join(os.path.dirname(__file__)), "plant_test_data.csv"
-        )
+        myfile = join(test_data_path, "plant_test_data.csv")
         df = pd.read_csv(myfile)
         df.set_index("date", inplace=True)
         df = timegrid.prices_to_grid(df)

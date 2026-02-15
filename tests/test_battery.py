@@ -7,6 +7,7 @@ from os.path import dirname, join
 import sys
 
 mypath = dirname(__file__)
+test_data_path = join(mypath, "data", "battery")
 sys.path.append(join(mypath, ".."))
 
 import eaopack as eao
@@ -433,7 +434,7 @@ class BatteryTest(unittest.TestCase):
         tg = eao.Timegrid(start, end, freq="h")
         #### basic test
         portf = eao.serialization.load_from_json(s)
-        data = pd.read_pickle("tests/battery_test_data.pkl")
+        data = pd.read_pickle(join(test_data_path, "battery_test_data.pkl"))
         # check index is correct
         out = eao.optimize(portf=portf, timegrid=tg, data=data, split_interval_size="d")
         self.assertEqual(tg.start, out["dispatch"].index[0])
@@ -641,7 +642,7 @@ class BatteryTest(unittest.TestCase):
         tg = eao.Timegrid(start, end, freq="h")
         #### basic test
         portf = eao.serialization.load_from_json(s)
-        data = pd.read_pickle("tests/battery_test_data.pkl")
+        data = pd.read_pickle(join(test_data_path, "battery_test_data.pkl"))
         mydata = tg.prices_to_grid(data).copy()
         # generate start/end dict price data
         myprice = eao.StartEndValueDict(
