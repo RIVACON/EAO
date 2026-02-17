@@ -676,61 +676,77 @@ class BatteryTest(unittest.TestCase):
 
 class TestBatteryWithRamp(unittest.TestCase):
 
-    def contract_and_battery(self, timegrid, ramp_battery, ramp_contract):
+    def contract_and_battery(self, timegrid, prices, eff=1, ramp_battery_up=None, ramp_battery_down=None, ramp_contract=None):
         node = eao.assets.Node("testNode")
         a = eao.assets.Storage(
-            "STORAGE1",
+            "Battery",
             node,
             size=50,
-            cap_in=100,
-            cap_out=100,
-            start_level=50,
+            cap_in=50,
+            cap_out=50,
+            start_level=0,
             end_level=0,
             cost_out=0,
-            eff_in=0.8,
-            ramp=ramp_battery,
+            eff_in=eff,
+            ramp_up=ramp_battery_up,
+            ramp_down=ramp_battery_down,
         )
         c = eao.assets.Contract(
-            name="c2",
+            name="Contract",
             price="price",
             nodes=node,
             min_cap=-100.0,
             max_cap=100,
             ramp=ramp_contract,
         )
-        prices = {"price": np.linspace(1, 100, timegrid.T)}
         portf = eao.portfolio.Portfolio([a, c])
         return eao.optimize(portf, timegrid, prices)
 
     def test_battery_with_ramp(self):
+        # ramp in battery: At largest t the maximal d(dispatch)/dt = 5 is observed:
         timegrid = eao.assets.Timegrid(
             dt.date(2021, 1, 1), dt.date(2021, 1, 10), freq="h"
         )
         T = timegrid.T
-        # ramp in battery: At largest t the maximal d(dispatch)/dt = 5 is observed:
-        out = self.contract_and_battery(timegrid, 5, None)
+        prices = {"price": np.linspace(1, 100, T)}
+        out = self.contract_and_battery(timegrid, prices, ramp_battery_up=5, ramp_battery_down=4)
         np.testing.assert_almost_equal(
-            out["dispatch"]["STORAGE1"].values[0 : T - 4], 0.0, 4
+            out["dispatch"]["Battery"].values[0: 4], [-20, -15, -12.5, -10,-7.5, -5, -2.5], 4
         )
         np.testing.assert_almost_equal(
-            out["dispatch"]["STORAGE1"].values[T - 4 : T], [5, 10, 15, 20], 4
+            out["dispatch"]["Battery"].values[4 : T - 4], 0.0, 4
+        )
+        np.testing.assert_almost_equal(
+            out["dispatch"]["Battery"].values[T - 4 : T], [5, 10, 15, 20], 4
         )
 
+    def test_battery_with_ramp_in_contract(self):
         # ramp in contract: At largest t the same maximal d(dispatch)/dt = 5 is observed:
-        out = self.contract_and_battery(timegrid, None, 5)
+        timegrid = eao.assets.Timegrid(
+            dt.date(2021, 1, 1), dt.date(2021, 1, 10), freq="h"
+        )
+        T = timegrid.T
+        prices = {"price": np.linspace(1, 100, T)}
+        out = self.contract_and_battery(timegrid, prices, ramp_contract=5)
         np.testing.assert_almost_equal(
-            out["dispatch"]["STORAGE1"].values[0 : T - 4], 0.0, 4
+            out["dispatch"]["Battery"].values[0 : T - 4], 0.0, 4
         )
         np.testing.assert_almost_equal(
-            out["dispatch"]["STORAGE1"].values[T - 4 : T], [5, 10, 15, 20], 4
+            out["dispatch"]["Battery"].values[T - 4 : T], [5, 10, 15, 20], 4
         )
 
-        # No ramps: At largest t the same maximal d(dispatch)/dt = capacity is observed:
-        out = self.contract_and_battery(timegrid, None, None)
-        np.testing.assert_almost_equal(
-            out["dispatch"]["STORAGE1"].values[0 : T - 1], 0.0, 4
+    def test_battery_with_ramp_none(self):
+        timegrid = eao.assets.Timegrid(
+            dt.date(2021, 1, 1), dt.date(2021, 1, 10), freq="h"
         )
-        np.testing.assert_almost_equal(out["dispatch"]["STORAGE1"].values[T:], 50, 4)
+        T = timegrid.T
+        prices = {"price": np.linspace(1, 100, T)}
+        # No ramps: At largest t the same maximal d(dispatch)/dt = capacity is observed:
+        out = self.contract_and_battery(timegrid, prices)
+        np.testing.assert_almost_equal(
+            out["dispatch"]["Battery"].values[0 : T - 1], 0.0, 4
+        )
+        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[T:], 50, 4)
 
 
 ###########################################################################################################
