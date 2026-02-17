@@ -1,6 +1,5 @@
 ### This file contains renewable energy assets such as photovoltaic, wind, or batteries
 
-from typing import Union, List, Dict, Sequence
 import datetime as dt
 import abc
 import numpy as np
@@ -33,15 +32,15 @@ class RenewableAsset(ea.SimpleContract):
         end: dt.datetime = None,
         wacc: float = 0,
         price: str = None,
-        extra_costs: Union[float, StartEndValueDict, str] = 0.0,
-        freq: Union[
-            str, None
-        ] = None,  ## ToDo: bitte bei None als Default als Union angeben
-        profile: Union[float, StartEndValueDict, str] = 0.0,
-        subsidy: float = None,  ## ToDo: bitte bei None als Default als Union angeben
-        fixed_price: float = None,  ## ToDo: bitte bei None als Default als Union angeben
-        n_hour_rule: int = None,  ## ToDo: bitte bei None als Default als Union angeben
-        controllable: bool = False,
+        freq: str | None = None,
+        profile: float | StartEndValueDict | str = 0.0,
+        controllable: bool = True,
+        sell_position: bool = False,
+        fixed_price: float | None = None,
+        n_hour_rule_payment: int | None = None,
+        n_hour_rule_delivery: int | None = None,
+        market_price: float | StartEndValueDict | str = 0.0,
+        cfd_type: bool = False,
     ):
         """Renewable Asset or PPA contract
             A renewable asset (PPA) produces (delivers) green power according to a given profile
@@ -49,10 +48,9 @@ class RenewableAsset(ea.SimpleContract):
 
         General asset parameters:
             name (str): Unique name of the asset                                              (asset parameter)
-            node (Node): Node, the constract is located in                                    (asset parameter)
+            node (Node): Node, the contract is located in                                    (asset parameter)
             start (dt.datetime) : start of asset being active. defaults to none (-> timegrid start relevant)
             end (dt.datetime)   : end of asset being active. defaults to none (-> timegrid start relevant)
-            timegrid (Timegrid): Timegrid for discretization                                  (asset parameter)
             wacc (float): Weighted average cost of capital to discount cash flows in target   (asset parameter)
             freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq)
                                     The more granular frequency of portf & asset is used
@@ -60,7 +58,7 @@ class RenewableAsset(ea.SimpleContract):
         Overall characteristics:
             profile (float, StartEndValueDict, str, optional):     Production profile given e.g. by wind or PV availability. Defaults to 0.
             controllable (bool, optional):  Production can be regulated down to zero. Defaults to True
-            sell_position (bool, optional): For PPAs - if True capacity is negative (i.e. to be deliverd). Defaults to False (capacity positive)
+            sell_position (bool, optional): For PPAs - if True capacity is negative (i.e. to be delivered). Defaults to False (capacity positive)
 
         Payment characteristics:
             fixed_price (float, str, StartEndValueDict, optional): Subsidy or PPA fixed payment per volume, e.g. EUR/MWh. Defaults to 0.
@@ -111,21 +109,22 @@ class RenewableAsset(ea.SimpleContract):
             end=end,
             wacc=wacc,
             price=price,
-            extra_costs=extra_costs,
             freq=freq,
         )
-        assert (subsidy is not None) != (  ### keine Unterscheidung mehr, jetzt boolean
-            fixed_price is not None
-        ), "Either subsidy or fixed_price must be specified, but not both"
         self.profile = profile
-        self.subsidy = subsidy
         self.fixed_price = fixed_price
-        self.n_hour_rule = n_hour_rule
+        self.controllable = controllable
+        self.sell_position = sell_position
+        self.n_hour_rule_payment = n_hour_rule_payment
+        self.n_hour_rule_delivery = n_hour_rule_delivery
+        self.market_price = market_price
+        self.cfd_type = cfd_type
+
 
     @abc.abstractmethod
     def setup_optim_problem(
         self,
-        prices: Union[dict, None] = None,
+        prices: dict | None = None,
         timegrid: Timegrid = None,
         costs_only: bool = False,
     ) -> OptimProblem:
