@@ -666,7 +666,9 @@ class BatteryTest(unittest.TestCase):
         # op = portf.setup_optim_problem(mydata, tg)
         # res = op.optimize()
         # out = eao.io.extract_output(portf, op, res, mydata)
-        out = eao.optimize(portf=portf, timegrid=tg, data=mydata, split_interval_size="d")
+        out = eao.optimize(
+            portf=portf, timegrid=tg, data=mydata, split_interval_size="d"
+        )
         myd = portf.get_asset("dah").make_vector(myprice)
         np.testing.assert_almost_equal(
             myd, out["prices"]["input data (from dict): max_cap"], 4
@@ -676,7 +678,15 @@ class BatteryTest(unittest.TestCase):
 
 class TestBatteryWithRamp(unittest.TestCase):
 
-    def contract_and_battery(self, timegrid, prices, eff=1, ramp_battery_up=None, ramp_battery_down=None, ramp_contract=None):
+    def contract_and_battery(
+        self,
+        timegrid,
+        prices,
+        eff=1,
+        ramp_battery_up=None,
+        ramp_battery_down=None,
+        ramp_contract=None,
+    ):
         node = eao.assets.Node("testNode")
         a = eao.assets.Storage(
             "Battery",
@@ -709,9 +719,13 @@ class TestBatteryWithRamp(unittest.TestCase):
         )
         T = timegrid.T
         prices = {"price": np.linspace(1, 100, T)}
-        out = self.contract_and_battery(timegrid, prices, ramp_battery_up=5, ramp_battery_down=4)
+        out = self.contract_and_battery(
+            timegrid, prices, ramp_battery_up=5, ramp_battery_down=4
+        )
         np.testing.assert_almost_equal(
-            out["dispatch"]["Battery"].values[0: 4], [-20, -15, -12.5, -10,-7.5, -5, -2.5], 4
+            out["dispatch"]["Battery"].values[0:4],
+            [-20, -15, -12.5, -10, -7.5, -5, -2.5],
+            4,
         )
         np.testing.assert_almost_equal(
             out["dispatch"]["Battery"].values[4 : T - 4], 0.0, 4
@@ -748,10 +762,79 @@ class TestBatteryWithRamp(unittest.TestCase):
         )
         np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[T:], 50, 4)
 
-
-###########################################################################################################
-###########################################################################################################
-###########################################################################################################
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_battery_ramp_updown(self):
+        timegrid = eao.assets.Timegrid(
+            dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="h"
+        )
+        T = timegrid.T
+        myp = np.zeros(T)
+        myp[1:5] = -100
+        myp[7:9] = 100
+        myp[10:13] = -100
+        myp[15:20] = 8
+        myp[21] = 1000
+        myp[22] = -1000
+        prices = {"price": myp}
+        ######
+        node = eao.assets.Node("testNode")
+        a = eao.assets.Storage(
+            "Battery",
+            node,
+            size=500,
+            cap_in=10,
+            cap_out=10,
+            cost_in=10,
+            cost_out=10,
+            start_level=0,
+            end_level=0,
+            ramp_up=None,
+            ramp_down=None,
+        )
+        c = eao.assets.Contract(
+            name="Contract",
+            price="price",
+            nodes=node,
+            min_cap=-100.0,
+            max_cap=100,
+        )
+        ### no ramp yet
+        portf = eao.portfolio.Portfolio([a, c])
+        out = eao.optimize(portf, timegrid, prices)
+        disp = out["dispatch"]["Battery"].values
+        diff = disp[1:] - disp[0:-1]
+        self.assertAlmostEqual(diff.max(), 20, 3)
+        self.assertAlmostEqual(diff.min(), -20, 3)
+        ### contract ramp
+        portf.get_asset("Contract").ramp = 5
+        out = eao.optimize(portf, timegrid, prices)
+        disp = out["dispatch"]["Battery"].values
+        diff = disp[1:] - disp[0:-1]
+        self.assertAlmostEqual(diff.max(), 5, 3)
+        self.assertAlmostEqual(diff.min(), -5, 3)
+        ### up  ramp
+        portf.get_asset("Contract").ramp = None
+        portf.get_asset("Battery").ramp_up = 7.0
+        out = eao.optimize(portf, timegrid, prices)
+        disp = out["dispatch"]["Battery"].values
+        diff = disp[1:] - disp[0:-1]
+        self.assertAlmostEqual(diff.max(), 7)
+        self.assertLess(diff.min(), -7)
+        ### down  ramp
+        portf.get_asset("Contract").ramp = None
+        portf.get_asset("Battery").ramp_up = None
+        portf.get_asset("Battery").ramp_down = 7.6
+        out = eao.optimize(portf, timegrid, prices)
+        disp = out["dispatch"]["Battery"].values
+        diff = disp[1:] - disp[0:-1]
+        self.assertGreater(diff.max(), 7.6)
+        self.assertAlmostEqual(diff.min(), -7.6)
+        ### up and down ramp
+        portf.get_asset("Contract").ramp = None
+        portf.get_asset("Battery").ramp_up = 8.1
+        portf.get_asset("Battery").ramp_down = 7.6
+        out = eao.optimize(portf, timegrid, prices)
+        disp = out["dispatch"]["Battery"].values
+        diff = disp[1:] - disp[0:-1]
+        self.assertAlmostEqual(diff.max(), 8.1)
+        self.assertAlmostEqual(diff.min(), -7.6)
+        pass

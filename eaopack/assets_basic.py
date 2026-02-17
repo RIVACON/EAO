@@ -420,7 +420,9 @@ class Storage(Asset):
         if isinstance(ramp_up, float):
             assert ramp_up > 0, f"ramp_up must be greater than zero but got {ramp_up}"
         if isinstance(ramp_down, float):
-            assert ramp_down > 0, f"ramp_down must be greater than zero but got {ramp_down}"
+            assert (
+                ramp_down > 0
+            ), f"ramp_down must be greater than zero but got {ramp_down}"
         self.ramp_up = ramp_up
         self.ramp_down = ramp_down
 
@@ -608,7 +610,9 @@ class Storage(Asset):
         ### Ramp constraints
         if self.ramp_up is not None:
             # scale ramp in case timegrid.freq and timegrid.main_time_unit are not equal
-            ramp = self.ramp_up * self.timegrid.restricted.dt[0]
+            ramp = (
+                self.ramp_up * self.timegrid.restricted.dt[1:]
+            )  # dt's may be of different size
             D = sp.diags(
                 diagonals=[-np.ones(n), np.ones(n)],
                 offsets=[-1, 0],
@@ -619,19 +623,21 @@ class Storage(Asset):
             D = D[1:, :]
             A = sp.vstack([A, D])  # stack upper constraints onto A
             cType += "U" * (n - 1)
-            b = np.hstack([b, ramp * np.ones(n - 1)])
+            b = np.hstack([b, ramp])
         if self.ramp_down is not None:
-            ramp = self.ramp_down * self.timegrid.restricted.dt[0]
+            ramp = (
+                self.ramp_down * self.timegrid.restricted.dt[1:]
+            )  # dt's may be of different size
             D = sp.diags(
-                diagonals=[np.ones(n), -np.ones(n)],
+                diagonals=[-np.ones(n), np.ones(n)],
                 offsets=[-1, 0],
                 shape=(n, n),
                 format="csr",
             )
             D = D[1:, :]
             A = sp.vstack([A, D])  # stack lower constraints onto A
-            cType += "U" * (n - 1)
-            b = np.hstack([b, ramp * np.ones(n - 1)])
+            cType += "L" * (n - 1)
+            b = np.hstack([b, -ramp])
 
         if sep_needed:
             A = sp.hstack((A * self.eff_in, A / self.eff_out))  # for in and out
@@ -1447,7 +1453,7 @@ class Contract(SimpleContract):
             return op
         # scale ramp in case timegrid.freq and timegrid.main_time_unit are not equal
         ramp = (
-            self.ramp * self.timegrid.restricted.dt[0]
+            self.ramp * self.timegrid.restricted.dt[1:]
             if self.ramp is not None
             else None
         )
@@ -1518,7 +1524,7 @@ class Contract(SimpleContract):
             D = sp.hstack((D, D))
         op.A = sp.vstack([op.A, D, D])  # stack lower and upper constraints onto op.A
         op.cType += "L" * (T - 1) + "U" * (T - 1)
-        op.b = np.hstack([op.b, -ramp * np.ones(T - 1), ramp * np.ones(T - 1)])
+        op.b = np.hstack([op.b, -ramp, ramp])
         return op
 
 
