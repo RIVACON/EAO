@@ -608,11 +608,7 @@ class Storage(Asset):
         cType = "U" * n + "L" * n
 
         ### Ramp constraints
-        if self.ramp_up is not None:
-            # scale ramp in case timegrid.freq and timegrid.main_time_unit are not equal
-            ramp = (
-                self.ramp_up * self.timegrid.restricted.dt[1:]
-            )  # dt's may be of different size
+        if self.ramp_up is not None or self.ramp_down is not None:
             D = sp.diags(
                 diagonals=[-np.ones(n), np.ones(n)],
                 offsets=[-1, 0],
@@ -621,6 +617,11 @@ class Storage(Asset):
             )
             # first row 1, .... deleted -- assuming first element has no restriction
             D = D[1:, :]
+        if self.ramp_up is not None:
+            # scale ramp in case timegrid.freq and timegrid.main_time_unit are not equal
+            ramp = (
+                self.ramp_up * self.timegrid.restricted.dt[1:]
+            )  # dt's may be of different size
             A = sp.vstack([A, D])  # stack upper constraints onto A
             cType += "U" * (n - 1)
             b = np.hstack([b, ramp])
@@ -628,13 +629,6 @@ class Storage(Asset):
             ramp = (
                 self.ramp_down * self.timegrid.restricted.dt[1:]
             )  # dt's may be of different size
-            D = sp.diags(
-                diagonals=[-np.ones(n), np.ones(n)],
-                offsets=[-1, 0],
-                shape=(n, n),
-                format="csr",
-            )
-            D = D[1:, :]
             A = sp.vstack([A, D])  # stack lower constraints onto A
             cType += "L" * (n - 1)
             b = np.hstack([b, -ramp])
@@ -1520,15 +1514,21 @@ class Contract(SimpleContract):
         )
         # first row 1, .... deleted -- assuming first element has no restriction
         D = D[1:, :]
-        if not self._no_separate_disp_vars:  # separate vars - e.g. because of extra_costs
+        if (
+            not self._no_separate_disp_vars
+        ):  # separate vars - e.g. because of extra_costs
             D = sp.hstack((D, D))
         if self.ramp_up is not None:
-            ramp = (self.ramp_up * self.timegrid.restricted.dt[1:])  # dt's may be of different size
+            ramp = (
+                self.ramp_up * self.timegrid.restricted.dt[1:]
+            )  # dt's may be of different size
             op.A = sp.vstack([op.A, D])  # stack upper constraints onto A
             op.cType += "U" * (n - 1)
             op.b = np.hstack([op.b, ramp])
         if self.ramp_down is not None:
-            ramp = (self.ramp_down * self.timegrid.restricted.dt[1:])  # dt's may be of different size
+            ramp = (
+                self.ramp_down * self.timegrid.restricted.dt[1:]
+            )  # dt's may be of different size
             op.A = sp.vstack([op.A, D])  # stack lower constraints onto A
             op.cType += "L" * (n - 1)
             op.b = np.hstack([op.b, -ramp])
