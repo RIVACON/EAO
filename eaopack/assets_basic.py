@@ -321,7 +321,8 @@ class Storage(Asset):
         max_cycles_freq: str = "d",
         periodicity: Union[None, str] = None,
         periodicity_duration: Union[None, str] = None,
-        ramp: Union[float, None] = None,
+        ramp_up: Union[float, None] = None,
+        ramp_down: Union[float, None] = None,
     ):
         """Specific storage asset. A storage has the basic capability to
             (1) take in a commodity within a limited flow rate (capacity)
@@ -362,7 +363,8 @@ class Storage(Asset):
 
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
-            ramp (float): Maximum increase/decrease of virtual dispatch. Defaults to None. First point in time is unrestricted
+            ramp_up (float): Maximum increase of virtual dispatch. Positive value expected. Defaults to None. First point in time is unrestricted
+            ramp_down (float): Maximum decrease of virtual dispatch. Positive value expected. Defaults to None. First point in time is unrestricted
         """
         super(Storage, self).__init__(
             name=name,
@@ -414,7 +416,15 @@ class Storage(Asset):
         ), "Cannot have periodicity duration not none and periodicity none"
         self.periodicity = periodicity
         self.periodicity_duration = periodicity_duration
-        self.ramp = ramp
+        #### ramp
+        if isinstance(ramp_up, float):
+            assert ramp_up > 0, f"ramp_up must be greater than zero but got {ramp_up}"
+        if isinstance(ramp_down, float):
+            assert (
+                ramp_down > 0
+            ), f"ramp_down must be greater than zero but got {ramp_down}"
+        self.ramp_up = ramp_up
+        self.ramp_down = ramp_down
 
     def setup_optim_problem(
         self,
@@ -598,10 +608,7 @@ class Storage(Asset):
         cType = "U" * n + "L" * n
 
         ### Ramp constraints
-        if self.ramp is not None:
-            # scale ramp in case timegrid.freq and timegrid.main_time_unit are not equal
-            ramp = self.ramp * self.timegrid.restricted.dt[0]
-
+        if self.ramp_up is not None or self.ramp_down is not None:
             D = sp.diags(
                 diagonals=[-np.ones(n), np.ones(n)],
                 offsets=[-1, 0],
@@ -610,9 +617,21 @@ class Storage(Asset):
             )
             # first row 1, .... deleted -- assuming first element has no restriction
             D = D[1:, :]
-            A = sp.vstack([A, D, D])  # stack lower and upper constraints onto A
-            cType += "L" * (n - 1) + "U" * (n - 1)
-            b = np.hstack([b, -ramp * np.ones(n - 1), ramp * np.ones(n - 1)])
+        if self.ramp_up is not None:
+            # scale ramp in case timegrid.freq and timegrid.main_time_unit are not equal
+            ramp = (
+                self.ramp_up * self.timegrid.restricted.dt[1:]
+            )  # dt's may be of different size
+            A = sp.vstack([A, D])  # stack upper constraints onto A
+            cType += "U" * (n - 1)
+            b = np.hstack([b, ramp])
+        if self.ramp_down is not None:
+            ramp = (
+                self.ramp_down * self.timegrid.restricted.dt[1:]
+            )  # dt's may be of different size
+            A = sp.vstack([A, D])  # stack lower constraints onto A
+            cType += "L" * (n - 1)
+            b = np.hstack([b, -ramp])
 
         if sep_needed:
             A = sp.hstack((A * self.eff_in, A / self.eff_out))  # for in and out
@@ -1304,7 +1323,8 @@ class Contract(SimpleContract):
         freq: str = None,
         periodicity: str = None,
         periodicity_duration: str = None,
-        ramp: Union[float, None] = None,
+        ramp_up: Union[float, None] = None,
+        ramp_down: Union[float, None] = None,
     ):
         """Contract: buy or sell (consume/produce) given price and limited capacity in/out
             Restrictions
@@ -1345,7 +1365,8 @@ class Contract(SimpleContract):
 
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
-            ramp (float): Maximum increase/decrease of virtual dispatch. Defaults to None. First point in time is unrestricted
+            ramp_up (float): Maximum increase of virtual dispatch. Positive value expected. Defaults to None. First point in time is unrestricted
+            ramp_down (float): Maximum decrease of virtual dispatch. Positive value expected. Defaults to None. First point in time is unrestricted
         """
         super(Contract, self).__init__(
             name=name,
@@ -1399,7 +1420,15 @@ class Contract(SimpleContract):
                 max_take["end"] = [max_take["end"]]
         self.min_take = min_take
         self.max_take = max_take
-        self.ramp = ramp
+        #### ramp
+        if isinstance(ramp_up, float):
+            assert ramp_up > 0, f"ramp_up must be greater than zero but got {ramp_up}"
+        if isinstance(ramp_down, float):
+            assert (
+                ramp_down > 0
+            ), f"ramp_down must be greater than zero but got {ramp_down}"
+        self.ramp_up = ramp_up
+        self.ramp_down = ramp_down
 
     @abc.abstractmethod
     def setup_optim_problem(
@@ -1426,12 +1455,6 @@ class Contract(SimpleContract):
         )
         if costs_only:
             return op
-        # scale ramp in case timegrid.freq and timegrid.main_time_unit are not equal
-        ramp = (
-            self.ramp * self.timegrid.restricted.dt[0]
-            if self.ramp is not None
-            else None
-        )
         # add restrictions min/max take
         min_take = self.min_take
         max_take = self.max_take
@@ -1474,7 +1497,7 @@ class Contract(SimpleContract):
             )
 
         # Ramp constraints:
-        if ramp is None:
+        if self.ramp_up is None and self.ramp_down is None:
             return op
         if op.A is None:
             op.A = A
@@ -1482,13 +1505,11 @@ class Contract(SimpleContract):
             op.cType = ""
         if op.b is None:
             op.b = np.empty(shape=(0))
-
-        T = self.timegrid.restricted.T
-        n = A.shape[1]
+        n = self.timegrid.restricted.T  # moved to Timegrid
         D = sp.diags(
-            diagonals=[-np.ones(T), np.ones(T)],
+            diagonals=[-np.ones(n), np.ones(n)],
             offsets=[-1, 0],
-            shape=(T, T),
+            shape=(n, n),
             format="csr",
         )
         # first row 1, .... deleted -- assuming first element has no restriction
@@ -1497,9 +1518,20 @@ class Contract(SimpleContract):
             not self._no_separate_disp_vars
         ):  # separate vars - e.g. because of extra_costs
             D = sp.hstack((D, D))
-        op.A = sp.vstack([op.A, D, D])  # stack lower and upper constraints onto op.A
-        op.cType += "L" * (T - 1) + "U" * (T - 1)
-        op.b = np.hstack([op.b, -ramp * np.ones(T - 1), ramp * np.ones(T - 1)])
+        if self.ramp_up is not None:
+            ramp = (
+                self.ramp_up * self.timegrid.restricted.dt[1:]
+            )  # dt's may be of different size
+            op.A = sp.vstack([op.A, D])  # stack upper constraints onto A
+            op.cType += "U" * (n - 1)
+            op.b = np.hstack([op.b, ramp])
+        if self.ramp_down is not None:
+            ramp = (
+                self.ramp_down * self.timegrid.restricted.dt[1:]
+            )  # dt's may be of different size
+            op.A = sp.vstack([op.A, D])  # stack lower constraints onto A
+            op.cType += "L" * (n - 1)
+            op.b = np.hstack([op.b, -ramp])
         return op
 
 
@@ -1531,7 +1563,8 @@ class MultiCommodityContract(Contract):
         freq: str = None,
         periodicity: str = None,
         periodicity_duration: str = None,
-        ramp: Union[float, None] = None,
+        ramp_up: Union[float, None] = None,
+        ramp_down: Union[float, None] = None,
     ):
         """Contract: buy or sell (consume/produce) given price and limited capacity in/out
             Restrictions
@@ -1570,7 +1603,8 @@ class MultiCommodityContract(Contract):
                                             str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
-            ramp (float): Maximum increase/decrease of virtual dispatch. Defaults to None. First point in time is unrestricted
+            ramp_up (float): Maximum increase of virtual dispatch. Expected to be positive. Defaults to None. First point in time is unrestricted
+            ramp_down (float): Maximum decrease of virtual dispatch. Expected to be positiveDefaults to None. First point in time is unrestricted
 
             New in comparison to contract:
             nodes (Node): different nodes the contract delivers to (one node per commodity)
@@ -1592,7 +1626,8 @@ class MultiCommodityContract(Contract):
             max_take=max_take,
             periodicity=periodicity,
             periodicity_duration=periodicity_duration,
-            ramp=ramp,
+            ramp_up=ramp_up,
+            ramp_down=ramp_down,
         )
 
         if not factors_commodities is None:
@@ -1711,17 +1746,12 @@ class ExtendedTransport(Transport):
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
 
-            min_take (dict) : Minimum volume within given period. Defaults to None
-            max_take (dict) : Maximum volume within given period. Defaults to None
-                                dict:  dict['start'] = np.array
-                                        dict['end']   = np.array
-                                        dict['values"] = np.array
-
+            min_take (dict, optional): Minimum volume within given period. Defaults to None
+            max_take (dict, optional): Maximum volume within given period. Defaults to None
 
             Extension of transport with more complex restrictions:
-
-            - time dependent capacity restrictions
-            - MinTake & MaxTake for a list of periods. With efficiency, min/maxTake refer to the quantity delivered FROM node 1
+                - time dependent capacity restrictions
+                - MinTake & MaxTake for a list of periods. With efficiency, min/maxTake refer to the quantity delivered FROM node 1
 
             Examples
                 - with min_cap = max_cap and a detailed time series

@@ -6,6 +6,8 @@ import os
 from os.path import dirname, join
 import sys
 mypath = (dirname(__file__))
+test_data_path = join(mypath, "data", "tz")
+output_data_path = join(mypath, "data", "output")
 sys.path.append(join(mypath, '..'))
 import eaopack as eao
 
@@ -66,7 +68,7 @@ class TimeZones(unittest.TestCase):
 
         self.assertAlmostEqual(res.value, 90., 5) # given by min_take
         out = eao.io.extract_output(portf, op, res, prices)
-        eao.io.output_to_file(out, 'test_output.xlsx')
+        eao.io.output_to_file(out, join(output_data_path, 'test_tz_output.xlsx'))
 
     def test_tz_serialization(self):
         """ Unit test. Timezones and serialization
@@ -201,7 +203,7 @@ class TimeZones(unittest.TestCase):
         Start = pd.Timestamp(Start).tz_localize('CET')
         End   = pd.Timestamp(End).tz_localize('CET')
 
-        data      = pd.read_pickle(os.path.join(os.path.join(os.path.dirname(__file__)),'data_DAH_ID.pkl'))
+        data      = pd.read_pickle(join(test_data_path, 'data_DAH_ID.pkl'))
         tg_dah = eao.basic_classes.Timegrid(start=Start, end=End, freq='h', timezone='CET')
         #### cast to grid: there was an issue here:
         p = tg_dah.prices_to_grid(data)   
