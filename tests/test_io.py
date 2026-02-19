@@ -405,7 +405,6 @@ class OptimizeShortcutTests(unittest.TestCase):
 
     def test_heat_portfolio(self):
         """given portfolio. test behaviour"""
-
         tg = eao.serialization.load_from_json(file_name=join(test_data_path, "tg_heat.json"))
         portf = eao.serialization.load_from_json(file_name=join(test_data_path, "portf_heat.json"))
         ### shorten
