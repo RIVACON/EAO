@@ -700,7 +700,8 @@ class TestBatteryWithRamp(unittest.TestCase):
             nodes=node,
             min_cap=-100.0,
             max_cap=100,
-            ramp=None
+            ramp_up=None,
+            ramp_down=None
         )
         self.portf = eao.portfolio.Portfolio([self.storage, self.contract])
         self.timegrid = eao.assets.Timegrid(
@@ -754,7 +755,8 @@ class TestBatteryWithRamp(unittest.TestCase):
         prices = {"price": np.linspace(1, 100, T)}
         self.storage.size = 50
         self.storage.start_level = 50
-        self.contract.ramp = 5
+        self.contract.ramp_up = 5
+        self.contract.ramp_down = 5
         out = eao.optimize(self.portf, self.timegrid, prices)
         np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[0 : T - 4], 0.0, 4)
         np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[T - 4 : T], [5, 10, 15, 20], 4)

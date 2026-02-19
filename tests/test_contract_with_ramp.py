@@ -14,15 +14,15 @@ import eaopack as eao
 
 class Test_Contract_Ramp(unittest.TestCase):
 
-    def simple_case_with_ramp(self, timegrid, prices, ramp1, ramp2) -> dict:
+    def simple_case_with_ramp(self, timegrid, prices, ramp1_up=None, ramp1_dn=None, ramp2_up=None, ramp2_dn=None) -> dict:
         """Simple case: Two contracts, set up so that we will see no dispatch ... then max"""
         ### manual benchmark
         node = eao.Node("power_node")
         c1 = eao.assets.Contract(
-            name="c1", price="price_1", nodes=node, min_cap=0, max_cap=10.0, ramp=ramp1
+            name="c1", price="price_1", nodes=node, min_cap=0, max_cap=10.0, ramp_up=ramp1_up, ramp_down=ramp1_dn
         )
         c2 = eao.assets.Contract(
-            name="c2", price="price_2", nodes=node, min_cap=-10.0, max_cap=0, ramp=ramp2
+            name="c2", price="price_2", nodes=node, min_cap=-10.0, max_cap=0, ramp_up=ramp2_up, ramp_down=ramp2_dn
         )
         # Idea: Give c2 a ramp later on to see the effect
         # a3.set_timegrid(timegrid)
@@ -37,7 +37,7 @@ class Test_Contract_Ramp(unittest.TestCase):
             "price_2": -100 * np.ones(timegrid.T),
         }
         prices["price_2"][5:10] = 5  ## here, we will see dispatch c1 ---> c2
-        out = self.simple_case_with_ramp(timegrid, prices, None, None)
+        out = self.simple_case_with_ramp(timegrid, prices)
         np.testing.assert_almost_equal(out["dispatch"]["c1"].values[5:10], 2.5, 4)
         np.testing.assert_almost_equal(out["dispatch"]["c2"].values[5:10], -2.5, 4)
         np.testing.assert_almost_equal(out["dispatch"]["c1"].values[0:5], 0, 4)
@@ -55,7 +55,7 @@ class Test_Contract_Ramp(unittest.TestCase):
             prices["price_2"][5:10] = 5  ## here, we will see dispatch c1 ---> c2
             for ramp1 in (0.5, 1, 2):
                 for ramp2 in (None, 0.75, 1.25):
-                    out = self.simple_case_with_ramp(timegrid, prices, ramp1, ramp2)
+                    out = self.simple_case_with_ramp(timegrid, prices, ramp1_up=ramp1, ramp1_dn=ramp1, ramp2_up=ramp2, ramp2_dn=ramp2)
 
                     ramp = ramp1 if ramp2 is None else min(ramp1, ramp2)
                     r = float(pd.Timedelta(freq) / pd.Timedelta("1h"))
@@ -90,7 +90,7 @@ class Test_Contract_Ramp(unittest.TestCase):
             "price_2": -100 * np.ones(timegrid.T),
         }
         prices["price_2"][0:5] = 5  ## here, we will see dispatch c1 ---> c2
-        out = self.simple_case_with_ramp(timegrid, prices, 0.5, None)
+        out = self.simple_case_with_ramp(timegrid, prices, ramp1_up=0.5, ramp1_dn=0.5)
         np.testing.assert_almost_equal(
             out["dispatch"]["c1"].values[0:5],
             np.array([0.625, 0.50, 0.375, 0.250, 0.125]),
@@ -112,7 +112,7 @@ class Test_Contract_Ramp(unittest.TestCase):
             "price_2": -100 * np.ones(T),
         }
         prices["price_2"][T - 5 : T] = 5  ## here, we will see dispatch c1 ---> c2
-        out = self.simple_case_with_ramp(timegrid, prices, 0.5, None)
+        out = self.simple_case_with_ramp(timegrid, prices, ramp1_up=0.5, ramp1_dn=0.5)
         np.testing.assert_almost_equal(
             out["dispatch"]["c1"].values[T - 5 : T],
             np.array([0.125, 0.250, 0.375, 0.500, 0.625]),
@@ -139,7 +139,7 @@ class Test_Contract_Ramp(unittest.TestCase):
 
         ## case only contracts
         c1 = eao.assets.Contract(
-            name="c1", price="price_1", nodes=node, min_cap=0, max_cap=10.0, ramp=2
+            name="c1", price="price_1", nodes=node, min_cap=0, max_cap=10.0, ramp_up=2, ramp_down=2
         )
         c2 = eao.assets.Contract(
             name="c2", price="price_2", nodes=node, min_cap=-10.0, max_cap=0
@@ -166,7 +166,8 @@ class Test_Contract_Ramp(unittest.TestCase):
             min_cap=0,
             max_cap=10.0,
             factors_commodities=[1, 0],
-            ramp=2,
+            ramp_up=2,
+            ramp_down=2
         )
         portf = eao.portfolio.Portfolio([m1, c2])
         out_m = eao.optimize(portf, timegrid, prices)
@@ -191,7 +192,8 @@ class Test_Contract_Ramp(unittest.TestCase):
             nodes=node,
             min_cap=-10,
             max_cap=10.0,
-            ramp=ramp,
+            ramp_up=ramp,
+            ramp_down=ramp
         )
         b = eao.assets.Storage(
             name="bat",
@@ -226,7 +228,8 @@ class Test_Contract_Ramp(unittest.TestCase):
             nodes=node,
             min_cap=-10,
             max_cap=10.0,
-            ramp=3,
+            ramp_up=3,
+            ramp_down=3,
             extra_costs=0.1,  ### !!!
         )
         c2 = eao.assets.Contract(
@@ -262,7 +265,8 @@ class Test_Contract_Ramp(unittest.TestCase):
             nodes=node,
             min_cap=-10,
             max_cap=10.0,
-            ramp=5,
+            ramp_up=5,
+            ramp_down=5,
             extra_costs=0.1,  ### !!!
         )
         c2 = eao.assets.Contract(
@@ -309,7 +313,8 @@ class Test_Contract_Ramp(unittest.TestCase):
             nodes=node,
             min_cap=-100,
             max_cap=100.0,
-            ramp=None,
+            ramp_up=None,
+            ramp_down=None,
         )
         b = eao.assets.Storage(
             name="bat",

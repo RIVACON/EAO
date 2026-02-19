@@ -103,7 +103,8 @@ class CHPAsset(ea.Contract):
             conversion_factor_power_heat (float, dict, str): Conversion efficiency from heat to power. Defaults to 1.
             max_share_heat (float, dict, str): Defines upper bound for the heat dispatch as a percentage of the power dispatch.
                                                I.e. max dispatch heat = max_share_heat * power dispatch. Defaults to None (no restriction).
-            ramp (float): Maximum increase/decrease of virtual dispatch (power + conversion_factor_power_heat * heat) in one main time unit). Defaults to None.
+            ramp (float): Maximum increase/decrease of virtual dispatch (power + conversion_factor_power_heat * heat) in one main time unit).
+                          CHPContract uses only one ramp parameter, not the bidirectional ramp of Contract Defaults to None.
             start_costs (float): Costs for starting. Defaults to 0.
             running_costs (float): Costs when on. Defaults to 0.
             min_runtime (int): Minimum runtime in timegrids main_time_unit. (start ramp time and shutdown ramp time do not count towards the min runtime.) Defaults to 0.
@@ -153,8 +154,10 @@ class CHPAsset(ea.Contract):
             max_cap=max_cap,
             min_take=min_take,
             max_take=max_take,
-            ramp=ramp,
+            ramp_up=None,
+            ramp_down=None
         )
+        self.ramp = ramp
         self._no_heat = _no_heat
         # check and record meaning of nodes
         self.idx_nodes = {}
@@ -287,12 +290,9 @@ class CHPAsset(ea.Contract):
         Returns:
             OptimProblem: Optimization problem to be used by optimizer
         """
-        ramp = self.ramp
-        self.ramp = None  # Don't let base-class contract.setup_optim_problem set ramp constraints
         op = super().setup_optim_problem(
             prices=prices, timegrid=timegrid, costs_only=costs_only
         )
-        self.ramp = ramp
 
         if self.freq is not None and self.freq != self.timegrid.freq:
             raise ValueError(

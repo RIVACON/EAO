@@ -1329,7 +1329,8 @@ class Contract(SimpleContract):
         freq: str = None,
         periodicity: str = None,
         periodicity_duration: str = None,
-        ramp: Union[float, None] = None,
+        ramp_up: Union[float, None] = None,
+        ramp_down: Union[float, None] = None,
     ):
         """Contract: buy or sell (consume/produce) given price and limited capacity in/out
             Restrictions
@@ -1370,7 +1371,8 @@ class Contract(SimpleContract):
 
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
-            ramp (float): Maximum increase/decrease of virtual dispatch. Defaults to None. First point in time is unrestricted
+            ramp_up (float): Maximum increase of virtual dispatch. Positive value expected. Defaults to None. First point in time is unrestricted
+            ramp_down (float): Maximum decrease of virtual dispatch. Positive value expected. Defaults to None. First point in time is unrestricted
         """
         super(Contract, self).__init__(
             name=name,
@@ -1424,7 +1426,15 @@ class Contract(SimpleContract):
                 max_take["end"] = [max_take["end"]]
         self.min_take = min_take
         self.max_take = max_take
-        self.ramp = ramp
+        #### ramp
+        if isinstance(ramp_up, float):
+            assert ramp_up > 0, f"ramp_up must be greater than zero but got {ramp_up}"
+        if isinstance(ramp_down, float):
+            assert (
+                ramp_down > 0
+            ), f"ramp_down must be greater than zero but got {ramp_down}"
+        self.ramp_up = ramp_up
+        self.ramp_down = ramp_down
 
     @abc.abstractmethod
     def setup_optim_problem(
@@ -1451,12 +1461,6 @@ class Contract(SimpleContract):
         )
         if costs_only:
             return op
-        # scale ramp in case timegrid.freq and timegrid.main_time_unit are not equal
-        ramp = (
-            self.ramp * self.timegrid.restricted.dt[1:]
-            if self.ramp is not None
-            else None
-        )
         # add restrictions min/max take
         min_take = self.min_take
         max_take = self.max_take
@@ -1499,7 +1503,7 @@ class Contract(SimpleContract):
             )
 
         # Ramp constraints:
-        if ramp is None:
+        if self.ramp_up is None and self.ramp_down is None:
             return op
         if op.A is None:
             op.A = A
@@ -1507,24 +1511,27 @@ class Contract(SimpleContract):
             op.cType = ""
         if op.b is None:
             op.b = np.empty(shape=(0))
-
-        T = self.timegrid.restricted.T
-        n = A.shape[1]
+        n = self.timegrid.restricted.T  # moved to Timegrid
         D = sp.diags(
-            diagonals=[-np.ones(T), np.ones(T)],
+            diagonals=[-np.ones(n), np.ones(n)],
             offsets=[-1, 0],
-            shape=(T, T),
+            shape=(n, n),
             format="csr",
         )
         # first row 1, .... deleted -- assuming first element has no restriction
         D = D[1:, :]
-        if (
-            not self._no_separate_disp_vars
-        ):  # separate vars - e.g. because of extra_costs
+        if not self._no_separate_disp_vars:  # separate vars - e.g. because of extra_costs
             D = sp.hstack((D, D))
-        op.A = sp.vstack([op.A, D, D])  # stack lower and upper constraints onto op.A
-        op.cType += "L" * (T - 1) + "U" * (T - 1)
-        op.b = np.hstack([op.b, -ramp, ramp])
+        if self.ramp_up is not None:
+            ramp = (self.ramp_up * self.timegrid.restricted.dt[1:])  # dt's may be of different size
+            op.A = sp.vstack([op.A, D])  # stack upper constraints onto A
+            op.cType += "U" * (n - 1)
+            op.b = np.hstack([op.b, ramp])
+        if self.ramp_down is not None:
+            ramp = (self.ramp_down * self.timegrid.restricted.dt[1:])  # dt's may be of different size
+            op.A = sp.vstack([op.A, D])  # stack lower constraints onto A
+            op.cType += "L" * (n - 1)
+            op.b = np.hstack([op.b, -ramp])
         return op
 
 
@@ -1556,7 +1563,8 @@ class MultiCommodityContract(Contract):
         freq: str = None,
         periodicity: str = None,
         periodicity_duration: str = None,
-        ramp: Union[float, None] = None,
+        ramp_up: Union[float, None] = None,
+        ramp_down: Union[float, None] = None,
     ):
         """Contract: buy or sell (consume/produce) given price and limited capacity in/out
             Restrictions
@@ -1595,7 +1603,8 @@ class MultiCommodityContract(Contract):
                                             str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
-            ramp (float): Maximum increase/decrease of virtual dispatch. Defaults to None. First point in time is unrestricted
+            ramp_up (float): Maximum increase of virtual dispatch. Expected to be positive. Defaults to None. First point in time is unrestricted
+            ramp_down (float): Maximum decrease of virtual dispatch. Expected to be positiveDefaults to None. First point in time is unrestricted
 
             New in comparison to contract:
             nodes (Node): different nodes the contract delivers to (one node per commodity)
@@ -1617,7 +1626,8 @@ class MultiCommodityContract(Contract):
             max_take=max_take,
             periodicity=periodicity,
             periodicity_duration=periodicity_duration,
-            ramp=ramp,
+            ramp_up=ramp_up,
+            ramp_down=ramp_down,
         )
 
         if not factors_commodities is None:
