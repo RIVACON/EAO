@@ -126,6 +126,45 @@ class Test_Contract_Ramp(unittest.TestCase):
         np.testing.assert_almost_equal(out["dispatch"]["c1"].values[0 : T - 5], 0, 4)
         np.testing.assert_almost_equal(out["dispatch"]["c2"].values[0 : T - 5], 0, 4)
 
+    def test_simple_case_ramp_up(self):
+        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="15min")
+        prices = {
+            "price_1": np.ones(timegrid.T) * 2,
+            "price_2": -100 * np.ones(timegrid.T),
+        }
+        prices["price_2"][5:10] = 5  ## here, we will see dispatch c1 ---> c2
+        out = self.simple_case_with_ramp(timegrid, prices, ramp1_up=0.4)
+        np.testing.assert_almost_equal(out["dispatch"]["c1"].values[5:10], [0.1, 0.2, 0.3, 0.4, 0.5], 4)
+        np.testing.assert_almost_equal(out["dispatch"]["c1"].values[0:5], 0, 4)
+        np.testing.assert_almost_equal(out["dispatch"]["c1"].values[10:], 0, 4)
+
+    def test_simple_case_ramp_dn(self):
+        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="15min")
+        prices = {
+            "price_1": np.ones(timegrid.T) * 2,
+            "price_2": 100 * np.ones(timegrid.T),
+        }
+        prices["price_2"][5:25] = -5  ## here, we will see dispatch ramp down as fast as possible, i.e., ramp_dn*1/4=0.3
+        out = self.simple_case_with_ramp(timegrid, prices, ramp1_dn=1.2)
+        np.testing.assert_almost_equal(out["dispatch"]["c1"].values[5:13], [2.2, 1.9, 1.6, 1.3, 1.0, 0.7, 0.4, 0.1], 4)
+        np.testing.assert_almost_equal(out["dispatch"]["c1"].values[0:5], 2.5, 4)
+        np.testing.assert_almost_equal(out["dispatch"]["c1"].values[13:25], 0, 4)
+        np.testing.assert_almost_equal(out["dispatch"]["c1"].values[25:], 2.5, 4)
+
+    def test_simple_case_ramp_up_and_dn(self):
+        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="15min")
+        prices = {
+            "price_1": np.ones(timegrid.T) * 2,
+            "price_2": -100 * np.ones(timegrid.T),
+        }
+        prices["price_2"][5:15] = 5
+        out = self.simple_case_with_ramp(timegrid, prices, ramp1_up=0.4, ramp1_dn=1.2)
+        np.testing.assert_almost_equal(out["dispatch"]["c1"].values[5:15], [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.6, 0.3], 4)
+        np.testing.assert_almost_equal(out["dispatch"]["c1"].values[0:5], 0, 4)
+        np.testing.assert_almost_equal(out["dispatch"]["c1"].values[15:], 0, 4)
+
+
+class Test_CHPAsset_Ramp(unittest.TestCase):
     def test_ramp_with_CHP_asset_or_multi(self):
         """CHP Asset does ramps differently, but in simple case should be identical"""
         timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="2h")
@@ -177,6 +216,7 @@ class Test_Contract_Ramp(unittest.TestCase):
             (out_m["dispatch"]["c1 (extra)"][5:10]).abs().sum(), 0, 3
         )
 
+class Test_Battery_Ramp(unittest.TestCase):
     def test_batterie_mit_rampen(self):
         """Test and illustration: Create a ramp for a battery via a contract"""
         timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="h")
@@ -210,6 +250,8 @@ class Test_Contract_Ramp(unittest.TestCase):
         diffs = abs(a[:-1] - a[1:])
         np.testing.assert_array_less(diffs, 0.5, ramp + 1e-4)
 
+
+class Test_ExtraCosts_Ramp(unittest.TestCase):
     def test_ramp_with_extra_cost(self):
         """extra_cost will lead to 2x the disp variables"""
         timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="2h")
@@ -297,6 +339,9 @@ class Test_Contract_Ramp(unittest.TestCase):
             )
             np.testing.assert_almost_equal(a[0:10], b, 3)
             pass
+
+
+class Test_EdgeCase_Ramp(unittest.TestCase):
 
     def test_batterie_mit_rampen_edge_cases(self):
         """Test and illustration: Create a ramp for a battery via a contract"""
