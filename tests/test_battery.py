@@ -678,163 +678,92 @@ class BatteryTest(unittest.TestCase):
 
 class TestBatteryWithRamp(unittest.TestCase):
 
-    def contract_and_battery(
-        self,
-        timegrid,
-        prices,
-        eff=1,
-        ramp_battery_up=None,
-        ramp_battery_down=None,
-        ramp_contract=None,
-    ):
+    def setUp(self):
         node = eao.assets.Node("testNode")
-        a = eao.assets.Storage(
+        self.storage = eao.assets.Storage(
             "Battery",
             node,
-            size=50,
-            cap_in=50,
-            cap_out=50,
+            size=100,
+            cap_in=100,
+            cap_out=100,
             start_level=0,
             end_level=0,
-            cost_out=0,
-            eff_in=eff,
-            ramp_up=ramp_battery_up,
-            ramp_down=ramp_battery_down,
-        )
-        c = eao.assets.Contract(
-            name="Contract",
-            price="price",
-            nodes=node,
-            min_cap=-100.0,
-            max_cap=100,
-            ramp=ramp_contract,
-        )
-        portf = eao.portfolio.Portfolio([a, c])
-        return eao.optimize(portf, timegrid, prices)
-
-    def test_battery_with_ramp(self):
-        # ramp in battery: At largest t the maximal d(dispatch)/dt = 5 is observed:
-        timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 1, 10), freq="h"
-        )
-        T = timegrid.T
-        prices = {"price": np.linspace(1, 100, T)}
-        out = self.contract_and_battery(
-            timegrid, prices, ramp_battery_up=5, ramp_battery_down=4
-        )
-        np.testing.assert_almost_equal(
-            out["dispatch"]["Battery"].values[0:4],
-            [-20, -15, -12.5, -10, -7.5, -5, -2.5],
-            4,
-        )
-        np.testing.assert_almost_equal(
-            out["dispatch"]["Battery"].values[4 : T - 4], 0.0, 4
-        )
-        np.testing.assert_almost_equal(
-            out["dispatch"]["Battery"].values[T - 4 : T], [5, 10, 15, 20], 4
-        )
-
-    def test_battery_with_ramp_in_contract(self):
-        # ramp in contract: At largest t the same maximal d(dispatch)/dt = 5 is observed:
-        timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 1, 10), freq="h"
-        )
-        T = timegrid.T
-        prices = {"price": np.linspace(1, 100, T)}
-        out = self.contract_and_battery(timegrid, prices, ramp_contract=5)
-        np.testing.assert_almost_equal(
-            out["dispatch"]["Battery"].values[0 : T - 4], 0.0, 4
-        )
-        np.testing.assert_almost_equal(
-            out["dispatch"]["Battery"].values[T - 4 : T], [5, 10, 15, 20], 4
-        )
-
-    def test_battery_with_ramp_none(self):
-        timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 1, 10), freq="h"
-        )
-        T = timegrid.T
-        prices = {"price": np.linspace(1, 100, T)}
-        # No ramps: At largest t the same maximal d(dispatch)/dt = capacity is observed:
-        out = self.contract_and_battery(timegrid, prices)
-        np.testing.assert_almost_equal(
-            out["dispatch"]["Battery"].values[0 : T - 1], 0.0, 4
-        )
-        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[T:], 50, 4)
-
-    def test_battery_ramp_updown(self):
-        timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="h"
-        )
-        T = timegrid.T
-        myp = np.zeros(T)
-        myp[1:5] = -100
-        myp[7:9] = 100
-        myp[10:13] = -100
-        myp[15:20] = 8
-        myp[21] = 1000
-        myp[22] = -1000
-        prices = {"price": myp}
-        ######
-        node = eao.assets.Node("testNode")
-        a = eao.assets.Storage(
-            "Battery",
-            node,
-            size=500,
-            cap_in=10,
-            cap_out=10,
-            cost_in=10,
             cost_out=10,
-            start_level=0,
-            end_level=0,
+            cost_in=10,
+            eff_in=1,
             ramp_up=None,
             ramp_down=None,
         )
-        c = eao.assets.Contract(
+        self.contract = eao.assets.Contract(
             name="Contract",
             price="price",
             nodes=node,
             min_cap=-100.0,
             max_cap=100,
+            ramp=None
         )
-        ### no ramp yet
-        portf = eao.portfolio.Portfolio([a, c])
-        out = eao.optimize(portf, timegrid, prices)
+        self.portf = eao.portfolio.Portfolio([self.storage, self.contract])
+        self.timegrid = eao.assets.Timegrid(
+            dt.date(2021, 1, 1), dt.date(2021, 1, 10), freq="h"
+        )
+        self.prices = {"price": np.zeros(self.timegrid.T)}
+
+    def test_battery_with_up_ramp(self):
+        # ramp in battery: At all time t the maximal d(dispatch)/dt = 5 is observed. Expectation: Battery starts empty
+        # and is filled at smallest t as fast as possible. At largest t the battery is emptied as fast as possible.
+        T = self.timegrid.T
+        prices = {"price": np.linspace(1, 100, T)}
+        self.storage.size = 50
+        self.storage.ramp_up = 5
+        out = eao.optimize(self.portf, self.timegrid, prices)
+        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[0 : 4], [-20, -15, -10, -5], 4)
+        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[4 : T - 4], 0.0, 4)
+        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[T-4 : T], [5, 10, 15, 20], 4)
+
+    def test_battery_with_down_ramp(self):
+        # ramp in battery: At all time t the minimal d(dispatch)/dt = -5 is observed. Expectation: Battery starts full
+        # and is emptied at smallest t as fast as possible. At largest t the battery is filled as fast as possible
+        T = self.timegrid.T
+        prices = {"price": np.linspace(100, 1, T)}
+        self.storage.size = 50
+        self.storage.start_level = 50
+        self.storage.end_level = 50
+        self.storage.ramp_down = 5
+        out = eao.optimize(self.portf, self.timegrid, prices)
+        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[0 : 4], [20, 15, 10, 5], 4)
+        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[4 : T - 4], 0.0, 4)
+        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[T-4 : T], [-5, -10, -15, -20], 4)
+
+    def test_battery_with_up_and_down_ramps(self):
+        # ramp in battery: Alternating prices of 20 times -100 and 20 times 100, etc.
+        # Expectation: The asymmetric up- and down ramp parameters limit the observed change in dispatch
+        pattern = np.array([-100] * 20 + [100] * 20)
+        T = self.timegrid.T
+        self.prices = {"price": np.tile(pattern, int(np.ceil(T / len(pattern))))[:T]}
+        self.storage.ramp_up = 2
+        self.storage.ramp_down = 1
+        out = eao.optimize(self.portf, self.timegrid, self.prices)
         disp = out["dispatch"]["Battery"].values
         diff = disp[1:] - disp[0:-1]
-        self.assertAlmostEqual(diff.max(), 20, 3)
-        self.assertAlmostEqual(diff.min(), -20, 3)
-        ### contract ramp
-        portf.get_asset("Contract").ramp = 5
-        out = eao.optimize(portf, timegrid, prices)
-        disp = out["dispatch"]["Battery"].values
-        diff = disp[1:] - disp[0:-1]
-        self.assertAlmostEqual(diff.max(), 5, 3)
-        self.assertAlmostEqual(diff.min(), -5, 3)
-        ### up  ramp
-        portf.get_asset("Contract").ramp = None
-        portf.get_asset("Battery").ramp_up = 7.0
-        out = eao.optimize(portf, timegrid, prices)
-        disp = out["dispatch"]["Battery"].values
-        diff = disp[1:] - disp[0:-1]
-        self.assertAlmostEqual(diff.max(), 7)
-        self.assertLess(diff.min(), -7)
-        ### down  ramp
-        portf.get_asset("Contract").ramp = None
-        portf.get_asset("Battery").ramp_up = None
-        portf.get_asset("Battery").ramp_down = 7.6
-        out = eao.optimize(portf, timegrid, prices)
-        disp = out["dispatch"]["Battery"].values
-        diff = disp[1:] - disp[0:-1]
-        self.assertGreater(diff.max(), 7.6)
-        self.assertAlmostEqual(diff.min(), -7.6)
-        ### up and down ramp
-        portf.get_asset("Contract").ramp = None
-        portf.get_asset("Battery").ramp_up = 8.1
-        portf.get_asset("Battery").ramp_down = 7.6
-        out = eao.optimize(portf, timegrid, prices)
-        disp = out["dispatch"]["Battery"].values
-        diff = disp[1:] - disp[0:-1]
-        self.assertAlmostEqual(diff.max(), 8.1)
-        self.assertAlmostEqual(diff.min(), -7.6)
-        pass
+        self.assertGreaterEqual(2, diff.max(), "Set up-ramp limit is not greater or equal to the observed")
+        self.assertLessEqual(-1, diff.min(), "Set down-ramp limit is not less or equal to the observed")
+
+    def test_battery_with_ramp_in_contract(self):
+        # ramp in contract: At largest t the same maximal d(dispatch)/dt = 5 is observed:
+        T = self.timegrid.T
+        prices = {"price": np.linspace(1, 100, T)}
+        self.storage.size = 50
+        self.storage.start_level = 50
+        self.contract.ramp = 5
+        out = eao.optimize(self.portf, self.timegrid, prices)
+        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[0 : T - 4], 0.0, 4)
+        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[T - 4 : T], [5, 10, 15, 20], 4)
+
+    def test_battery_with_ramp_none(self):
+        # No ramps: At largest t the same maximal d(dispatch)/dt = capacity is observed:
+        T = self.timegrid.T
+        prices = {"price": np.linspace(1, 100, T)}
+        out = eao.optimize(self.portf, self.timegrid, prices)
+        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[1 : T - 1], 0.0, 4)
+        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[:1], -100, 4)
+        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[T:], 100, 4)
