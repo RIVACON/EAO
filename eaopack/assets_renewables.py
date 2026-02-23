@@ -31,15 +31,14 @@ class RenewableAsset(ea.SimpleContract):
         start: dt.datetime = None,
         end: dt.datetime = None,
         wacc: float = 0,
-        price: str = None,
         freq: str | None = None,
         profile: float | StartEndValueDict | str = 0.0,
         controllable: bool = True,
         sell_position: bool = False,
+        market_price: float | StartEndValueDict | str = 0.0,
         fixed_price: float | None = None,
         n_hour_rule_payment: int | None = None,
         n_hour_rule_delivery: int | None = None,
-        market_price: float | StartEndValueDict | str = 0.0,
         cfd_type: bool = False,
     ):
         """Renewable Asset or PPA contract
@@ -108,89 +107,87 @@ class RenewableAsset(ea.SimpleContract):
             start=start,
             end=end,
             wacc=wacc,
-            price=price,
             freq=freq,
         )
         self.profile = profile
         self.fixed_price = fixed_price
+        self.market_price = market_price
+        self.cfd_type = cfd_type
         self.controllable = controllable
         self.sell_position = sell_position
         self.n_hour_rule_payment = n_hour_rule_payment
         self.n_hour_rule_delivery = n_hour_rule_delivery
-        self.market_price = market_price
-        self.cfd_type = cfd_type
-
 
     @abc.abstractmethod
     def setup_optim_problem(
         self,
         prices: dict | None = None,
-        timegrid: Timegrid = None,
+        timegrid: Timegrid | None = None,
         costs_only: bool = False,
     ) -> OptimProblem:
-        # profile is effectively the max_cap
+
+        # set timegrid if given as optional argument - needed for make_vector calls
+        if not timegrid is None:
+            self.set_timegrid(timegrid)
+
+        # Payment logic
+        fixed_price = self.make_vector(self.fixed_price, convert=True)
+        if self.cfd_type:
+            market_price = self.make_vector(self.market_price, convert=True)
+            self.price = fixed_price - market_price if fixed_price is not None else -market_price
+        else:
+            self.price = fixed_price
+
+        # profile is effectively the max_cap; min_cap is either 0 or equal max_cap if asset is not controllable
         if self.profile is not None:
             self.max_cap = self.profile
-            self.min_cap = 0  # check!
+        self.min_cap = 0 if self.controllable else self.max_cap
 
-        # ToDo: Use "self.make_vector" to convert to suitable array for all variables (where suited)
-        ### im SimpleContract gab es noch eine alte (umständliche) Variante; ist geändert
-        # Get prices vector
-        if self.price is not None:
-            assert isinstance(self.price, str), (
-                "Error in asset " + self.name + " --> price must be given as string"
-            )
-            assert (
-                self.price in prices
-            ), f"Price {self.price} is not available in given prices dict"
-            price = prices[self.price].copy()
-        else:
-            price = None
+        # Asset in short position; min_cap and max_cap in reverse
+        if self.sell_position:
+            self.max_cap, self.min_cap = -self.min_cap, -self.max_cap
 
-        # Case constant subsidy: Subsidy is paid on-top of price -> -subsidy are extra-costs
-        if self.subsidy is not None:
-            self.extra_costs = -self.subsidy
+        # n_hour_rules for payment and delivery (different values may apply)
+        self.price = self.make_vector(self.price, convert=True)
+        if self.n_hour_rule_payment is not None:
+            n_hours = self.convert_to_timegrid_freq(
+                self.n_hour_rule_payment, "n_hour_rule_payment", timegrid=timegrid)
+            idx = n_hour_rule_applies(self.price, n_hours)
+            self.price[idx] = 0
 
-        # Case fixed price: price - extra_costs = fixed_price, i.e., extra_costs = price - fixed_price
-        if self.fixed_price is not None:
-            if price is not None:
-                if isinstance(price, list):
-                    self.extra_costs = np.asarray(price) - self.fixed_price
-                else:
-                    self.extra_costs = np.asarray(price) - self.fixed_price
-            else:
-                self.extra_costs = -self.fixed_price
+        if  self.n_hour_rule_delivery is not None:
+            n_hours = self.convert_to_timegrid_freq(
+                self.n_hour_rule_delivery, "n_hour_rule_delivery", timegrid=timegrid)
+            idx = n_hour_rule_applies(self.price, n_hours)
+            self.min_cap = self.make_vector(self.min_cap, convert=True)
+            self.max_cap = self.make_vector(self.max_cap, convert=True)
+            self.min_cap[idx] = 0
+            self.max_cap[idx] = 0
 
-        # Find n_hour_rule-long consecutive interval of negative prices and set them to zero
-        if self.n_hour_rule is not None and price is not None and timegrid is not None:
-            n_hour_rule = self.convert_to_timegrid_freq(
-                self.n_hour_rule, "n_hour_rule", timegrid=timegrid
-            )
-            mask = price <= 0
-            # Pad with False at both ends to catch edge runs
-            padded = np.concatenate(([False], mask, [False]))
-            diff = np.diff(padded.astype(int))
-            starts = np.where(diff == 1)[0]
-            ends = np.where(diff == -1)[0]
-            lengths = ends - starts
-            n_hour_rule_applies = lengths >= n_hour_rule
-            idx = np.concatenate(
-                [
-                    np.arange(s, e)
-                    for s, e in zip(
-                        starts[n_hour_rule_applies], ends[n_hour_rule_applies]
-                    )
-                ]
-            )
-            price[idx] = 0.0
-            # same for extra_costs -> assumption: if subsidy or fixed_price and n_hour_rule is given there is no dispatch
-            # in the n_hor_rule interval and therefore no subsidy
-            if isinstance(self.extra_costs, (float, int, np.ndarray)):
-                self.extra_costs = self.extra_costs * np.ones(timegrid.T)
-            self.extra_costs[idx] = 0.0
-
-        renewable_prices = {self.price: price}
-        op = super().setup_optim_problem(  # parent: SimpleContract
-            prices=renewable_prices, timegrid=timegrid, costs_only=costs_only
+        # call parent SimpleContract setup_optim_problem implementation
+        op = super().setup_optim_problem(
+            prices=prices, timegrid=timegrid, costs_only=costs_only
         )
         return op
+
+
+def n_hour_rule_applies(price: np.ndarray, n_hours: int) -> np.ndarray:
+    """
+    Find n_hours-long consecutive interval of negative prices and return their indexes
+    """
+    mask = price <= 0
+    padded = np.concatenate(([False], mask, [False]))  # Pad with False at both ends to catch edge runs
+    diff = np.diff(padded.astype(int))
+    starts = np.where(diff == 1)[0]
+    ends = np.where(diff == -1)[0]
+    lengths = ends - starts
+    n_hour_rule_applies = lengths >= n_hours
+    idx = np.concatenate(
+        [
+            np.arange(s, e)
+            for s, e in zip(
+            starts[n_hour_rule_applies], ends[n_hour_rule_applies]
+        )
+        ]
+    )
+    return idx
