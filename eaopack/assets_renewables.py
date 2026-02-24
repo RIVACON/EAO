@@ -18,11 +18,10 @@ from eaopack.basic_classes import (
 )
 from eaopack.optimization import OptimProblem
 from eaopack.optimization import Results
+from eaopack.assets import *
 
-import eaopack.assets as ea  # basic asset classes (to inherit from)
 
-
-class RenewableAsset(ea.SimpleContract):
+class RenewableAsset(Asset):
 
     def __init__(
         self,
@@ -101,14 +100,9 @@ class RenewableAsset(ea.SimpleContract):
             ...
 
         """
-        super().__init__(  # parent: SimpleContract
-            name=name,
-            nodes=nodes,
-            start=start,
-            end=end,
-            wacc=wacc,
-            freq=freq,
-        )
+        assert profile is not None, "RenewableAsset argument profile cannot be None."
+        assert market_price is not None, "RenewableAsset argument market_price cannot be None."
+        super().__init__(name=name, nodes=nodes, start=start, end=end, wacc=wacc, freq=freq)
         self.profile = profile
         self.fixed_price = fixed_price
         self.market_price = market_price
@@ -131,21 +125,21 @@ class RenewableAsset(ea.SimpleContract):
             self.set_timegrid(timegrid)
 
         # Payment logic
-        fixed_price = self.make_vector(self.fixed_price, convert=False)
-        market_price = self.make_vector(self.market_price, convert=False)
+        fixed_price = self.make_vector(prices=prices, value=self.fixed_price, convert=False)
+        market_price = self.make_vector(prices=prices, value=self.market_price, convert=False)
+        effective_price_name = "effective_price"
         if self.cfd_type:
-            effective_price = fixed_price - market_price
+            effective_price = {effective_price_name: fixed_price - market_price}
         else:
-            effective_price = fixed_price
+            effective_price = {effective_price_name: fixed_price}
 
         # profile is effectively the max_cap; min_cap is either 0 or equal max_cap if asset is not controllable
-        if self.profile is not None:
-            self.max_cap = self.profile
-        self.min_cap = 0 if self.controllable else self.max_cap
+        max_cap = self.profile
+        min_cap = self.make_vector(value=0, convert=True) if self.controllable else max_cap
 
         # Asset in short position; min_cap and max_cap in reverse
         if self.sell_position:
-            self.max_cap, self.min_cap = -self.min_cap, -self.max_cap
+            max_cap, min_cap = -min_cap, -max_cap
 
         # n_hour_rules for payment and delivery (different values may apply)
         if self.n_hour_rule_payment is not None:
@@ -158,17 +152,24 @@ class RenewableAsset(ea.SimpleContract):
             n_hours = self.convert_to_timegrid_freq(
                 self.n_hour_rule_delivery, "n_hour_rule_delivery", timegrid=timegrid)
             idx = n_hour_rule_applies(market_price, n_hours)
-            self.min_cap = self.make_vector(self.min_cap, convert=True)
-            self.max_cap = self.make_vector(self.max_cap, convert=True)
-            self.min_cap[idx] = 0
-            self.max_cap[idx] = 0
+            min_cap[idx] = 0
+            max_cap[idx] = 0
 
-
-        # call parent SimpleContract setup_optim_problem implementation
-        op = super().setup_optim_problem(
+        # set up SimpleContract and call setup_optim_problem:
+        internal_contract = SimpleContract(
+            name=self.name,
+            nodes=self.nodes,
+            start=self.start,
+            end=self.end,
+            wacc=self.wacc,
+            freq=self.freq,
+            min_cap=min_cap,
+            max_cap=max_cap,
+            price=effective_price_name
+        )
+        return internal_contract.setup_optim_problem(
             prices=effective_price, timegrid=timegrid, costs_only=costs_only
         )
-        return op
 
 
 def n_hour_rule_applies(price: np.ndarray, n_hours: int) -> np.ndarray:
@@ -181,12 +182,12 @@ def n_hour_rule_applies(price: np.ndarray, n_hours: int) -> np.ndarray:
     starts = np.where(diff == 1)[0]
     ends = np.where(diff == -1)[0]
     lengths = ends - starts
-    n_hour_rule_applies = lengths >= n_hours
+    rule_applies = lengths >= n_hours
     idx = np.concatenate(
         [
             np.arange(s, e)
             for s, e in zip(
-            starts[n_hour_rule_applies], ends[n_hour_rule_applies]
+            starts[rule_applies], ends[rule_applies]
         )
         ]
     )
