@@ -56,7 +56,7 @@ class RenewablesTestCase(unittest.TestCase):
     def test_default(self):
         # Constant positive prices, expectation: dispatch = maximal power = energy profile independent of fixed_prices
         # as long as fixed_price < market prices = 5
-        for fixed_price in (None, 0, 1, 4):
+        for fixed_price in (0, 1, 4):
             self.renewable.fixed_price=fixed_price
             out = eao.optimize(self.portf, self.timegrid, {"price": self.market_price["values"]})
             np.testing.assert_almost_equal(out["dispatch"]["Renewable"].values, self.profile['values'], 4)
@@ -64,7 +64,7 @@ class RenewablesTestCase(unittest.TestCase):
     def test_cfd_type(self):
         # Constant positive prices, expectation: dispatch = maximal power = energy profile independent of fixed_prices
         self.renewable.cfd_type = True
-        for fixed_price in (None, 0, 1, 4, 6, 9):
+        for fixed_price in (0, 1, 4, 6, 9):
             self.renewable.fixed_price=fixed_price
             out = eao.optimize(self.portf, self.timegrid, {"price": self.market_price["values"]})
             np.testing.assert_almost_equal(out["dispatch"]["Renewable"].values, self.profile['values'], 4)

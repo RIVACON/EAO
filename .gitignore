@@ -49,4 +49,5 @@ test_status.json
 notebooks_status.json
 /doc/source/_static
 .github/badges/*.svg
-.idea*
+.idea/workspace.xml
+.idea/*

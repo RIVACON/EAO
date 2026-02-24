@@ -131,12 +131,12 @@ class RenewableAsset(ea.SimpleContract):
             self.set_timegrid(timegrid)
 
         # Payment logic
-        fixed_price = self.make_vector(self.fixed_price, convert=True)
+        fixed_price = self.make_vector(self.fixed_price, convert=False)
+        market_price = self.make_vector(self.market_price, convert=False)
         if self.cfd_type:
-            market_price = self.make_vector(self.market_price, convert=True)
-            self.price = fixed_price - market_price if fixed_price is not None else -market_price
+            effective_price = fixed_price - market_price
         else:
-            self.price = fixed_price
+            effective_price = fixed_price
 
         # profile is effectively the max_cap; min_cap is either 0 or equal max_cap if asset is not controllable
         if self.profile is not None:
@@ -148,25 +148,25 @@ class RenewableAsset(ea.SimpleContract):
             self.max_cap, self.min_cap = -self.min_cap, -self.max_cap
 
         # n_hour_rules for payment and delivery (different values may apply)
-        self.price = self.make_vector(self.price, convert=True)
         if self.n_hour_rule_payment is not None:
             n_hours = self.convert_to_timegrid_freq(
                 self.n_hour_rule_payment, "n_hour_rule_payment", timegrid=timegrid)
-            idx = n_hour_rule_applies(self.price, n_hours)
-            self.price[idx] = 0
+            idx = n_hour_rule_applies(market_price, n_hours)
+            effective_price[idx] = 0
 
         if  self.n_hour_rule_delivery is not None:
             n_hours = self.convert_to_timegrid_freq(
                 self.n_hour_rule_delivery, "n_hour_rule_delivery", timegrid=timegrid)
-            idx = n_hour_rule_applies(self.price, n_hours)
+            idx = n_hour_rule_applies(market_price, n_hours)
             self.min_cap = self.make_vector(self.min_cap, convert=True)
             self.max_cap = self.make_vector(self.max_cap, convert=True)
             self.min_cap[idx] = 0
             self.max_cap[idx] = 0
 
+
         # call parent SimpleContract setup_optim_problem implementation
         op = super().setup_optim_problem(
-            prices=prices, timegrid=timegrid, costs_only=costs_only
+            prices=effective_price, timegrid=timegrid, costs_only=costs_only
         )
         return op
 
