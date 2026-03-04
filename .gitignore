@@ -51,4 +51,4 @@ notebooks_status.json
 .github/badges/*.svg
 *__pycache__*
 eaopack/_assets_private.py
-tests/_tests_assets_private.py
+tests/_test_assets_private.py
