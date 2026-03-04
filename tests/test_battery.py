@@ -701,7 +701,7 @@ class TestBatteryWithRamp(unittest.TestCase):
             min_cap=-100.0,
             max_cap=100,
             ramp_up=None,
-            ramp_down=None
+            ramp_down=None,
         )
         self.portf = eao.portfolio.Portfolio([self.storage, self.contract])
         self.timegrid = eao.assets.Timegrid(
@@ -717,9 +717,15 @@ class TestBatteryWithRamp(unittest.TestCase):
         self.storage.size = 50
         self.storage.ramp_up = 5
         out = eao.optimize(self.portf, self.timegrid, prices)
-        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[0 : 4], [-20, -15, -10, -5], 4)
-        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[4 : T - 4], 0.0, 4)
-        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[T-4 : T], [5, 10, 15, 20], 4)
+        np.testing.assert_almost_equal(
+            out["dispatch"]["Battery"].values[0:4], [-20, -15, -10, -5], 4
+        )
+        np.testing.assert_almost_equal(
+            out["dispatch"]["Battery"].values[4 : T - 4], 0.0, 4
+        )
+        np.testing.assert_almost_equal(
+            out["dispatch"]["Battery"].values[T - 4 : T], [5, 10, 15, 20], 4
+        )
 
     def test_battery_with_down_ramp(self):
         # ramp in battery: At all time t the minimal d(dispatch)/dt = -5 is observed. Expectation: Battery starts full
@@ -731,9 +737,15 @@ class TestBatteryWithRamp(unittest.TestCase):
         self.storage.end_level = 50
         self.storage.ramp_down = 5
         out = eao.optimize(self.portf, self.timegrid, prices)
-        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[0 : 4], [20, 15, 10, 5], 4)
-        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[4 : T - 4], 0.0, 4)
-        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[T-4 : T], [-5, -10, -15, -20], 4)
+        np.testing.assert_almost_equal(
+            out["dispatch"]["Battery"].values[0:4], [20, 15, 10, 5], 4
+        )
+        np.testing.assert_almost_equal(
+            out["dispatch"]["Battery"].values[4 : T - 4], 0.0, 4
+        )
+        np.testing.assert_almost_equal(
+            out["dispatch"]["Battery"].values[T - 4 : T], [-5, -10, -15, -20], 4
+        )
 
     def test_battery_with_up_and_down_ramps(self):
         # ramp in battery: Alternating prices of 20 times -100 and 20 times 100, etc.
@@ -746,8 +758,12 @@ class TestBatteryWithRamp(unittest.TestCase):
         out = eao.optimize(self.portf, self.timegrid, self.prices)
         disp = out["dispatch"]["Battery"].values
         diff = disp[1:] - disp[0:-1]
-        self.assertGreaterEqual(2, diff.max(), "Set up-ramp limit is not greater or equal to the observed")
-        self.assertLessEqual(-1, diff.min(), "Set down-ramp limit is not less or equal to the observed")
+        self.assertGreaterEqual(
+            2, diff.max(), "Set up-ramp limit is not greater or equal to the observed"
+        )
+        self.assertLessEqual(
+            -1, diff.min(), "Set down-ramp limit is not less or equal to the observed"
+        )
 
     def test_battery_with_ramp_in_contract(self):
         # ramp in contract: At largest t the same maximal d(dispatch)/dt = 5 is observed:
@@ -758,14 +774,167 @@ class TestBatteryWithRamp(unittest.TestCase):
         self.contract.ramp_up = 5
         self.contract.ramp_down = 5
         out = eao.optimize(self.portf, self.timegrid, prices)
-        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[0 : T - 4], 0.0, 4)
-        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[T - 4 : T], [5, 10, 15, 20], 4)
+        np.testing.assert_almost_equal(
+            out["dispatch"]["Battery"].values[0 : T - 4], 0.0, 4
+        )
+        np.testing.assert_almost_equal(
+            out["dispatch"]["Battery"].values[T - 4 : T], [5, 10, 15, 20], 4
+        )
 
     def test_battery_with_ramp_none(self):
         # No ramps: At largest t the same maximal d(dispatch)/dt = capacity is observed:
         T = self.timegrid.T
         prices = {"price": np.linspace(1, 100, T)}
         out = eao.optimize(self.portf, self.timegrid, prices)
-        np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[1 : T - 1], 0.0, 4)
+        np.testing.assert_almost_equal(
+            out["dispatch"]["Battery"].values[1 : T - 1], 0.0, 4
+        )
         np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[:1], -100, 4)
         np.testing.assert_almost_equal(out["dispatch"]["Battery"].values[T:], 100, 4)
+
+
+class TestBatteryWithMinLevel(unittest.TestCase):
+
+    def test_max_level(self):
+        """test max_level as parameter"""
+        node = eao.assets.Node("testNode")
+        timegrid = eao.assets.Timegrid(
+            dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="h"
+        )
+        a = eao.assets.Storage(
+            "STORAGE",
+            node,
+            cap_in=1,
+            cap_out=1,
+            size=4,
+            start_level=0,
+            end_level=0,
+            price="price",
+            eff_in=0.8,
+            eff_out=0.9,
+            no_simult_in_out=False,
+        )
+        price = np.ones([timegrid.T])
+        price[:10] = 0
+        price[8] = 5
+        price[3:5] = 0
+        price[18:20] = 20
+
+        prices = {"price": price}
+        op = a.setup_optim_problem(prices, timegrid=timegrid)
+        res = op.optimize()
+        xin = res.x[0:24]
+        xout = res.x[24:48]
+        fl = a.fill_level(op, res)
+        self.assertAlmostEqual(
+            -xin.sum() / xout.sum(), 1 / 0.9 / 0.8, 3
+        )  # overall loss
+        self.assertAlmostEqual(fl.max(), 4, 5)
+        print(res)
+
+    def test_min_level(self):
+        """test max_level as parameter"""
+        node = eao.assets.Node("testNode")
+        timegrid = eao.assets.Timegrid(
+            dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="h"
+        )
+        a = eao.assets.Storage(
+            "STORAGE",
+            node,
+            size=5,
+            cap_in=1,
+            cap_out=1,
+            min_level="soc_min",
+            start_level=0,
+            end_level=3,
+            price="price",
+            eff_in=0.8,
+            eff_out=0.9,
+            no_simult_in_out=False,
+        )
+        price = np.ones([timegrid.T])
+        price[:10] = 0
+        price[8] = 5
+        price[3:5] = 0
+        price[18:20] = 20
+
+        soc_min = np.ones([timegrid.T]) * 1
+        soc_min[:10] = 0
+        soc_min[20:22] = 4.5
+        prices = {"price": price, "soc_min": soc_min}
+        op = a.setup_optim_problem(prices, timegrid=timegrid)
+        res = op.optimize()
+        fl = a.fill_level(op, res)
+        np.testing.assert_almost_equal(fl[20:22], 4.5, 3)
+
+    def test_min_and_max_level(self):
+        """test time dependent min_level and max_level as parameters"""
+        node = eao.assets.Node("testNode")
+        timegrid = eao.assets.Timegrid(
+            dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="h"
+        )
+        a = eao.assets.Storage(
+            "STORAGE",
+            node,
+            size="soc_max",
+            min_level="soc_min",
+            cap_in=100,
+            cap_out=100,
+            start_level=1.5,
+            end_level=5.5,
+            price="price",
+            eff_in=0.8,
+            eff_out=0.9,
+            no_simult_in_out=False,
+        )
+        price = 50 * np.ones([timegrid.T])
+        price[1::2] = 0
+
+        soc_min = np.linspace(1, 5, timegrid.T)
+        soc_max = np.linspace(2, 6, timegrid.T)
+
+        prices = {"price": price, "soc_min": soc_min, "soc_max": soc_max}
+        op = a.setup_optim_problem(prices, timegrid=timegrid)
+        res = op.optimize()
+        fl = a.fill_level(op, res)
+        np.testing.assert_almost_equal(fl[::2], soc_min[::2], 3)
+        np.testing.assert_almost_equal(fl[1:-1:2], soc_max[1:-1:2], 3)
+
+    def test_min_and_max_level_blocks(self):
+        """test time dependent min_level and max_level as parameters - with block size"""
+        node = eao.assets.Node("testNode")
+        timegrid = eao.assets.Timegrid(
+            dt.date(2021, 1, 1), dt.date(2021, 1, 4), freq="h"
+        )
+        a = eao.assets.Storage(
+            "STORAGE",
+            node,
+            size="soc_max",
+            min_level="soc_min",
+            cap_in=100,
+            cap_out=100,
+            start_level=1.5,
+            end_level=5.5,
+            price="price",
+            eff_in=0.8,
+            eff_out=0.9,
+            no_simult_in_out=False,
+            block_size="d",
+        )
+        price = 50 * np.ones([timegrid.T])
+        price[1::2] = 0
+
+        soc_min = np.linspace(1, 5, timegrid.T)
+        soc_max = np.linspace(2, 6, timegrid.T)
+
+        prices = {"price": price, "soc_min": soc_min, "soc_max": soc_max}
+        op = a.setup_optim_problem(prices, timegrid=timegrid)
+        res = op.optimize(solver="SCIP")
+        fl = a.fill_level(op, res)
+        # blocks: each end of day reach end level
+        r = range(23, 71, 24)
+        ### we have adjusted the end level for blocks to lie within min/max range of level
+        # here, the max level was the limit
+        np.testing.assert_almost_equal(fl[r], soc_max[r], 3)
+        np.testing.assert_almost_equal(fl[::2], soc_min[::2], 3)
+        np.testing.assert_almost_equal(fl[1:-1:2], soc_max[1:-1:2], 3)

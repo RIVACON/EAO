@@ -302,8 +302,8 @@ class Storage(Asset):
         end: Union[dt.datetime, pd.Timestamp, None] = None,
         wacc: float = 0.0,
         size: Union[float, StartEndValueDict, str] = 0.0,
-        cap_in: Union[float, StartEndValueDict, str] = None,
-        cap_out: Union[float, StartEndValueDict, str] = None,
+        cap_in: Union[float, StartEndValueDict, str, None] = None,
+        cap_out: Union[float, StartEndValueDict, str, None] = None,
         start_level: float = 0.0,
         end_level: float = 0.0,
         cost_out: float = 0.0,
@@ -323,6 +323,7 @@ class Storage(Asset):
         periodicity_duration: Union[None, str] = None,
         ramp_up: Union[float, None] = None,
         ramp_down: Union[float, None] = None,
+        min_level: Union[float, str, StartEndValueDict, None] = None,
     ):
         """Specific storage asset. A storage has the basic capability to
             (1) take in a commodity within a limited flow rate (capacity)
@@ -339,6 +340,8 @@ class Storage(Asset):
                                     The more granular frequency of portf & asset is used
 
             size (float, str, StartEndValueDict): Maximum volume of commodity in storage. Use str or StartEndValueDict for time dependency
+            min_level (float, str, StartEndValueDict, None): Minimum fill level. Use str or StartEndValueDict for time dependency Defaults to None (zero)
+
             cap_in (float, str, StartEndValueDict): Maximum flow rate for taking in a commodity. Use str or StartEndValueDict for time dependency
             cap_out (float, str, StartEndValueDict): Maximum flow rate for taking in a commodity. Use str or StartEndValueDict for time dependency
             start_level (float, optional): Level of storage at start of optimization. Defaults to zero.
@@ -425,6 +428,7 @@ class Storage(Asset):
             ), f"ramp_down must be greater than zero but got {ramp_down}"
         self.ramp_up = ramp_up
         self.ramp_down = ramp_down
+        self.min_level = min_level
 
     def setup_optim_problem(
         self,
@@ -514,8 +518,30 @@ class Storage(Asset):
         #       where N_t is the number of time steps after (t)
         # convert to costs per main time unit
 
-        # account for time dependent size and capa
+        # account for time dependent size and min_level
         size = self.make_vector(self.size, prices, default_value=0.0)
+        if self.min_level is not None:
+            min_level = self.make_vector(self.min_level, prices)
+        else:
+            min_level = self.make_vector(0.0, prices)
+        assert (min_level >= 0.0).all(), (
+            "Storage " + self.name + ": min_level must not be negative"
+        )
+        assert (min_level <= size).all(), (
+            "Storage " + self.name + ": min_level must not be greater than size"
+        )
+        assert self.start_level >= min_level[0], (
+            "Storage " + self.name + ": start_level must be >= min_level[0]"
+        )
+        assert self.end_level >= min_level[-1], (
+            "Storage " + self.name + ": end_level must be >= min_level[-1]"
+        )
+        assert self.start_level <= size[0], (
+            "Storage " + self.name + ": start_level must be <= size[0]"
+        )
+        assert self.end_level <= size[-1], (
+            "Storage " + self.name + ": end_level must be <= size[-1]"
+        )
         if self.cost_store != 0:
             cost_store = self.cost_store * dt * discount
             cost_store = np.asarray(
@@ -554,7 +580,7 @@ class Storage(Asset):
             b = (size - self.start_level) - inflow
             b[-1] = self.end_level - self.start_level - inflow[-1]
             # Minimum: empty
-            b_min = -self.start_level * np.ones(n, float) - inflow
+            b_min = min_level - self.start_level * np.ones(n, float) - inflow
             b_min[-1] = self.end_level - self.start_level - inflow[-1]
         else:  ## creating block matrices on the diagonal
             A = sp.lil_matrix((n, n))
@@ -586,20 +612,26 @@ class Storage(Asset):
                 A[np.ix_(block, block)] = -sp.tril(
                     np.ones((len_block, len_block), float)
                 )  # triangle matrix for time block
-
                 ### for first block start value is start_level - for others we start with the end level
                 if ib == 0:
                     my_start = self.start_level
                 else:
-                    my_start = self.end_level
+                    my_start = my_end  # value from prefious loop
+                ### for blocks we may have an end level not consistent with min_level and size (if time dependent)
+                # adjust to lie within range of min_level and size
+                my_end = max(self.end_level, min_level[block[-1]])
+                my_end = min(my_end, size[block[-1]])
 
                 # Maximum: max volume not exceeded
                 parts_b = (size[block] - my_start) - inflow[block]
-                parts_b[-1] = self.end_level - my_start - inflow[block[-1]]
+                # due to earlier assert final end level should always fit and therefore be self.end_level
+                parts_b[-1] = my_end - my_start - inflow[block[-1]]
                 b[block] = parts_b
                 # Minimum: empty
-                parts_b_min = -my_start * np.ones(len_block) - inflow[block]
-                parts_b_min[-1] = self.end_level - my_start - inflow[block[-1]]
+                parts_b_min = (
+                    min_level[block] - my_start * np.ones(len_block) - inflow[block]
+                )
+                parts_b_min[-1] = my_end - my_start - inflow[block[-1]]
                 b_min[block] = parts_b_min
 
         # join restrictions for in, out, full, empty
