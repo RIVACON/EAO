@@ -21,5 +21,8 @@ from eaopack.assets_plants import CHPAsset, \
 from eaopack.assets_structured import StructuredAsset, \
                                       LinkedAsset
 
+# possibility to add non-public implementations for assets
+from eaopack.assets_private import *
+
 ### import other basic classes as well (for convenience)
 from eaopack.basic_classes import Timegrid, Unit, Node
