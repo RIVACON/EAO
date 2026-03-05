@@ -302,6 +302,7 @@ class Storage(Asset):
         end: Union[dt.datetime, pd.Timestamp, None] = None,
         wacc: float = 0.0,
         size: Union[float, StartEndValueDict, str] = 0.0,
+        max_level: Union[float, str, StartEndValueDict, None] = None,
         min_level: Union[float, str, StartEndValueDict, None] = None,
         cap_in: Union[float, StartEndValueDict, str, None] = None,
         cap_out: Union[float, StartEndValueDict, str, None] = None,
@@ -340,6 +341,8 @@ class Storage(Asset):
                                     The more granular frequency of portf & asset is used
 
             size (float, str, StartEndValueDict): Maximum volume of commodity in storage. Use str or StartEndValueDict for time dependency
+                                                  In case max_level is used, it overrides the size.
+            max_level (float, str, StartEndValueDict, None): Maximum fill level. Use str or StartEndValueDict for time dependency Defaults to None (zero)
             min_level (float, str, StartEndValueDict, None): Minimum fill level. Use str or StartEndValueDict for time dependency Defaults to None (zero)
 
             cap_in (float, str, StartEndValueDict): Maximum flow rate for taking in a commodity. Use str or StartEndValueDict for time dependency
@@ -359,7 +362,7 @@ class Storage(Asset):
             eff_out: Efficiency taking out the commodity. Defaults to 1 (=100%)
 
             max_cycles_no   (float, optional): Maximum number of cycles the battery can perform. Defaults to None -- MIP!
-                                               In case a time-dependent size is chosen, max_cycles_no refers to the average size
+                                               In case a time-dependent size is chosen, max_cycles_no refers to the storage mean size in that cycle interval
             max_cycles_freq (str, optional): Frequency of the maximum number of cycles. Example: "d" for daily cycles. Defaults to 'd'
 
             inflow (float, str, StartEndValueDict, optional): Inflow volumes (flow in each time step. E.g. water inflow in hydro storage). Defaults to 0.
@@ -431,6 +434,7 @@ class Storage(Asset):
         self.ramp_up = ramp_up
         self.ramp_down = ramp_down
         self.min_level = min_level
+        self.max_level = max_level
 
     def setup_optim_problem(
         self,
@@ -530,13 +534,21 @@ class Storage(Asset):
             min_level = self.make_vector(self.min_level, prices)
         else:
             min_level = self.make_vector(0.0, prices)
-
+        if self.max_level is None:
+            max_level = size
+        else:
+            max_level = self.make_vector(self.max_level, prices, default_value=size[0])
         ### assertions for level restrictions
+        assert (max_level <= size).all(), (
+            "Storage " + self.name + ": max_level must not be larger than size"
+        )
         assert (min_level >= 0.0).all(), (
             "Storage " + self.name + ": min_level must not be negative"
         )
-        assert (min_level <= size).all(), (
-            "Storage " + self.name + ": min_level must not be greater than size"
+        assert (min_level <= max_level).all(), (
+            "Storage "
+            + self.name
+            + ": min_level must not be greater than size/ max_level"
         )
         assert start_level[0] >= min_level[0], (
             "Storage " + self.name + ": start_level must be >= min_level[0]"
@@ -544,11 +556,11 @@ class Storage(Asset):
         assert end_level[-1] >= min_level[-1], (
             "Storage " + self.name + ": end_level must be >= min_level[-1]"
         )
-        assert start_level[0] <= size[0], (
-            "Storage " + self.name + ": start_level must be <= size[0]"
+        assert start_level[0] <= max_level[0], (
+            "Storage " + self.name + ": start_level must be <= size/ max_level[0]"
         )
-        assert end_level[-1] <= size[-1], (
-            "Storage " + self.name + ": end_level must be <= size[-1]"
+        assert end_level[-1] <= max_level[-1], (
+            "Storage " + self.name + ": end_level must be <= size/ max_level[-1]"
         )
         if self.cost_store != 0:
             cost_store = self.cost_store * dt * discount
@@ -586,7 +598,7 @@ class Storage(Asset):
         if self.block_size is None:
             A = -sp.tril(np.ones((n, n), float))
             # Maximum: max volume not exceeded
-            b = (size - start_level[0]) - inflow
+            b = (max_level - start_level[0]) - inflow
             b[-1] = end_level[-1] - start_level[0] - inflow[-1]
             # Minimum: empty
             b_min = min_level - start_level[0] * np.ones(n, float) - inflow
@@ -628,10 +640,10 @@ class Storage(Asset):
                 ### for blocks we may have an end level not consistent with min_level and size (if time dependent)
                 # adjust to lie within range of min_level and size
                 my_end = max(end_level[block[-1]], min_level[block[-1]])
-                my_end = min(my_end, size[block[-1]])
+                my_end = min(my_end, max_level[block[-1]])
 
                 # Maximum: max volume not exceeded
-                parts_b = (size[block] - my_start) - inflow[block]
+                parts_b = (max_level[block] - my_start) - inflow[block]
                 # due to earlier assert final end level should always fit and therefore be self.end_level
                 parts_b[-1] = my_end - my_start - inflow[block[-1]]
                 b[block] = parts_b
@@ -679,9 +691,6 @@ class Storage(Asset):
         ## add restrictions for max_cycles
         # quantity behind no of cycles
         if self.max_cycles_no is not None:
-            cycle_quant = (
-                self.max_cycles_no * size.mean()
-            )  # in case of time-dependent size use mean
             ## create daterange for start / end of cycles
             try:
                 extra_time = pd.Timedelta(self.max_cycles_freq)
@@ -698,6 +707,10 @@ class Storage(Asset):
                 myI = (self.timegrid.restricted.timepoints >= myrange[i]) & (
                     self.timegrid.restricted.timepoints < myrange[i + 1]
                 )
+                cycle_quant = (
+                    self.max_cycles_no * size[myI].mean()
+                )  # in case of time-dependent size use mean
+
                 if any(myI):
                     myA = sp.lil_matrix((1, 2 * n))
                     myA[0, self.timegrid.restricted.I[myI]] = (

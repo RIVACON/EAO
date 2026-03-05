@@ -1010,3 +1010,78 @@ class TestBatteryWithMinLevel(unittest.TestCase):
             fl[fl.index.hour == 23], end_level[fl.index.hour == 23], 3
         )
         pass
+
+    def test_max_level_via_new_parameter(self):
+        """test time dependent min_level and max_level as parameters - using max_level parameter"""
+        node = eao.assets.Node("testNode")
+        timegrid = eao.assets.Timegrid(
+            dt.date(2021, 1, 1), dt.date(2021, 1, 4), freq="h"
+        )
+        a = eao.assets.Storage(
+            "STORAGE",
+            node,
+            size=20,
+            min_level="soc_min",
+            max_level="soc_max",
+            cap_in=100,
+            cap_out=100,
+            start_level=1.5,
+            end_level=5.5,
+            price="price",
+            eff_in=0.8,
+            eff_out=0.9,
+            no_simult_in_out=False,
+            block_size="d",
+        )
+        price = 50 * np.ones([timegrid.T])
+        price[1::2] = 0
+
+        soc_min = np.linspace(1, 5, timegrid.T)
+        soc_max = np.linspace(2, 6, timegrid.T)
+        size = np.linspace(3, 7, timegrid.T)
+        prices = {"price": price, "soc_min": soc_min, "soc_max": soc_max, "size": size}
+
+        op = a.setup_optim_problem(prices, timegrid=timegrid)
+        res = op.optimize(solver="SCIP")
+        fl = a.fill_level(op, res)
+        # blocks: each end of day reach end level
+        r = range(23, 71, 24)
+        ### we have adjusted the end level for blocks to lie within min/max range of level
+        # here, the max level was the limit
+        np.testing.assert_almost_equal(fl[r], soc_max[r], 3)
+        np.testing.assert_almost_equal(fl[::2], soc_min[::2], 3)
+        np.testing.assert_almost_equal(fl[1:-1:2], soc_max[1:-1:2], 3)
+
+        ########### add cycle constraint and check how it refers to changing size
+        soc_min = np.linspace(0, 1, timegrid.T)
+        soc_max = np.linspace(5, 6, timegrid.T)
+        size = np.linspace(5, 7, timegrid.T)
+        prices = {"price": price, "soc_min": soc_min, "soc_max": soc_max, "size": size}
+
+        a = eao.assets.Storage(
+            "STORAGE",
+            node,
+            size="size",
+            min_level="soc_min",
+            max_level="soc_max",
+            cap_in=100,
+            cap_out=100,
+            start_level=1.5,
+            end_level=2.5,
+            price="price",
+            eff_in=0.8,
+            eff_out=0.9,
+            no_simult_in_out=False,
+            # block_size="d",
+            max_cycles_freq="d",
+            max_cycles_no=0.25,
+        )
+        op = a.setup_optim_problem(prices, timegrid=timegrid)
+        res = op.optimize(solver="SCIP")
+        fl = a.fill_level(op, res)
+        load = -res.x[0 : timegrid.T]
+        load = pd.Series(index=timegrid.timepoints, data=load)
+        load = load.resample("d").sum() * a.eff_in
+        ss = pd.Series(index=timegrid.timepoints, data=size)
+        ss = ss.resample("d").mean() * a.max_cycles_no
+        np.testing.assert_almost_equal(load.values, ss.values, 3)
