@@ -938,3 +938,75 @@ class TestBatteryWithMinLevel(unittest.TestCase):
         np.testing.assert_almost_equal(fl[r], soc_max[r], 3)
         np.testing.assert_almost_equal(fl[::2], soc_min[::2], 3)
         np.testing.assert_almost_equal(fl[1:-1:2], soc_max[1:-1:2], 3)
+
+    def test_dynamic_end_level(self):
+        """test time dependent end_level - with block size"""
+        node = eao.assets.Node("testNode")
+        timegrid = eao.assets.Timegrid(
+            dt.date(2021, 1, 1), dt.date(2021, 1, 5), freq="h"
+        )
+        a = eao.assets.Storage(
+            "STORAGE",
+            node,
+            size="soc_max",
+            min_level="soc_min",
+            cap_in=100,
+            cap_out=100,
+            start_level="start_level",
+            end_level="end_level",
+            price="price",
+            eff_in=0.8,
+            eff_out=0.9,
+            no_simult_in_out=False,
+            block_size="d",
+        )
+        price = 50 * np.ones([timegrid.T])
+        price[1::2] = 0
+
+        soc_min = np.linspace(1, 2, timegrid.T)
+        soc_max = np.linspace(8, 12, timegrid.T)
+        end_level = np.linspace(3, 4, timegrid.T)
+        end_level = end_level.round(2)
+        start_level = end_level.copy()
+        # for split optim - ensure start and end are equal
+        rr = range(0, 4 * 24, 24)
+        for i, r in enumerate(rr):
+            if i != 0:
+                start_level[r] = end_level[r - 1]
+        data = {
+            "price": price,
+            "soc_min": soc_min,
+            "soc_max": soc_max,
+            "end_level": end_level,
+            "start_level": start_level,
+        }
+        ##############
+        ### block-wise optimization: expect end level at end of each block (day)
+        op = a.setup_optim_problem(data, timegrid=timegrid)
+        res = op.optimize(solver="SCIP")
+        fl = a.fill_level(op, res, input_data=data)
+        # blocks: each end of day reach end level
+        ### we have adjusted the end level for blocks to lie within min/max range of level
+        # here, the max level was the limit
+        r = range(23, 96, 24)
+        np.testing.assert_almost_equal(fl[r], end_level[r], 3)
+        ##############
+        ### step optimization: expect end level at end of each block (day)
+        c = eao.assets.SimpleContract(
+            nodes=node, price="price", min_cap=-1000, max_cap=1000
+        )
+        a.price = None
+        a.block_size = None
+        portf = eao.Portfolio([a, c])
+        out = eao.optimize(
+            portf=portf,
+            timegrid=timegrid,
+            data=data,
+            split_interval_size="d",
+            solver="SCIP",
+        )
+        fl = out["internal_variables"]["STORAGE_fill_level"]
+        np.testing.assert_almost_equal(
+            fl[fl.index.hour == 23], end_level[fl.index.hour == 23], 3
+        )
+        pass

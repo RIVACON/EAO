@@ -302,16 +302,19 @@ class Storage(Asset):
         end: Union[dt.datetime, pd.Timestamp, None] = None,
         wacc: float = 0.0,
         size: Union[float, StartEndValueDict, str] = 0.0,
+        min_level: Union[float, str, StartEndValueDict, None] = None,
         cap_in: Union[float, StartEndValueDict, str, None] = None,
         cap_out: Union[float, StartEndValueDict, str, None] = None,
-        start_level: float = 0.0,
-        end_level: float = 0.0,
+        start_level: Union[float, StartEndValueDict, str] = 0.0,
+        end_level: Union[float, StartEndValueDict, str, None] = 0.0,
         cost_out: float = 0.0,
         cost_in: float = 0.0,
         cost_store: float = 0.0,
         block_size: Union[None, str] = None,
         eff_in: float = 1.0,
         eff_out: float = 1.0,
+        ramp_up: Union[float, None] = None,
+        ramp_down: Union[float, None] = None,
         inflow: float = 0.0,
         no_simult_in_out: bool = False,
         max_store_duration: Union[None, float] = None,
@@ -321,9 +324,6 @@ class Storage(Asset):
         max_cycles_freq: str = "d",
         periodicity: Union[None, str] = None,
         periodicity_duration: Union[None, str] = None,
-        ramp_up: Union[float, None] = None,
-        ramp_down: Union[float, None] = None,
-        min_level: Union[float, str, StartEndValueDict, None] = None,
     ):
         """Specific storage asset. A storage has the basic capability to
             (1) take in a commodity within a limited flow rate (capacity)
@@ -344,8 +344,10 @@ class Storage(Asset):
 
             cap_in (float, str, StartEndValueDict): Maximum flow rate for taking in a commodity. Use str or StartEndValueDict for time dependency
             cap_out (float, str, StartEndValueDict): Maximum flow rate for taking in a commodity. Use str or StartEndValueDict for time dependency
-            start_level (float, optional): Level of storage at start of optimization. Defaults to zero.
-            end_level (float, optional):Level of storage at end of optimization. Defaults to zero.
+            start_level (float, str, StartEndValueDict): Level of storage at start of optimization. Defaults to zero.
+            end_level (float, str, StartEndValueDict): Level of storage at end of optimization. Defaults to zero.
+                                                       In case block-wise optimization or split_optimization is used, a start or end_level in form of a time series
+                                                       may be useful: In this case, the respective start or end_level of the respective point in time is used
             cost_out (float, optional): Cost for taking out volumes ($/volume). Defaults to 0.
             cost_in (float, optional): Cost for taking in volumes ($/volume). Defaults to 0.
             cost_store (float, optional): Cost for keeping in storage ($/volume/main time unit). Defaults to 0.
@@ -360,7 +362,7 @@ class Storage(Asset):
                                                In case a time-dependent size is chosen, max_cycles_no refers to the average size
             max_cycles_freq (str, optional): Frequency of the maximum number of cycles. Example: "d" for daily cycles. Defaults to 'd'
 
-            inflow (float, optional): Constant rate of inflow volumes (flow in each time step. E.g. water inflow in hydro storage). Defaults to 0.
+            inflow (float, str, StartEndValueDict, optional): Inflow volumes (flow in each time step. E.g. water inflow in hydro storage). Defaults to 0.
             no_simult_in_out (boolean, optional): Enforce no simultaneous dispatch in/out in case of costs or efficiency!=1. Makes problem MIP. Defaults to False
             max_store_duration (float, optional): Maximal duration in main time units that charged commodity can be held. Makes problem a MIP. Defaults to none
 
@@ -468,7 +470,8 @@ class Storage(Asset):
         # capacities convert to arrays, adjusting capacity (unit is in vol/h)
         ct = self.make_vector(self.cap_out, prices, default_value=0.0, convert=True)
         cp = self.make_vector(self.cap_in, prices, default_value=0.0, convert=True)
-        inflow = np.cumsum(self.inflow * dt)
+        inflow = self.make_vector(self.inflow, prices, default_value=0.0, convert=True)
+        inflow = np.cumsum(inflow)
         discount = self.timegrid.restricted.discount_factors
 
         if self.price is not None:
@@ -520,26 +523,31 @@ class Storage(Asset):
 
         # account for time dependent size and min_level
         size = self.make_vector(self.size, prices, default_value=0.0)
+        # allow for dynamic start and end levels (e.g. for block-wise optimization with changing intermediate start/end levels)
+        start_level = self.make_vector(self.start_level, prices, default_value=0.0)
+        end_level = self.make_vector(self.end_level, prices, default_value=0.0)
         if self.min_level is not None:
             min_level = self.make_vector(self.min_level, prices)
         else:
             min_level = self.make_vector(0.0, prices)
+
+        ### assertions for level restrictions
         assert (min_level >= 0.0).all(), (
             "Storage " + self.name + ": min_level must not be negative"
         )
         assert (min_level <= size).all(), (
             "Storage " + self.name + ": min_level must not be greater than size"
         )
-        assert self.start_level >= min_level[0], (
+        assert start_level[0] >= min_level[0], (
             "Storage " + self.name + ": start_level must be >= min_level[0]"
         )
-        assert self.end_level >= min_level[-1], (
+        assert end_level[-1] >= min_level[-1], (
             "Storage " + self.name + ": end_level must be >= min_level[-1]"
         )
-        assert self.start_level <= size[0], (
+        assert start_level[0] <= size[0], (
             "Storage " + self.name + ": start_level must be <= size[0]"
         )
-        assert self.end_level <= size[-1], (
+        assert end_level[-1] <= size[-1], (
             "Storage " + self.name + ": end_level must be <= size[-1]"
         )
         if self.cost_store != 0:
@@ -547,6 +555,7 @@ class Storage(Asset):
             cost_store = np.asarray(
                 [cost_store[ii:].sum() for ii in range(0, len(cost_store))]
             )
+
         # costs in and out
         if sep_needed:
             u = np.hstack((np.zeros(n, float), ct))
@@ -577,11 +586,11 @@ class Storage(Asset):
         if self.block_size is None:
             A = -sp.tril(np.ones((n, n), float))
             # Maximum: max volume not exceeded
-            b = (size - self.start_level) - inflow
-            b[-1] = self.end_level - self.start_level - inflow[-1]
+            b = (size - start_level[0]) - inflow
+            b[-1] = end_level[-1] - start_level[0] - inflow[-1]
             # Minimum: empty
-            b_min = min_level - self.start_level * np.ones(n, float) - inflow
-            b_min[-1] = self.end_level - self.start_level - inflow[-1]
+            b_min = min_level - start_level[0] * np.ones(n, float) - inflow
+            b_min[-1] = end_level[-1] - start_level[0] - inflow[-1]
         else:  ## creating block matrices on the diagonal
             A = sp.lil_matrix((n, n))
             b = np.empty(n)
@@ -608,18 +617,17 @@ class Storage(Asset):
             ### for i, a in enumerate(aa[0:-1]):  # go through the blocks
             for ib, block in enumerate(block_ind):
                 len_block = len(block)
-                a = block[0]
                 A[np.ix_(block, block)] = -sp.tril(
                     np.ones((len_block, len_block), float)
                 )  # triangle matrix for time block
                 ### for first block start value is start_level - for others we start with the end level
                 if ib == 0:
-                    my_start = self.start_level
+                    my_start = start_level[0]
                 else:
                     my_start = my_end  # value from prefious loop
                 ### for blocks we may have an end level not consistent with min_level and size (if time dependent)
                 # adjust to lie within range of min_level and size
-                my_end = max(self.end_level, min_level[block[-1]])
+                my_end = max(end_level[block[-1]], min_level[block[-1]])
                 my_end = min(my_end, size[block[-1]])
 
                 # Maximum: max volume not exceeded
@@ -828,7 +836,12 @@ class Storage(Asset):
             timegrid=self.timegrid,
         )
 
-    def fill_level(self, optim_problem: OptimProblem, results: Results) -> np.array:
+    def fill_level(
+        self,
+        optim_problem: OptimProblem,
+        results: Results,
+        input_data: Union[dict, pd.DataFrame, None] = None,
+    ) -> np.array:
         """Calculate fill level of the storage incl. efficiencies etc
 
         Args:
@@ -838,7 +851,41 @@ class Storage(Asset):
         Returns:
             np.array: array with fill level per time step as per timegrid of asset
         """
-
+        if input_data is not None:
+            # data which is potentially time dependent
+            inflow = self.make_vector(
+                self.inflow, input_data, default_value=0.0, convert=True
+            )
+            inflow = np.cumsum(inflow)
+            start_level = self.make_vector(
+                self.start_level, input_data, default_value=0.0, convert=False
+            )[0]
+        else:
+            inflow = self.inflow
+            if inflow is None:
+                inflow = 0.0
+            assert isinstance(
+                inflow, (float, int)
+            ), "If no input_data is given, inflow must be given as float or None"
+            start_level = self.start_level
+            if start_level is None:
+                start_level = 0.0
+            assert isinstance(
+                start_level, (float, int)
+            ), "If no input_data is given, start_level must be given as float or None"
+            inflow = (
+                np.cumsum(inflow) * self.timegrid.restricted.dt
+            )  # in case of time dependent inflow, need to cumulate and adjust for time step size
+        ## deal with the case where tg.restricted != timegrid
+        if self.timegrid.restricted.T != self.timegrid.T:
+            # inflow defined only on tg.restricted. Extend, where inflow in wider tg is same as last value in tg.restricted
+            inf = pd.Series(index=self.timegrid.timepoints, data=0.0)
+            inf.loc[self.timegrid.restricted.timepoints] = inflow
+            # within in case asset freq is different
+            if hasattr(self.timegrid.restricted, "I_minor_in_major"):
+                for myi, myI in enumerate(self.timegrid.restricted.I_minor_in_major):
+                    inf.loc[self.timegrid.timepoints[myI]] = inflow[myi]
+            inflow = inf.values
         ######### missing: mapping in optim problem
         fill_level = np.zeros(self.timegrid.T)
         # filter for right asset in case larger problem is given
@@ -857,7 +904,8 @@ class Storage(Asset):
                 max(0, -results.x[i]) * self.eff_in
                 + min(0, -results.x[i]) / self.eff_out
             )
-        fill_level = fill_level.cumsum() + self.start_level
+
+        fill_level = fill_level.cumsum() + start_level + inflow
         return fill_level
 
 
