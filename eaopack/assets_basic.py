@@ -291,6 +291,20 @@ class Asset:
 ##########################
 
 
+def _calculate_effective_ramp(capa: Sequence, ramp: float, dt: Timegrid) -> float:
+    """Calculate effective ramp within time step, given ramp in flow per main_time_unit and time step size"""
+    # case 1: fast ramp: ramp is fast enough to reach max capacity within time step
+    #         from the dispatch we need to substract the triangle until max. capacity is reached (max dispatch change = capa*dt - capa^2/ramp/2)
+    # case 2: slow ramp: we do not reach max capacity within time step and obtain a dispatch of ramp * dt^2
+    # ramp greater equal than capa - impossible
+    ramp_case_1 = capa * dt - 0.5 * capa**2 / ramp
+    ramp_case_2 = 0.5 * ramp * dt**2
+    ramp = np.where(capa / ramp <= dt, ramp_case_1, ramp_case_2)
+    if len(ramp) == 1:
+        ramp = ramp[0]
+    return ramp
+
+
 class Storage(Asset):
     """Storage Class in Python"""
 
@@ -314,8 +328,8 @@ class Storage(Asset):
         block_size: Union[None, str] = None,
         eff_in: float = 1.0,
         eff_out: float = 1.0,
-        ramp_up: Union[float, None] = None,
-        ramp_down: Union[float, None] = None,
+        ramp_up: Union[float, StartEndValueDict, str, None] = None,
+        ramp_down: Union[float, StartEndValueDict, str, None] = None,
         inflow: float = 0.0,
         no_simult_in_out: bool = False,
         max_store_duration: Union[None, float] = None,
@@ -371,8 +385,14 @@ class Storage(Asset):
 
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
-            ramp_up (float): Maximum increase of virtual dispatch. Positive value expected. Defaults to None. First point in time is unrestricted
-            ramp_down (float): Maximum decrease of virtual dispatch. Positive value expected. Defaults to None. First point in time is unrestricted
+            ramp_up (float, dict, str):   Maximum increase of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
+            ramp_up (float, StartEndValueDict, str):   Maximum increase of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
+            ramp_down (float, StartEndValueDict, str): Maximum decrease of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
+                                                       For ramps up or down: Positive value expected. Defaults to None. First point in time is unrestricted
+                                                       ramp is given for change in flow (e.g. capacity). Since the dispatch is given in volume per time interval (e.g. MWh for 1h)
+                                                       the change is given by the change in the quantity
+                                                       Ramp fast: Missing is the trangle until the max. capacity is reached (capa*dt - capa^2/ramp/2)
+                                                       Ramp slow: We do not reach max capacity within dt and obtain a dispatch of ramp * dt^2
         """
         super(Storage, self).__init__(
             name=name,
@@ -660,7 +680,9 @@ class Storage(Asset):
         cType = "U" * n + "L" * n
 
         ### Ramp constraints
+        # Max capacity change .. here in flow, not volume (MW, not MWh)!
         if self.ramp_up is not None or self.ramp_down is not None:
+            max_capa_change = (ct + cp) / self.timegrid.restricted.dt
             D = sp.diags(
                 diagonals=[-np.ones(n), np.ones(n)],
                 offsets=[-1, 0],
@@ -670,17 +692,28 @@ class Storage(Asset):
             # first row 1, .... deleted -- assuming first element has no restriction
             D = D[1:, :]
         if self.ramp_up is not None:
-            # scale ramp in case timegrid.freq and timegrid.main_time_unit are not equal
-            ramp = (
-                self.ramp_up * self.timegrid.restricted.dt[1:]
-            )  # dt's may be of different size
+            ramp = self.make_vector(
+                self.ramp_up, prices, default_value=0.0, convert=False
+            )
+            # [1:] in arrays since first point in time is unrestricted
+            ramp = _calculate_effective_ramp(
+                capa=max_capa_change[1:],  # maximum change in capacity
+                ramp=ramp[1:],
+                dt=self.timegrid.restricted.dt[1:],
+            )
             A = sp.vstack([A, D])  # stack upper constraints onto A
             cType += "U" * (n - 1)
             b = np.hstack([b, ramp])
         if self.ramp_down is not None:
-            ramp = (
-                self.ramp_down * self.timegrid.restricted.dt[1:]
-            )  # dt's may be of different size
+            ramp = self.make_vector(
+                self.ramp_down, prices, default_value=0.0, convert=False
+            )
+            # [1:] in arrays since first point in time is unrestricted
+            ramp = _calculate_effective_ramp(
+                capa=max_capa_change[1:],  # maximum change in capacity
+                ramp=ramp[1:],
+                dt=self.timegrid.restricted.dt[1:],
+            )
             A = sp.vstack([A, D])  # stack lower constraints onto A
             cType += "L" * (n - 1)
             b = np.hstack([b, -ramp])
@@ -1416,8 +1449,8 @@ class Contract(SimpleContract):
         freq: str = None,
         periodicity: str = None,
         periodicity_duration: str = None,
-        ramp_up: Union[float, None] = None,
-        ramp_down: Union[float, None] = None,
+        ramp_up: Union[float, StartEndValueDict, str] = None,
+        ramp_down: Union[float, StartEndValueDict, str] = None,
     ):
         """Contract: buy or sell (consume/produce) given price and limited capacity in/out
             Restrictions
@@ -1458,8 +1491,13 @@ class Contract(SimpleContract):
 
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
-            ramp_up (float): Maximum increase of virtual dispatch. Positive value expected. Defaults to None. First point in time is unrestricted
-            ramp_down (float): Maximum decrease of virtual dispatch. Positive value expected. Defaults to None. First point in time is unrestricted
+            ramp_up (float, StartEndValueDict, str):   Maximum increase of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
+            ramp_down (float, StartEndValueDict, str): Maximum decrease of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
+                                                       For ramps up or down: Positive value expected. Defaults to None. First point in time is unrestricted
+                                                       ramp is given for change in flow (e.g. capacity). Since the dispatch is given in volume per time interval (e.g. MWh for 1h)
+                                                       the change is given by the change in the quantity
+                                                       Ramp fast: Missing is the trangle until the max. capacity is reached (capa*dt - capa^2/ramp/2)
+                                                       Ramp slow: We do not reach max capacity within dt and obtain a dispatch of ramp * dt^2
         """
         super(Contract, self).__init__(
             name=name,
@@ -1589,9 +1627,10 @@ class Contract(SimpleContract):
                 timegrid=timegrid,
             )
 
-        # Ramp constraints:
         if self.ramp_up is None and self.ramp_down is None:
             return op
+        ###### Add ramp constraints
+        # prepare restriction parameters
         if op.A is None:
             op.A = A
         if op.cType is None:
@@ -1605,23 +1644,52 @@ class Contract(SimpleContract):
             shape=(n, n),
             format="csr",
         )
-        # first row 1, .... deleted -- assuming first element has no restriction
-        D = D[1:, :]
+        D = D[
+            1:, :
+        ]  # first row 1, .... deleted -- assuming first element has no restriction
         if (
             not self._no_separate_disp_vars
         ):  # separate vars - e.g. because of extra_costs
             D = sp.hstack((D, D))
+        # Max capacity change
+        max_capa_change = self.make_vector(
+            self.max_cap, prices, convert=False
+        ) - self.make_vector(
+            self.min_cap, prices, convert=False
+        )  ## here in flow, not volume (MW, not MWh)!
+        # add constraint for ramp up
         if self.ramp_up is not None:
-            ramp = (
-                self.ramp_up * self.timegrid.restricted.dt[1:]
-            )  # dt's may be of different size
+            # calculate effective ramp for dispatch (eg. in MWh per time step) from ramp in MW change per h
+            ramp = self.make_vector(
+                self.ramp_up, prices, default_value=0.0, convert=False
+            )
+            # [1:] in arrays since first point in time is unrestricted
+            ramp = _calculate_effective_ramp(
+                capa=max_capa_change[1:],  # maximum change in capacity
+                ramp=ramp[1:],
+                dt=self.timegrid.restricted.dt[1:],
+            )
+            # ramp = (
+            #    self.ramp_up * self.timegrid.restricted.dt[1:]
+            # )  # dt's may be of different size
             op.A = sp.vstack([op.A, D])  # stack upper constraints onto A
             op.cType += "U" * (n - 1)
             op.b = np.hstack([op.b, ramp])
+        # add constraint for ramp down
         if self.ramp_down is not None:
-            ramp = (
-                self.ramp_down * self.timegrid.restricted.dt[1:]
-            )  # dt's may be of different size
+            # calculate effective ramp for dispatch (eg. in MWh per time step) from ramp in MW change per h
+            ramp = self.make_vector(
+                self.ramp_down, prices, default_value=0.0, convert=False
+            )
+            # [1:] in arrays since first point in time is unrestricted
+            ramp = _calculate_effective_ramp(
+                capa=max_capa_change[1:],  # maximum change in capacity
+                ramp=ramp[1:],
+                dt=self.timegrid.restricted.dt[1:],
+            )
+            # ramp = (
+            #     self.ramp_down * self.timegrid.restricted.dt[1:]
+            # )  # dt's may be of different size
             op.A = sp.vstack([op.A, D])  # stack lower constraints onto A
             op.cType += "L" * (n - 1)
             op.b = np.hstack([op.b, -ramp])

@@ -13,6 +13,18 @@ sys.path.append(join(mypath, ".."))
 import eaopack as eao
 
 
+def convert_ramps(ramp, DT, P):
+    """Convert ramp in MW change per h to ramp in MWh per time step"""
+    # convert ramps ... attention, ramp R given in MWh / h
+    if ramp is None:
+        return None
+    if ramp * DT > 0.5 * DT * P:  # fast
+        v = P**2 / (2 * (P * DT - ramp * DT))
+    else:  # slow "Trapezfall"
+        v = ramp * DT / DT**2 * 2
+    return v
+
+
 class BatteryTest(unittest.TestCase):
     def test_optimization(self):
         """trivial test with eff_out"""
@@ -715,7 +727,9 @@ class TestBatteryWithRamp(unittest.TestCase):
         T = self.timegrid.T
         prices = {"price": np.linspace(1, 100, T)}
         self.storage.size = 50
-        self.storage.ramp_up = 5
+        self.storage.ramp_up = convert_ramps(
+            5.0, self.timegrid.dt[0], self.storage.cap_out + self.storage.cap_in
+        )
         out = eao.optimize(self.portf, self.timegrid, prices)
         np.testing.assert_almost_equal(
             out["dispatch"]["Battery"].values[0:4], [-20, -15, -10, -5], 4
@@ -735,7 +749,9 @@ class TestBatteryWithRamp(unittest.TestCase):
         self.storage.size = 50
         self.storage.start_level = 50
         self.storage.end_level = 50
-        self.storage.ramp_down = 5
+        self.storage.ramp_down = convert_ramps(
+            5.0, self.timegrid.dt[0], self.storage.cap_out + self.storage.cap_in
+        )
         out = eao.optimize(self.portf, self.timegrid, prices)
         np.testing.assert_almost_equal(
             out["dispatch"]["Battery"].values[0:4], [20, 15, 10, 5], 4
@@ -753,8 +769,12 @@ class TestBatteryWithRamp(unittest.TestCase):
         pattern = np.array([-100] * 20 + [100] * 20)
         T = self.timegrid.T
         self.prices = {"price": np.tile(pattern, int(np.ceil(T / len(pattern))))[:T]}
-        self.storage.ramp_up = 2
-        self.storage.ramp_down = 1
+        self.storage.ramp_up = convert_ramps(
+            2.0, self.timegrid.dt[0], self.storage.cap_out + self.storage.cap_in
+        )
+        self.storage.ramp_down = convert_ramps(
+            1.0, self.timegrid.dt[0], self.storage.cap_out + self.storage.cap_in
+        )
         out = eao.optimize(self.portf, self.timegrid, self.prices)
         disp = out["dispatch"]["Battery"].values
         diff = disp[1:] - disp[0:-1]
@@ -771,8 +791,12 @@ class TestBatteryWithRamp(unittest.TestCase):
         prices = {"price": np.linspace(1, 100, T)}
         self.storage.size = 50
         self.storage.start_level = 50
-        self.contract.ramp_up = 5
-        self.contract.ramp_down = 5
+        self.contract.ramp_up = convert_ramps(
+            5.0, self.timegrid.dt[0], self.storage.cap_out + self.storage.cap_in
+        )
+        self.contract.ramp_down = convert_ramps(
+            5.0, self.timegrid.dt[0], self.storage.cap_out + self.storage.cap_in
+        )
         out = eao.optimize(self.portf, self.timegrid, prices)
         np.testing.assert_almost_equal(
             out["dispatch"]["Battery"].values[0 : T - 4], 0.0, 4
