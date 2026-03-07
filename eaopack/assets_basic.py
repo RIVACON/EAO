@@ -682,7 +682,6 @@ class Storage(Asset):
         ### Ramp constraints
         # Max capacity change .. here in flow, not volume (MW, not MWh)!
         if self.ramp_up is not None or self.ramp_down is not None:
-            max_capa_change = (ct + cp) / self.timegrid.restricted.dt
             D = sp.diags(
                 diagonals=[-np.ones(n), np.ones(n)],
                 offsets=[-1, 0],
@@ -692,12 +691,16 @@ class Storage(Asset):
             # first row 1, .... deleted -- assuming first element has no restriction
             D = D[1:, :]
         if self.ramp_up is not None:
+            # max change in capacity - from charge to discharge (ramp up) or vice versa
+            # we need the change from step (t-1) to (t)
+            # cp: charge, ct: discharge
+            max_capa_change = (cp[:-1] + ct[1:]) / self.timegrid.restricted.dt[1:]
             ramp = self.make_vector(
                 self.ramp_up, prices, default_value=0.0, convert=False
             )
             # [1:] in arrays since first point in time is unrestricted
             ramp = _calculate_effective_ramp(
-                capa=max_capa_change[1:],  # maximum change in capacity
+                capa=max_capa_change,  # maximum change in capacity
                 ramp=ramp[1:],
                 dt=self.timegrid.restricted.dt[1:],
             )
@@ -705,12 +708,15 @@ class Storage(Asset):
             cType += "U" * (n - 1)
             b = np.hstack([b, ramp])
         if self.ramp_down is not None:
+            # max change in capacity - DOWN: from discharge (ct) to charge (cp)
+            # we need the change from step (t-1) to (t)
+            max_capa_change = (ct[:-1] + cp[1:]) / self.timegrid.restricted.dt[1:]
             ramp = self.make_vector(
                 self.ramp_down, prices, default_value=0.0, convert=False
             )
             # [1:] in arrays since first point in time is unrestricted
             ramp = _calculate_effective_ramp(
-                capa=max_capa_change[1:],  # maximum change in capacity
+                capa=max_capa_change,  # maximum change in capacity
                 ramp=ramp[1:],
                 dt=self.timegrid.restricted.dt[1:],
             )
@@ -1651,21 +1657,23 @@ class Contract(SimpleContract):
             not self._no_separate_disp_vars
         ):  # separate vars - e.g. because of extra_costs
             D = sp.hstack((D, D))
-        # Max capacity change
-        max_capa_change = self.make_vector(
-            self.max_cap, prices, convert=False
-        ) - self.make_vector(
-            self.min_cap, prices, convert=False
-        )  ## here in flow, not volume (MW, not MWh)!
+        # capacity - # here in flow, not volume (MW, not MWh)!
+        my_max_cap = self.make_vector(self.max_cap, prices, convert=False)
+        my_min_cap = self.make_vector(self.min_cap, prices, convert=False)
         # add constraint for ramp up
         if self.ramp_up is not None:
+            # Max capacity change
+            # max change in capacity - from min_cap to max_cap (ramp up) or vice versa
+            # we need the change from step (t-1) to (t)
+            max_capa_change = np.maximum(0.0, -my_min_cap[:-1] + my_max_cap[1:])
+            # cannot be sure it's positive in edge cases. If neg. cannot ramp up anyhow
             # calculate effective ramp for dispatch (eg. in MWh per time step) from ramp in MW change per h
             ramp = self.make_vector(
                 self.ramp_up, prices, default_value=0.0, convert=False
             )
             # [1:] in arrays since first point in time is unrestricted
             ramp = _calculate_effective_ramp(
-                capa=max_capa_change[1:],  # maximum change in capacity
+                capa=max_capa_change,  # maximum change in capacity
                 ramp=ramp[1:],
                 dt=self.timegrid.restricted.dt[1:],
             )
@@ -1677,13 +1685,18 @@ class Contract(SimpleContract):
             op.b = np.hstack([op.b, ramp])
         # add constraint for ramp down
         if self.ramp_down is not None:
+            # Max capacity change
+            # max change in capacity - down: max_cap to min_cap
+            # we need the change from step (t-1) to (t)
+            max_capa_change = np.maximum(0.0, my_max_cap[:-1] - my_min_cap[1:])
+            # cannot be sure it's positive in edge cases. If neg. cannot ramp down anyhow
             # calculate effective ramp for dispatch (eg. in MWh per time step) from ramp in MW change per h
             ramp = self.make_vector(
                 self.ramp_down, prices, default_value=0.0, convert=False
             )
             # [1:] in arrays since first point in time is unrestricted
             ramp = _calculate_effective_ramp(
-                capa=max_capa_change[1:],  # maximum change in capacity
+                capa=max_capa_change,  # maximum change in capacity
                 ramp=ramp[1:],
                 dt=self.timegrid.restricted.dt[1:],
             )
