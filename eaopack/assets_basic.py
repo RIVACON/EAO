@@ -392,7 +392,7 @@ class Storage(Asset):
                                                        ramp is given for change in flow (e.g. capacity). Since the dispatch is given in volume per time interval (e.g. MWh for 1h)
                                                        the change is given by the change in the quantity
                                                        Ramp fast: Missing is the trangle until the max. capacity is reached (capa*dt - capa^2/ramp/2)
-                                                       Ramp slow: We do not reach max capacity within dt and obtain a dispatch of ramp * dt^2
+                                                       Ramp slow: We do not reach max capacity within dt and obtain a dispatch of 0.5 * ramp * dt^2
         """
         super(Storage, self).__init__(
             name=name,
@@ -746,11 +746,10 @@ class Storage(Asset):
                 myI = (self.timegrid.restricted.timepoints >= myrange[i]) & (
                     self.timegrid.restricted.timepoints < myrange[i + 1]
                 )
-                cycle_quant = (
-                    self.max_cycles_no * size[myI].mean()
-                )  # in case of time-dependent size use mean
-
                 if any(myI):
+                    cycle_quant = (
+                        self.max_cycles_no * size[myI].mean()
+                    )  # in case of time-dependent size use mean over cycle interval
                     myA = sp.lil_matrix((1, 2 * n))
                     myA[0, self.timegrid.restricted.I[myI]] = (
                         -self.eff_in
@@ -1503,7 +1502,7 @@ class Contract(SimpleContract):
                                                        ramp is given for change in flow (e.g. capacity). Since the dispatch is given in volume per time interval (e.g. MWh for 1h)
                                                        the change is given by the change in the quantity
                                                        Ramp fast: Missing is the trangle until the max. capacity is reached (capa*dt - capa^2/ramp/2)
-                                                       Ramp slow: We do not reach max capacity within dt and obtain a dispatch of ramp * dt^2
+                                                       Ramp slow: We do not reach max capacity within dt and obtain a dispatch of 0.5 * ramp * dt^2
         """
         super(Contract, self).__init__(
             name=name,
