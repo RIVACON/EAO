@@ -683,6 +683,9 @@ class Storage(Asset):
         A = sp.vstack((A, A))
         cType = "U" * n + "L" * n
 
+        if sep_needed:
+            A = sp.hstack((A * self.eff_in, A / self.eff_out))  # for in and out
+
         ### Ramp constraints
         # Max capacity change .. here in flow, not volume (MW, not MWh)!
         if self.ramp_up is not None or self.ramp_down is not None:
@@ -694,6 +697,8 @@ class Storage(Asset):
             )
             # first row 1, .... deleted -- assuming first element has no restriction
             D = D[1:, :]
+            if sep_needed:
+                D = sp.hstack((D, D))
         if self.ramp_up is not None:
             # cp: charge, ct: discharge
             if self.no_zero_transition_within_ramp:
@@ -736,9 +741,6 @@ class Storage(Asset):
             A = sp.vstack([A, D])  # stack lower constraints onto A
             cType += "L" * (n - 1)
             b = np.hstack([b, -ramp])
-
-        if sep_needed:
-            A = sp.hstack((A * self.eff_in, A / self.eff_out))  # for in and out
 
         ## add restrictions for max_cycles
         # quantity behind no of cycles
