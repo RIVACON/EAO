@@ -54,3 +54,4 @@ eaopack/_assets_private.py
 tests/_test_assets_private.py
 eaopack/assets_private.py
 tests/test_assets_private.py
+doc/source/samples/samples_private/*
