@@ -1,3 +1,8 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 ### collect all assets from other files
 # for easier import and access
 
