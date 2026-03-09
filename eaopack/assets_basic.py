@@ -330,6 +330,7 @@ class Storage(Asset):
         eff_out: float = 1.0,
         ramp_up: Union[float, StartEndValueDict, str, None] = None,
         ramp_down: Union[float, StartEndValueDict, str, None] = None,
+        no_zero_transition_within_ramp = False,
         inflow: float = 0.0,
         no_simult_in_out: bool = False,
         max_store_duration: Union[None, float] = None,
@@ -393,6 +394,8 @@ class Storage(Asset):
                                                        the change is given by the change in the quantity
                                                        Ramp fast: Missing is the trangle until the max. capacity is reached (capa*dt - capa^2/ramp/2)
                                                        Ramp slow: We do not reach max capacity within dt and obtain a dispatch of 0.5 * ramp * dt^2
+            no_zero_transition_within_ramp (bool): If True, no zero transition in power is allowed within the ramp time. E.g. for ramp_up: if we have a positive infeed at time t, 
+                                                    we need to have a positive infeed at time t+1 until the ramp up time is over. Defaults to False.
         """
         super(Storage, self).__init__(
             name=name,
@@ -453,6 +456,8 @@ class Storage(Asset):
             ), f"ramp_down must be greater than zero but got {ramp_down}"
         self.ramp_up = ramp_up
         self.ramp_down = ramp_down
+        self.no_simult_in_out = no_simult_in_out
+        self.no_zero_transition_within_ramp = no_zero_transition_within_ramp
         self.min_level = min_level
         self.max_level = max_level
 
@@ -691,10 +696,14 @@ class Storage(Asset):
             # first row 1, .... deleted -- assuming first element has no restriction
             D = D[1:, :]
         if self.ramp_up is not None:
-            # max change in capacity - from charge to discharge (ramp up) or vice versa
-            # we need the change from step (t-1) to (t)
             # cp: charge, ct: discharge
-            max_capa_change = (cp[:-1] + ct[1:]) / self.timegrid.restricted.dt[1:]
+            if self.no_zero_transition_within_ramp:
+                # max discharging capacity
+                max_capa_change  = ct[1:]/self.timegrid.restricted.dt[1:]
+            else:
+                # max change in capacity - from charge to discharge (ramp up) or vice versa
+                # we need the change from step (t-1) to (t)
+                max_capa_change = (cp[:-1] + ct[1:]) / self.timegrid.restricted.dt[1:]
             ramp = self.make_vector(
                 self.ramp_up, prices, default_value=0.0, convert=False
             )
@@ -708,9 +717,14 @@ class Storage(Asset):
             cType += "U" * (n - 1)
             b = np.hstack([b, ramp])
         if self.ramp_down is not None:
-            # max change in capacity - DOWN: from discharge (ct) to charge (cp)
-            # we need the change from step (t-1) to (t)
-            max_capa_change = (ct[:-1] + cp[1:]) / self.timegrid.restricted.dt[1:]
+            # cp: charge, ct: discharge
+            if self.no_zero_transition_within_ramp:
+                # max charging capacity
+                max_capa_change = cp[1:] / self.timegrid.restricted.dt[1:]
+            else:
+                # max change in capacity - DOWN: from discharge (ct) to charge (cp)
+                # we need the change from step (t-1) to (t)
+                max_capa_change = (ct[:-1] + cp[1:]) / self.timegrid.restricted.dt[1:]
             ramp = self.make_vector(
                 self.ramp_down, prices, default_value=0.0, convert=False
             )
