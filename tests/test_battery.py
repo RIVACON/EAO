@@ -1109,3 +1109,45 @@ class TestBatteryWithMinLevel(unittest.TestCase):
         ss = pd.Series(index=timegrid.timepoints, data=size)
         ss = ss.resample("d").mean() * a.max_cycles_no
         np.testing.assert_almost_equal(load.values, ss.values, 3)
+
+
+class TestBatteryStorageCost(unittest.TestCase):
+
+    def test_max_store_duration(self):
+        """Check proper functioning of storage cost"""
+        node = eao.Node("testNode")
+        timegrid = eao.Timegrid(
+            dt.datetime(2021, 1, 1, tzinfo=dt.timezone.utc),
+            dt.datetime(2021, 1, 2, tzinfo=dt.timezone.utc),
+            freq="h",
+        )
+        start_level = 3
+        end_level = 2
+        size = 5
+        max_store_duration = 10
+        a = eao.assets.Storage(
+            "STORAGE",
+            node,
+            size=size,
+            cap_in=1,
+            cap_out=1,
+            start_level=start_level,
+            end_level=end_level,
+            cost_store=-1,
+            eff_in=1,
+            eff_out=1,
+            max_store_duration=max_store_duration,
+        )
+        sc = eao.assets.SimpleContract("SC", nodes=node, min_cap=-100, max_cap=100)
+        prices = {}
+        portf = eao.Portfolio([a, sc])
+        op = portf.setup_optim_problem(prices, timegrid=timegrid)
+        res = op.optimize()
+        out = eao.io.extract_output(portf, op, res, prices)
+        fill_level = out["internal_variables"]["STORAGE_fill_level"]
+        self.assertAlmostEqual(fill_level.iloc[len(fill_level) - 1], end_level)
+        self.assertAlmostEqual(np.abs(fill_level.iloc[0] - start_level), 1)
+        for i in range(len(fill_level)):
+            self.assertLessEqual(fill_level.iloc[i], size)
+            self.assertGreaterEqual(fill_level.iloc[i], 0)
+        self.assertEqual(sum(fill_level == 0), (timegrid.T - 1) // max_store_duration)

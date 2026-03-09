@@ -291,7 +291,9 @@ class Asset:
 ##########################
 
 
-def _calculate_effective_ramp(capa: Sequence, ramp: Sequence, dt: Timegrid) -> Union[Sequence, float]:
+def _calculate_effective_ramp(
+    capa: Sequence, ramp: Sequence, dt: Timegrid
+) -> Union[Sequence, float]:
     """Calculate effective ramp within time step, given ramp in flow per main_time_unit and time step size"""
     # case 1: fast ramp: ramp is fast enough to reach max capacity within time step
     #         from the dispatch we need to substract the triangle until max. capacity is reached (max dispatch change = capa*dt - capa^2/ramp/2)
@@ -299,10 +301,7 @@ def _calculate_effective_ramp(capa: Sequence, ramp: Sequence, dt: Timegrid) -> U
     # ramp greater equal than capa - impossible
     ramp_case_1 = capa * dt - 0.5 * capa**2 / ramp
     ramp_case_2 = 0.5 * ramp * dt**2
-    ramp = np.where(capa / ramp <= dt, ramp_case_1, ramp_case_2)
-    if len(ramp) == 1:
-        ramp = ramp[0]
-    return ramp
+    return np.where(capa / ramp <= dt, ramp_case_1, ramp_case_2)
 
 
 class Storage(Asset):
@@ -330,7 +329,7 @@ class Storage(Asset):
         eff_out: float = 1.0,
         ramp_up: Union[float, StartEndValueDict, str, None] = None,
         ramp_down: Union[float, StartEndValueDict, str, None] = None,
-        no_zero_transition_within_ramp = False,
+        no_zero_transition_within_ramp=False,
         inflow: float = 0.0,
         no_simult_in_out: bool = False,
         max_store_duration: Union[None, float] = None,
@@ -394,7 +393,7 @@ class Storage(Asset):
                                                        the change is given by the change in the quantity
                                                        Ramp fast: Missing is the trangle until the max. capacity is reached (capa*dt - capa^2/ramp/2)
                                                        Ramp slow: We do not reach max capacity within dt and obtain a dispatch of 0.5 * ramp * dt^2
-            no_zero_transition_within_ramp (bool): If True, no zero transition in power is allowed within the ramp time. E.g. for ramp_up: if we have a positive infeed at time t, 
+            no_zero_transition_within_ramp (bool): If True, no zero transition in power is allowed within the ramp time. E.g. for ramp_up: if we have a positive infeed at time t,
                                                     we need to have a positive infeed at time t+1 until the ramp up time is over. Defaults to False.
         """
         super(Storage, self).__init__(
@@ -699,7 +698,7 @@ class Storage(Asset):
             # cp: charge, ct: discharge
             if self.no_zero_transition_within_ramp:
                 # max discharging capacity
-                max_capa_change  = ct[1:]/self.timegrid.restricted.dt[1:]
+                max_capa_change = ct[1:] / self.timegrid.restricted.dt[1:]
             else:
                 # max change in capacity - from charge to discharge (ramp up) or vice versa
                 # we need the change from step (t-1) to (t)
@@ -863,13 +862,19 @@ class Storage(Asset):
             u = np.hstack((u, np.ones(n)))
             # extend A for binary variables (not relevant in exist. restrictions)
             (n_exist, m) = A.shape
-            # (1) reformulate fill level restrictions and extend A with bool ("is filled") variables
-            #      replace   (Ax <= b)  by  (Ax)i - bool_i*b  <=  0
-            #      n restrictions for max fill level
-            A = sp.hstack(
-                (A, sp.vstack((sp.diags(-b[0:n], 0), sp.lil_matrix((n_exist - n, n)))))
-            )
-            b[0:n] = 0
+            # (1) reformulate fill level restrictions and extend A with bool ("is filled") variables:
+            # replace 0 <= fill_level_i <= size with 0 <=fill_level_i <= new_bool_var_i * size for i = 0, ..., n - 2
+            # and replace end_level <= fill_level_i <= end_level with
+            # new_bool_var_i * end_level <= fill_level_i <= new_bool_var_i * end_level for the end timestep i = n-1
+            # n restrictions for max fill level
+            diag = -size
+            diag[n - 1] = -end_level[-1]
+            rest = sp.lil_matrix((n_exist - n, n))
+            rest[n - 1, n - 1] = -end_level[-1]
+            A = sp.hstack((A, sp.vstack((sp.diags(diag, 0), rest))))
+            b[0 : n - 1] = b[0 : n - 1] - size[0 : n - 1]
+            b[n - 1] = b[n - 1] - end_level[-1]
+            b[2 * n - 1] = b[2 * n - 1] - end_level[-1]
             # (2) create extra restrictions for booleans ("1 --> fill level non zero") - one for each time step
             # -->  all windows of size max_duration (md) plus one, sum of vars is <= md
             for myi in range(0, n):
