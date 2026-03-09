@@ -127,7 +127,7 @@ def extract_output(
                 ### extract ... fill level
                 myCol = a.name + "_fill_level"
                 internal_variables[myCol] = 0.0
-                internal_variables.loc[:, myCol] = a.fill_level(op, res)
+                internal_variables.loc[:, myCol] = a.fill_level(op, res, prices)
         # extract duals from nodal restrictions
         # looping through nodes and their recorded nodal restrictions and extract dual
         if not res.duals is None and not res.duals["N"] is None:

@@ -1,3 +1,8 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 ### collect all assets from other files
 # for easier import and access
 
@@ -20,6 +25,12 @@ from eaopack.assets_plants import CHPAsset, \
 
 from eaopack.assets_structured import StructuredAsset, \
                                       LinkedAsset
+
+try:
+    # possibility to add non-public implementations for assets   
+    from eaopack.assets_private import *
+except (ImportError, ModuleNotFoundError):
+    pass
 
 ### import other basic classes as well (for convenience)
 from eaopack.basic_classes import Timegrid, Unit, Node

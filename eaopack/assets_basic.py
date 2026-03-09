@@ -291,6 +291,19 @@ class Asset:
 ##########################
 
 
+def _calculate_effective_ramp(
+    capa: Sequence, ramp: Sequence, dt: Timegrid
+) -> Union[Sequence, float]:
+    """Calculate effective ramp within time step, given ramp in flow per main_time_unit and time step size"""
+    # case 1: fast ramp: ramp is fast enough to reach max capacity within time step
+    #         from the dispatch we need to substract the triangle until max. capacity is reached (max dispatch change = capa*dt - capa^2/ramp/2)
+    # case 2: slow ramp: we do not reach max capacity within time step and obtain a dispatch of ramp * dt^2
+    # ramp greater equal than capa - impossible
+    ramp_case_1 = capa * dt - 0.5 * capa**2 / ramp
+    ramp_case_2 = 0.5 * ramp * dt**2
+    return np.where(capa / ramp <= dt, ramp_case_1, ramp_case_2)
+
+
 class Storage(Asset):
     """Storage Class in Python"""
 
@@ -302,16 +315,21 @@ class Storage(Asset):
         end: Union[dt.datetime, pd.Timestamp, None] = None,
         wacc: float = 0.0,
         size: Union[float, StartEndValueDict, str] = 0.0,
-        cap_in: Union[float, StartEndValueDict, str] = None,
-        cap_out: Union[float, StartEndValueDict, str] = None,
-        start_level: float = 0.0,
-        end_level: float = 0.0,
+        max_level: Union[float, str, StartEndValueDict, None] = None,
+        min_level: Union[float, str, StartEndValueDict, None] = None,
+        cap_in: Union[float, StartEndValueDict, str, None] = None,
+        cap_out: Union[float, StartEndValueDict, str, None] = None,
+        start_level: Union[float, StartEndValueDict, str] = 0.0,
+        end_level: Union[float, StartEndValueDict, str, None] = 0.0,
         cost_out: float = 0.0,
         cost_in: float = 0.0,
         cost_store: float = 0.0,
         block_size: Union[None, str] = None,
         eff_in: float = 1.0,
         eff_out: float = 1.0,
+        ramp_up: Union[float, StartEndValueDict, str, None] = None,
+        ramp_down: Union[float, StartEndValueDict, str, None] = None,
+        no_zero_transition_within_ramp=False,
         inflow: float = 0.0,
         no_simult_in_out: bool = False,
         max_store_duration: Union[None, float] = None,
@@ -321,8 +339,6 @@ class Storage(Asset):
         max_cycles_freq: str = "d",
         periodicity: Union[None, str] = None,
         periodicity_duration: Union[None, str] = None,
-        ramp_up: Union[float, None] = None,
-        ramp_down: Union[float, None] = None,
     ):
         """Specific storage asset. A storage has the basic capability to
             (1) take in a commodity within a limited flow rate (capacity)
@@ -339,10 +355,16 @@ class Storage(Asset):
                                     The more granular frequency of portf & asset is used
 
             size (float, str, StartEndValueDict): Maximum volume of commodity in storage. Use str or StartEndValueDict for time dependency
+                                                  In case max_level is used, it overrides the size.
+            max_level (float, str, StartEndValueDict, None): Maximum fill level. Use str or StartEndValueDict for time dependency Defaults to None (zero)
+            min_level (float, str, StartEndValueDict, None): Minimum fill level. Use str or StartEndValueDict for time dependency Defaults to None (zero)
+
             cap_in (float, str, StartEndValueDict): Maximum flow rate for taking in a commodity. Use str or StartEndValueDict for time dependency
             cap_out (float, str, StartEndValueDict): Maximum flow rate for taking in a commodity. Use str or StartEndValueDict for time dependency
-            start_level (float, optional): Level of storage at start of optimization. Defaults to zero.
-            end_level (float, optional):Level of storage at end of optimization. Defaults to zero.
+            start_level (float, str, StartEndValueDict): Level of storage at start of optimization. Defaults to zero.
+            end_level (float, str, StartEndValueDict): Level of storage at end of optimization. Defaults to zero.
+                                                       In case block-wise optimization or split_optimization is used, a start or end_level in form of a time series
+                                                       may be useful: In this case, the respective start or end_level of the respective point in time is used
             cost_out (float, optional): Cost for taking out volumes ($/volume). Defaults to 0.
             cost_in (float, optional): Cost for taking in volumes ($/volume). Defaults to 0.
             cost_store (float, optional): Cost for keeping in storage ($/volume/main time unit). Defaults to 0.
@@ -354,17 +376,25 @@ class Storage(Asset):
             eff_out: Efficiency taking out the commodity. Defaults to 1 (=100%)
 
             max_cycles_no   (float, optional): Maximum number of cycles the battery can perform. Defaults to None -- MIP!
-                                               In case a time-dependent size is chosen, max_cycles_no refers to the average size
+                                               In case a time-dependent size is chosen, max_cycles_no refers to the storage mean size in that cycle interval
             max_cycles_freq (str, optional): Frequency of the maximum number of cycles. Example: "d" for daily cycles. Defaults to 'd'
 
-            inflow (float, optional): Constant rate of inflow volumes (flow in each time step. E.g. water inflow in hydro storage). Defaults to 0.
+            inflow (float, str, StartEndValueDict, optional): Inflow volumes (flow in each time step. E.g. water inflow in hydro storage). Defaults to 0.
             no_simult_in_out (boolean, optional): Enforce no simultaneous dispatch in/out in case of costs or efficiency!=1. Makes problem MIP. Defaults to False
             max_store_duration (float, optional): Maximal duration in main time units that charged commodity can be held. Makes problem a MIP. Defaults to none
 
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
-            ramp_up (float): Maximum increase of virtual dispatch. Positive value expected. Defaults to None. First point in time is unrestricted
-            ramp_down (float): Maximum decrease of virtual dispatch. Positive value expected. Defaults to None. First point in time is unrestricted
+            ramp_up (float, dict, str):   Maximum increase of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
+            ramp_up (float, StartEndValueDict, str):   Maximum increase of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
+            ramp_down (float, StartEndValueDict, str): Maximum decrease of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
+                                                       For ramps up or down: Positive value expected. Defaults to None. First point in time is unrestricted
+                                                       ramp is given for change in flow (e.g. capacity). Since the dispatch is given in volume per time interval (e.g. MWh for 1h)
+                                                       the change is given by the change in the quantity
+                                                       Ramp fast: Missing is the trangle until the max. capacity is reached (capa*dt - capa^2/ramp/2)
+                                                       Ramp slow: We do not reach max capacity within dt and obtain a dispatch of 0.5 * ramp * dt^2
+            no_zero_transition_within_ramp (bool): If True, no zero transition in power is allowed within the ramp time. E.g. for ramp_up: if we have a positive infeed at time t,
+                                                    we need to have a positive infeed at time t+1 until the ramp up time is over. Defaults to False.
         """
         super(Storage, self).__init__(
             name=name,
@@ -425,6 +455,10 @@ class Storage(Asset):
             ), f"ramp_down must be greater than zero but got {ramp_down}"
         self.ramp_up = ramp_up
         self.ramp_down = ramp_down
+        self.no_simult_in_out = no_simult_in_out
+        self.no_zero_transition_within_ramp = no_zero_transition_within_ramp
+        self.min_level = min_level
+        self.max_level = max_level
 
     def setup_optim_problem(
         self,
@@ -464,7 +498,8 @@ class Storage(Asset):
         # capacities convert to arrays, adjusting capacity (unit is in vol/h)
         ct = self.make_vector(self.cap_out, prices, default_value=0.0, convert=True)
         cp = self.make_vector(self.cap_in, prices, default_value=0.0, convert=True)
-        inflow = np.cumsum(self.inflow * dt)
+        inflow = self.make_vector(self.inflow, prices, default_value=0.0, convert=True)
+        inflow = np.cumsum(inflow)
         discount = self.timegrid.restricted.discount_factors
 
         if self.price is not None:
@@ -514,13 +549,49 @@ class Storage(Asset):
         #       where N_t is the number of time steps after (t)
         # convert to costs per main time unit
 
-        # account for time dependent size and capa
+        # account for time dependent size and min_level
         size = self.make_vector(self.size, prices, default_value=0.0)
+        # allow for dynamic start and end levels (e.g. for block-wise optimization with changing intermediate start/end levels)
+        start_level = self.make_vector(self.start_level, prices, default_value=0.0)
+        end_level = self.make_vector(self.end_level, prices, default_value=0.0)
+        if self.min_level is not None:
+            min_level = self.make_vector(self.min_level, prices)
+        else:
+            min_level = self.make_vector(0.0, prices)
+        if self.max_level is None:
+            max_level = size
+        else:
+            max_level = self.make_vector(self.max_level, prices, default_value=size[0])
+        ### assertions for level restrictions
+        assert (max_level <= size).all(), (
+            "Storage " + self.name + ": max_level must not be larger than size"
+        )
+        assert (min_level >= 0.0).all(), (
+            "Storage " + self.name + ": min_level must not be negative"
+        )
+        assert (min_level <= max_level).all(), (
+            "Storage "
+            + self.name
+            + ": min_level must not be greater than size/ max_level"
+        )
+        assert start_level[0] >= min_level[0], (
+            "Storage " + self.name + ": start_level must be >= min_level[0]"
+        )
+        assert end_level[-1] >= min_level[-1], (
+            "Storage " + self.name + ": end_level must be >= min_level[-1]"
+        )
+        assert start_level[0] <= max_level[0], (
+            "Storage " + self.name + ": start_level must be <= size/ max_level[0]"
+        )
+        assert end_level[-1] <= max_level[-1], (
+            "Storage " + self.name + ": end_level must be <= size/ max_level[-1]"
+        )
         if self.cost_store != 0:
             cost_store = self.cost_store * dt * discount
             cost_store = np.asarray(
                 [cost_store[ii:].sum() for ii in range(0, len(cost_store))]
             )
+
         # costs in and out
         if sep_needed:
             u = np.hstack((np.zeros(n, float), ct))
@@ -551,11 +622,11 @@ class Storage(Asset):
         if self.block_size is None:
             A = -sp.tril(np.ones((n, n), float))
             # Maximum: max volume not exceeded
-            b = (size - self.start_level) - inflow
-            b[-1] = self.end_level - self.start_level - inflow[-1]
+            b = (max_level - start_level[0]) - inflow
+            b[-1] = end_level[-1] - start_level[0] - inflow[-1]
             # Minimum: empty
-            b_min = -self.start_level * np.ones(n, float) - inflow
-            b_min[-1] = self.end_level - self.start_level - inflow[-1]
+            b_min = min_level - start_level[0] * np.ones(n, float) - inflow
+            b_min[-1] = end_level[-1] - start_level[0] - inflow[-1]
         else:  ## creating block matrices on the diagonal
             A = sp.lil_matrix((n, n))
             b = np.empty(n)
@@ -582,24 +653,29 @@ class Storage(Asset):
             ### for i, a in enumerate(aa[0:-1]):  # go through the blocks
             for ib, block in enumerate(block_ind):
                 len_block = len(block)
-                a = block[0]
                 A[np.ix_(block, block)] = -sp.tril(
                     np.ones((len_block, len_block), float)
                 )  # triangle matrix for time block
-
                 ### for first block start value is start_level - for others we start with the end level
                 if ib == 0:
-                    my_start = self.start_level
+                    my_start = start_level[0]
                 else:
-                    my_start = self.end_level
+                    my_start = my_end  # value from prefious loop
+                ### for blocks we may have an end level not consistent with min_level and size (if time dependent)
+                # adjust to lie within range of min_level and size
+                my_end = max(end_level[block[-1]], min_level[block[-1]])
+                my_end = min(my_end, max_level[block[-1]])
 
                 # Maximum: max volume not exceeded
-                parts_b = (size[block] - my_start) - inflow[block]
-                parts_b[-1] = self.end_level - my_start - inflow[block[-1]]
+                parts_b = (max_level[block] - my_start) - inflow[block]
+                # due to earlier assert final end level should always fit and therefore be self.end_level
+                parts_b[-1] = my_end - my_start - inflow[block[-1]]
                 b[block] = parts_b
                 # Minimum: empty
-                parts_b_min = -my_start * np.ones(len_block) - inflow[block]
-                parts_b_min[-1] = self.end_level - my_start - inflow[block[-1]]
+                parts_b_min = (
+                    min_level[block] - my_start * np.ones(len_block) - inflow[block]
+                )
+                parts_b_min[-1] = my_end - my_start - inflow[block[-1]]
                 b_min[block] = parts_b_min
 
         # join restrictions for in, out, full, empty
@@ -608,6 +684,7 @@ class Storage(Asset):
         cType = "U" * n + "L" * n
 
         ### Ramp constraints
+        # Max capacity change .. here in flow, not volume (MW, not MWh)!
         if self.ramp_up is not None or self.ramp_down is not None:
             D = sp.diags(
                 diagonals=[-np.ones(n), np.ones(n)],
@@ -618,17 +695,44 @@ class Storage(Asset):
             # first row 1, .... deleted -- assuming first element has no restriction
             D = D[1:, :]
         if self.ramp_up is not None:
-            # scale ramp in case timegrid.freq and timegrid.main_time_unit are not equal
-            ramp = (
-                self.ramp_up * self.timegrid.restricted.dt[1:]
-            )  # dt's may be of different size
+            # cp: charge, ct: discharge
+            if self.no_zero_transition_within_ramp:
+                # max discharging capacity
+                max_capa_change = ct[1:] / self.timegrid.restricted.dt[1:]
+            else:
+                # max change in capacity - from charge to discharge (ramp up) or vice versa
+                # we need the change from step (t-1) to (t)
+                max_capa_change = (cp[:-1] + ct[1:]) / self.timegrid.restricted.dt[1:]
+            ramp = self.make_vector(
+                self.ramp_up, prices, default_value=0.0, convert=False
+            )
+            # [1:] in arrays since first point in time is unrestricted
+            ramp = _calculate_effective_ramp(
+                capa=max_capa_change,  # maximum change in capacity
+                ramp=ramp[1:],
+                dt=self.timegrid.restricted.dt[1:],
+            )
             A = sp.vstack([A, D])  # stack upper constraints onto A
             cType += "U" * (n - 1)
             b = np.hstack([b, ramp])
         if self.ramp_down is not None:
-            ramp = (
-                self.ramp_down * self.timegrid.restricted.dt[1:]
-            )  # dt's may be of different size
+            # cp: charge, ct: discharge
+            if self.no_zero_transition_within_ramp:
+                # max charging capacity
+                max_capa_change = cp[1:] / self.timegrid.restricted.dt[1:]
+            else:
+                # max change in capacity - DOWN: from discharge (ct) to charge (cp)
+                # we need the change from step (t-1) to (t)
+                max_capa_change = (ct[:-1] + cp[1:]) / self.timegrid.restricted.dt[1:]
+            ramp = self.make_vector(
+                self.ramp_down, prices, default_value=0.0, convert=False
+            )
+            # [1:] in arrays since first point in time is unrestricted
+            ramp = _calculate_effective_ramp(
+                capa=max_capa_change,  # maximum change in capacity
+                ramp=ramp[1:],
+                dt=self.timegrid.restricted.dt[1:],
+            )
             A = sp.vstack([A, D])  # stack lower constraints onto A
             cType += "L" * (n - 1)
             b = np.hstack([b, -ramp])
@@ -639,9 +743,6 @@ class Storage(Asset):
         ## add restrictions for max_cycles
         # quantity behind no of cycles
         if self.max_cycles_no is not None:
-            cycle_quant = (
-                self.max_cycles_no * size.mean()
-            )  # in case of time-dependent size use mean
             ## create daterange for start / end of cycles
             try:
                 extra_time = pd.Timedelta(self.max_cycles_freq)
@@ -659,6 +760,9 @@ class Storage(Asset):
                     self.timegrid.restricted.timepoints < myrange[i + 1]
                 )
                 if any(myI):
+                    cycle_quant = (
+                        self.max_cycles_no * size[myI].mean()
+                    )  # in case of time-dependent size use mean over cycle interval
                     myA = sp.lil_matrix((1, 2 * n))
                     myA[0, self.timegrid.restricted.I[myI]] = (
                         -self.eff_in
@@ -758,13 +862,19 @@ class Storage(Asset):
             u = np.hstack((u, np.ones(n)))
             # extend A for binary variables (not relevant in exist. restrictions)
             (n_exist, m) = A.shape
-            # (1) reformulate fill level restrictions and extend A with bool ("is filled") variables
-            #      replace   (Ax <= b)  by  (Ax)i - bool_i*b  <=  0
-            #      n restrictions for max fill level
-            A = sp.hstack(
-                (A, sp.vstack((sp.diags(-b[0:n], 0), sp.lil_matrix((n_exist - n, n)))))
-            )
-            b[0:n] = 0
+            # (1) reformulate fill level restrictions and extend A with bool ("is filled") variables:
+            # replace 0 <= fill_level_i <= size with 0 <=fill_level_i <= new_bool_var_i * size for i = 0, ..., n - 2
+            # and replace end_level <= fill_level_i <= end_level with
+            # new_bool_var_i * end_level <= fill_level_i <= new_bool_var_i * end_level for the end timestep i = n-1
+            # n restrictions for max fill level
+            diag = -size
+            diag[n - 1] = -end_level[-1]
+            rest = sp.lil_matrix((n_exist - n, n))
+            rest[n - 1, n - 1] = -end_level[-1]
+            A = sp.hstack((A, sp.vstack((sp.diags(diag, 0), rest))))
+            b[0 : n - 1] = b[0 : n - 1] - size[0 : n - 1]
+            b[n - 1] = b[n - 1] - end_level[-1]
+            b[2 * n - 1] = b[2 * n - 1] - end_level[-1]
             # (2) create extra restrictions for booleans ("1 --> fill level non zero") - one for each time step
             # -->  all windows of size max_duration (md) plus one, sum of vars is <= md
             for myi in range(0, n):
@@ -796,7 +906,12 @@ class Storage(Asset):
             timegrid=self.timegrid,
         )
 
-    def fill_level(self, optim_problem: OptimProblem, results: Results) -> np.array:
+    def fill_level(
+        self,
+        optim_problem: OptimProblem,
+        results: Results,
+        input_data: Union[dict, pd.DataFrame, None] = None,
+    ) -> np.array:
         """Calculate fill level of the storage incl. efficiencies etc
 
         Args:
@@ -806,7 +921,41 @@ class Storage(Asset):
         Returns:
             np.array: array with fill level per time step as per timegrid of asset
         """
-
+        if input_data is not None:
+            # data which is potentially time dependent
+            inflow = self.make_vector(
+                self.inflow, input_data, default_value=0.0, convert=True
+            )
+            inflow = np.cumsum(inflow)
+            start_level = self.make_vector(
+                self.start_level, input_data, default_value=0.0, convert=False
+            )[0]
+        else:
+            inflow = self.inflow
+            if inflow is None:
+                inflow = 0.0
+            assert isinstance(
+                inflow, (float, int)
+            ), "If no input_data is given, inflow must be given as float or None"
+            start_level = self.start_level
+            if start_level is None:
+                start_level = 0.0
+            assert isinstance(
+                start_level, (float, int)
+            ), "If no input_data is given, start_level must be given as float or None"
+            inflow = (
+                np.cumsum(inflow) * self.timegrid.restricted.dt
+            )  # in case of time dependent inflow, need to cumulate and adjust for time step size
+        ## deal with the case where tg.restricted != timegrid
+        if self.timegrid.restricted.T != self.timegrid.T:
+            # inflow defined only on tg.restricted. Extend, where inflow in wider tg is same as last value in tg.restricted
+            inf = pd.Series(index=self.timegrid.timepoints, data=0.0)
+            inf.loc[self.timegrid.restricted.timepoints] = inflow
+            # within in case asset freq is different
+            if hasattr(self.timegrid.restricted, "I_minor_in_major"):
+                for myi, myI in enumerate(self.timegrid.restricted.I_minor_in_major):
+                    inf.loc[self.timegrid.timepoints[myI]] = inflow[myi]
+            inflow = inf.values
         ######### missing: mapping in optim problem
         fill_level = np.zeros(self.timegrid.T)
         # filter for right asset in case larger problem is given
@@ -825,7 +974,8 @@ class Storage(Asset):
                 max(0, -results.x[i]) * self.eff_in
                 + min(0, -results.x[i]) / self.eff_out
             )
-        fill_level = fill_level.cumsum() + self.start_level
+
+        fill_level = fill_level.cumsum() + start_level + inflow
         return fill_level
 
 
@@ -1323,8 +1473,8 @@ class Contract(SimpleContract):
         freq: str = None,
         periodicity: str = None,
         periodicity_duration: str = None,
-        ramp_up: Union[float, None] = None,
-        ramp_down: Union[float, None] = None,
+        ramp_up: Union[float, StartEndValueDict, str] = None,
+        ramp_down: Union[float, StartEndValueDict, str] = None,
     ):
         """Contract: buy or sell (consume/produce) given price and limited capacity in/out
             Restrictions
@@ -1365,8 +1515,13 @@ class Contract(SimpleContract):
 
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
-            ramp_up (float): Maximum increase of virtual dispatch. Positive value expected. Defaults to None. First point in time is unrestricted
-            ramp_down (float): Maximum decrease of virtual dispatch. Positive value expected. Defaults to None. First point in time is unrestricted
+            ramp_up (float, StartEndValueDict, str):   Maximum increase of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
+            ramp_down (float, StartEndValueDict, str): Maximum decrease of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
+                                                       For ramps up or down: Positive value expected. Defaults to None. First point in time is unrestricted
+                                                       ramp is given for change in flow (e.g. capacity). Since the dispatch is given in volume per time interval (e.g. MWh for 1h)
+                                                       the change is given by the change in the quantity
+                                                       Ramp fast: Missing is the trangle until the max. capacity is reached (capa*dt - capa^2/ramp/2)
+                                                       Ramp slow: We do not reach max capacity within dt and obtain a dispatch of 0.5 * ramp * dt^2
         """
         super(Contract, self).__init__(
             name=name,
@@ -1496,9 +1651,10 @@ class Contract(SimpleContract):
                 timegrid=timegrid,
             )
 
-        # Ramp constraints:
         if self.ramp_up is None and self.ramp_down is None:
             return op
+        ###### Add ramp constraints
+        # prepare restriction parameters
         if op.A is None:
             op.A = A
         if op.cType is None:
@@ -1512,23 +1668,59 @@ class Contract(SimpleContract):
             shape=(n, n),
             format="csr",
         )
-        # first row 1, .... deleted -- assuming first element has no restriction
-        D = D[1:, :]
+        D = D[
+            1:, :
+        ]  # first row 1, .... deleted -- assuming first element has no restriction
         if (
             not self._no_separate_disp_vars
         ):  # separate vars - e.g. because of extra_costs
             D = sp.hstack((D, D))
+        # capacity - # here in flow, not volume (MW, not MWh)!
+        my_max_cap = self.make_vector(self.max_cap, prices, convert=False)
+        my_min_cap = self.make_vector(self.min_cap, prices, convert=False)
+        # add constraint for ramp up
         if self.ramp_up is not None:
-            ramp = (
-                self.ramp_up * self.timegrid.restricted.dt[1:]
-            )  # dt's may be of different size
+            # Max capacity change
+            # max change in capacity - from min_cap to max_cap (ramp up) or vice versa
+            # we need the change from step (t-1) to (t)
+            max_capa_change = np.maximum(0.0, -my_min_cap[:-1] + my_max_cap[1:])
+            # cannot be sure it's positive in edge cases. If neg. cannot ramp up anyhow
+            # calculate effective ramp for dispatch (eg. in MWh per time step) from ramp in MW change per h
+            ramp = self.make_vector(
+                self.ramp_up, prices, default_value=0.0, convert=False
+            )
+            # [1:] in arrays since first point in time is unrestricted
+            ramp = _calculate_effective_ramp(
+                capa=max_capa_change,  # maximum change in capacity
+                ramp=ramp[1:],
+                dt=self.timegrid.restricted.dt[1:],
+            )
+            # ramp = (
+            #    self.ramp_up * self.timegrid.restricted.dt[1:]
+            # )  # dt's may be of different size
             op.A = sp.vstack([op.A, D])  # stack upper constraints onto A
             op.cType += "U" * (n - 1)
             op.b = np.hstack([op.b, ramp])
+        # add constraint for ramp down
         if self.ramp_down is not None:
-            ramp = (
-                self.ramp_down * self.timegrid.restricted.dt[1:]
-            )  # dt's may be of different size
+            # Max capacity change
+            # max change in capacity - down: max_cap to min_cap
+            # we need the change from step (t-1) to (t)
+            max_capa_change = np.maximum(0.0, my_max_cap[:-1] - my_min_cap[1:])
+            # cannot be sure it's positive in edge cases. If neg. cannot ramp down anyhow
+            # calculate effective ramp for dispatch (eg. in MWh per time step) from ramp in MW change per h
+            ramp = self.make_vector(
+                self.ramp_down, prices, default_value=0.0, convert=False
+            )
+            # [1:] in arrays since first point in time is unrestricted
+            ramp = _calculate_effective_ramp(
+                capa=max_capa_change,  # maximum change in capacity
+                ramp=ramp[1:],
+                dt=self.timegrid.restricted.dt[1:],
+            )
+            # ramp = (
+            #     self.ramp_down * self.timegrid.restricted.dt[1:]
+            # )  # dt's may be of different size
             op.A = sp.vstack([op.A, D])  # stack lower constraints onto A
             op.cType += "L" * (n - 1)
             op.b = np.hstack([op.b, -ramp])
