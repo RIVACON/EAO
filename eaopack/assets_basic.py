@@ -291,7 +291,7 @@ class Asset:
 ##########################
 
 
-def _calculate_effective_ramp(capa: Sequence, ramp: float, dt: Timegrid) -> float:
+def _calculate_effective_ramp(capa: Sequence, ramp: Sequence, dt: Timegrid) -> Union[Sequence, float]:
     """Calculate effective ramp within time step, given ramp in flow per main_time_unit and time step size"""
     # case 1: fast ramp: ramp is fast enough to reach max capacity within time step
     #         from the dispatch we need to substract the triangle until max. capacity is reached (max dispatch change = capa*dt - capa^2/ramp/2)
