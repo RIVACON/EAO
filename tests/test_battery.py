@@ -1110,6 +1110,34 @@ class TestBatteryWithMinLevel(unittest.TestCase):
         ss = ss.resample("d").mean() * a.max_cycles_no
         np.testing.assert_almost_equal(load.values, ss.values, 3)
 
+    def test_battery_regression(self):
+        """Regression test with realistic data"""
+        portf = eao.serialization.load_from_json(
+            file_name=join(test_data_path, "portf_dah.json")
+        )
+        b = portf.get_asset("battery")
+        tg = eao.serialization.load_from_json(
+            file_name=join(test_data_path, "tg_dah.json")
+        )
+        data = pd.read_csv(join(test_data_path, "data.csv"))
+        data.set_index("Datetime", inplace=True)
+        out = eao.optimize(portf, tg, data)
+        d = out["dispatch"]
+        d["diff"] = d["battery"].diff(1)
+        print(f"Max_change: {d["diff"].max():.1f}")
+        r_up = eao.assets_basic._calculate_effective_ramp(
+            b.cap_out,
+            b.ramp_up,
+            tg.restricted.dt[0],
+        )
+        r_dn = eao.assets_basic._calculate_effective_ramp(
+            b.cap_in,
+            b.ramp_down,
+            tg.restricted.dt[0],
+        )
+        self.assertLessEqual(d["diff"].max(), r_up)
+        self.assertGreaterEqual(d["diff"].max(), r_dn)
+
 
 class TestBatteryStorageCost(unittest.TestCase):
 

@@ -1,0 +1,15 @@
+{
+    "__class__": "Timegrid",
+    "end": {
+        "__class__": "datetime",
+        "__tz__": "CET",
+        "__value__": "2026-01-02 23:00:00"
+    },
+    "freq": "h",
+    "main_time_unit": "h",
+    "start": {
+        "__class__": "datetime",
+        "__tz__": "CET",
+        "__value__": "2026-01-01 23:00:00"
+    }
+}
