@@ -1135,8 +1135,9 @@ class TestBatteryWithMinLevel(unittest.TestCase):
             b.ramp_down,
             tg.restricted.dt[0],
         )
-        self.assertLessEqual(d["diff"].max(), r_up)
-        self.assertGreaterEqual(d["diff"].max(), r_dn)
+        self.assertAlmostEqual(d["diff"].max(), r_up, 3)
+        self.assertAlmostEqual(-d["diff"].min(), r_dn, 3)
+        pass
 
 
 class TestBatteryStorageCost(unittest.TestCase):
