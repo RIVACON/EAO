@@ -26,6 +26,7 @@ from eaopack.assets_plants import CHPAsset, \
 from eaopack.assets_structured import StructuredAsset, \
                                       LinkedAsset
 
+from eaopack.assets_renewables import RenewableAsset
 try:
     # possibility to add non-public implementations for assets   
     from eaopack.assets_private import *
