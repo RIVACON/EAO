@@ -52,19 +52,22 @@ class RenewableAsset(Asset):
                                     The more granular frequency of portf & asset is used
 
         Overall characteristics:
-            profile (float, StartEndValueDict, str, optional):     Production profile given e.g. by wind or PV availability. Defaults to 0.
-            controllable (bool, optional):  Production can be regulated down to zero. Defaults to True
-            short_position (bool, optional): For PPAs - if True capacity is negative (i.e. to be delivered). Defaults to False (capacity positive)
+            profile (float, StartEndValueDict, str, optional): Production profile given e.g. by wind or PV availability. Defaults to 0.
+            controllable (bool, optional):                     Production can be regulated down to zero. Defaults to True
+            short_position (bool, optional): For PPAs - if True, capacity is negative (i.e. to be delivered). Defaults to False
 
         Payment characteristics:
             fixed_price (float, str, StartEndValueDict, optional): Subsidy or PPA fixed payment per volume, e.g. EUR/MWh. Defaults to 0.
-                                                                   fixed_price may be received (positive) or paid (negative)
-            n_hour_rule_payment (int, optional):  Number of hours defining a minimum period length. If for this period market prices are zero
+                                                                   Convention: cost for production: positive
+                                                                               payment/ subsidy: negative
+            market_price (float, str, StartEndValueDict, optional): Underlying market price for payment terms. Defaults to 0.
+            n_hour_rule_payment (int, optional):  Number of hours defining a minimum period length. If for this period market prices are below zero
                                                   no fixed_price is paid. Defaults to None.
             n_hour_rule_delivery (int, optional): Rule as for n_hour_rule_payment. Here: if applies no delivery (e.g. for PPAs). Defaults to None
-            market_price (float, str, StartEndValueDict, optional): Underlying market price for payment terms. Defaults to 0.
-            cfd_type (bool, optional):            If True, (fixed_price-market_price) is paid. If False, fixed_price. Defaults to False
+            cfd_type (bool, optional):            If True, (fixed_price + market_price) is paid. If False, fixed_price. Defaults to False
+                                                  Attention: convention is subsidy payment is negative (thus effectively difference to marpet price)
         """
+
         assert profile is not None, "RenewableAsset argument profile cannot be None."
         assert (
             market_price is not None
@@ -100,11 +103,10 @@ class RenewableAsset(Asset):
         market_price = self.make_vector(
             prices=prices, value=self.market_price, convert=False
         )
-        effective_price_name = "effective_price"
         if self.cfd_type:
-            effective_price = {effective_price_name: fixed_price - market_price}
+            effective_price = fixed_price + market_price
         else:
-            effective_price = {effective_price_name: fixed_price}
+            effective_price = fixed_price
 
         # profile is effectively the max_cap; min_cap is either 0 or equal max_cap if asset is not controllable
         max_cap = self.profile
@@ -142,10 +144,10 @@ class RenewableAsset(Asset):
             freq=self.freq,
             min_cap=min_cap,
             max_cap=max_cap,
-            price=effective_price_name,
+            price=effective_price,  # attention: in our logic, positive: we PAY for production, neg: subsidy
         )
         return internal_contract.setup_optim_problem(
-            prices=effective_price, timegrid=timegrid, costs_only=costs_only
+            prices=None, timegrid=timegrid, costs_only=costs_only
         )
 
 
@@ -153,7 +155,7 @@ def n_hour_rule_applies(price: np.ndarray, n_hours: int) -> np.ndarray:
     """
     Find n_hours-long consecutive interval of negative prices and return their indexes
     """
-    mask = price <= 0
+    mask = price < 0
     padded = np.concatenate(
         ([False], mask, [False])
     )  # Pad with False at both ends to catch edge runs

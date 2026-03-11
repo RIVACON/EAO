@@ -392,8 +392,7 @@ def optimize(
                - asset internal variables
                - special variables
     """
-    assert data is not None, 'Data input "data" must be given, was None'
-
+    # assert data is not None, 'Data input "data" must be given, was None'
     if data is not None:
         my_data = timegrid.prices_to_grid(data)
     else:
