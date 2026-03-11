@@ -1,0 +1,81 @@
+{
+    "__class__": "Portfolio",
+    "assets": [
+        {
+            "__class__": "Asset",
+            "asset_type": "SimpleContract",
+            "end": null,
+            "extra_costs": 0.0,
+            "freq": null,
+            "max_cap": 1000,
+            "min_cap": -1000,
+            "name": "dah",
+            "nodes": [
+                {
+                    "__class__": "Node",
+                    "commodity": null,
+                    "name": "power",
+                    "unit": {
+                        "__class__": "Unit",
+                        "commodity": "none",
+                        "factor": 1.0,
+                        "flow": "MW",
+                        "volume": "MWh"
+                    }
+                }
+            ],
+            "periodicity": null,
+            "periodicity_duration": null,
+            "price": "dah",
+            "start": null,
+            "wacc": 0
+        },
+        {
+            "__class__": "Asset",
+            "asset_type": "Storage",
+            "block_size": null,
+            "cap_in": 50.0,
+            "cap_out": 50.0,
+            "cost_in": 0.0,
+            "cost_out": 0.0,
+            "cost_store": 0.0,
+            "eff_in": 0.922,
+            "eff_out": 0.922,
+            "end": null,
+            "end_level": 100.0,
+            "freq": null,
+            "inflow": 0.0,
+            "max_cycles_freq": "d",
+            "max_cycles_no": 2.0,
+            "max_level": null,
+            "max_store_duration": null,
+            "min_level": null,
+            "name": "battery",
+            "no_simult_in_out": true,
+            "no_zero_transition_within_ramp": true,
+            "nodes": [
+                {
+                    "__class__": "Node",
+                    "commodity": null,
+                    "name": "power",
+                    "unit": {
+                        "__class__": "Unit",
+                        "commodity": "none",
+                        "factor": 1.0,
+                        "flow": "MW",
+                        "volume": "MWh"
+                    }
+                }
+            ],
+            "periodicity": null,
+            "periodicity_duration": null,
+            "price": null,
+            "ramp_down": 600.0,
+            "ramp_up": 1200.0,
+            "size": 200.0,
+            "start": null,
+            "start_level": 100.0,
+            "wacc": 0.0
+        }
+    ]
+}
