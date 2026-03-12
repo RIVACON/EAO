@@ -1,4 +1,4 @@
-name: RunNotebooks [push main, manual]
+name: RunNotebooks_Badge [manual]
 
 on:
   workflow_dispatch:
