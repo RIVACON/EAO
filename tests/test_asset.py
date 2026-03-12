@@ -743,7 +743,7 @@ class MultiCommodity(unittest.TestCase):
 
     def test_predefined_multicommodity(self):
         """test to reproduce the results in the sample "capture_heat_portfolio.py"""
-        portf = eao.serialization.load_from_json(
+        portf = eao.serialization.from_json(
             file_name=join(test_data_path, "test_portf_multi_commodity.JSON")
         )
         prices = pd.read_csv(join(test_data_path, "2020_price_sample.csv"))
@@ -1076,7 +1076,7 @@ class TestOrderOrderBooks(unittest.TestCase):
 
         portf = eao.portfolio.Portfolio([a, order_book])
         s = eao.serialization.to_json(order_book)
-        ob = eao.serialization.load_from_json(s)
+        ob = eao.serialization.from_json(s)
         portf2 = eao.portfolio.Portfolio([a, ob])
 
         prices = {"market": 10 * np.ones(timegrid.T)}

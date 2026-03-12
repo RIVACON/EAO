@@ -88,7 +88,7 @@ class various(unittest.TestCase):
         }"""
         size = 100  # battery size
         eff = 0.9
-        portf = eao.serialization.load_from_json(s)
+        portf = eao.serialization.from_json(s)
         portf.assets[0].eff_in = eff
         portf.assets[0].size = size
         portf.assets[0].no_simult_in_out = (
@@ -194,7 +194,7 @@ class various(unittest.TestCase):
         }"""
         size = 100  # battery size
         eff = 1
-        portf = eao.serialization.load_from_json(s)
+        portf = eao.serialization.from_json(s)
         portf.assets[0].eff_in = eff
         portf.assets[0].size = size
         portf.assets[0].no_simult_in_out = False
@@ -293,7 +293,7 @@ class various(unittest.TestCase):
         }"""
         size = 100  # battery size
         eff = 0.9
-        portf = eao.serialization.load_from_json(s)
+        portf = eao.serialization.from_json(s)
         portf.assets[0].eff_in = eff
         portf.assets[0].size = size
         a = portf.assets[0]
@@ -443,7 +443,7 @@ class various(unittest.TestCase):
         }"""
         size = 100  # battery size
         eff = 1
-        portf = eao.serialization.load_from_json(s)
+        portf = eao.serialization.from_json(s)
         portf.assets[0].eff_in = eff
         portf.assets[0].size = size
         portf.assets[0].no_simult_in_out = False

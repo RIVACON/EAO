@@ -345,9 +345,7 @@ def set_param(obj, path, value):
 
     try:
         s = serialization.json.dumps(o)
-        res = serialization.load_from_json(
-            s
-        )  # create object again (properly initializing)
+        res = serialization.from_json(s)  # create object again (properly initializing)
     except:
         if "name" in o:
             n = o["name"]

@@ -168,7 +168,7 @@ def to_json(obj, file_name=None):
             )
 
 
-def load_from_json(json_str: str = None, file_name: str = None):
+def from_json(json_str: str = None, file_name: str = None):
     """create object from JSON in file or string
     Args:
         file_name (str): Filename containing json string. Optional
@@ -184,10 +184,6 @@ def load_from_json(json_str: str = None, file_name: str = None):
         return json.loads(json_str, object_hook=json_deserialize_objects)
     else:
         raise ValueError("Either filename or json string must be given")
-
-
-def from_json(json_str: str = None, file_name: str = None):
-    return load_from_json(json_str, file_name)
 
 
 def run_from_json(
@@ -215,7 +211,7 @@ def run_from_json(
         no file_name_out given: Results dict
     """
     # (1) create object
-    portf = load_from_json(json_str, file_name_in)
+    portf = from_json(json_str, file_name_in)
     if not isinstance(portf, Portfolio):
         raise ValueError("File does not contain an eao Portfolio")
 

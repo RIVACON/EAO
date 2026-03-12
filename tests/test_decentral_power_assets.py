@@ -134,7 +134,7 @@ class RenewablesTestCase(unittest.TestCase):
         self.renewable.market_price = mp
         ## intermediate: check serialization
         s = eao.serialization.to_json(self.portf)
-        portf = eao.serialization.load_from_json(s)
+        portf = eao.serialization.from_json(s)
         np.testing.assert_almost_equal(
             portf.get_asset("Renewable").profile, self.profile, 4
         )
