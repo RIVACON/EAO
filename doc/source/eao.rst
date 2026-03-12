@@ -38,6 +38,15 @@ available via eaopack.assets
    :undoc-members:
    :show-inheritance:
 
+Decentral power assets
+------------------------------------
+available via eaopack.assets
+
+.. automodule:: eaopack.assets_decentral_power
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Portfolio
 ------------------------------------
 

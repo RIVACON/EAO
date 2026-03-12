@@ -186,6 +186,10 @@ def load_from_json(json_str: str = None, file_name: str = None):
         raise ValueError("Either filename or json string must be given")
 
 
+def from_json(json_str: str = None, file_name: str = None):
+    return load_from_json(json_str, file_name)
+
+
 def run_from_json(
     json_str: str = None,
     file_name_in: str = None,

@@ -132,7 +132,13 @@ class RenewablesTestCase(unittest.TestCase):
         fp = -2.0
         self.renewable.fixed_price = fp
         self.renewable.market_price = mp
-        out = eao.optimize(self.portf, self.timegrid)
+        ## intermediate: check serialization
+        s = eao.serialization.to_json(self.portf)
+        portf = eao.serialization.load_from_json(s)
+        np.testing.assert_almost_equal(
+            portf.get_asset("Renewable").profile, self.profile, 4
+        )
+        out = eao.optimize(portf, self.timegrid)
         disp = out["dispatch"]["Renewable"].values
         dcf = out["DCF"]["Renewable"].values
         we_get = -disp * fp
@@ -142,3 +148,45 @@ class RenewablesTestCase(unittest.TestCase):
         np.testing.assert_almost_equal(
             out["dispatch"]["Renewable"].values, self.profile, 4
         )
+
+
+class BatteryAsset(unittest.TestCase):
+
+    def test_battery_asset(self):
+        """Test specific battery asset - a simplified storage"""
+        """trivial test with eff_out"""
+        node = eao.assets.Node("testNode")
+        timegrid = eao.assets.Timegrid(
+            dt.date(2021, 1, 1), dt.date(2021, 1, 2), freq="h"
+        )
+        a = eao.assets.Battery(
+            "Battery",
+            node,
+            size=5,
+            cap_in=1,
+            cap_out=1,
+            start_level=0,
+            end_level=0,
+            price="price",
+            eff_in=0.8,
+            eff_out=0.9,
+            no_simult_in_out=True,
+        )
+        price = np.ones([timegrid.T])
+        price[:10] = 0
+        price[8] = 5
+        price[3:5] = 0
+        price[18:20] = 20
+        s = eao.serialization.to_json(a)
+        a = eao.serialization.from_json(s)
+        prices = {"price": price}
+        op = a.setup_optim_problem(prices, timegrid=timegrid)
+        res = op.optimize()
+        xin = res.x[0:24]
+        xout = res.x[24:48]
+        fl = a.fill_level(op, res)
+        self.assertAlmostEqual(
+            -xin.sum() / xout.sum(), 1 / 0.9 / 0.8, 3
+        )  # overall loss
+        self.assertAlmostEqual(fl.max(), 5, 5)
+        print(res)

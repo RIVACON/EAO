@@ -24,7 +24,7 @@ from eaopack.assets_plants import (
 
 from eaopack.assets_structured import StructuredAsset, LinkedAsset
 
-from eaopack.assets_renewables import RenewableAsset
+from eaopack.assets_decentral_power import RenewableAsset, Battery
 
 try:
     # possibility to add non-public implementations for assets

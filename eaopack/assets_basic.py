@@ -314,7 +314,7 @@ def _calculate_effective_ramp(
 
 
 class Storage(Asset):
-    """Storage Class in Python"""
+    """Storage Asset Class"""
 
     def __init__(
         self,
@@ -349,7 +349,7 @@ class Storage(Asset):
         periodicity: Union[None, str] = None,
         periodicity_duration: Union[None, str] = None,
     ):
-        """Specific storage asset. A storage has the basic capability to
+        """Storage asset. A storage has the basic capability to
             (1) take in a commodity within a limited flow rate (capacity)
             (2) store a maximum volume of a commodity (size)
             (3) give out the commodity within a limited flow rate
@@ -394,7 +394,6 @@ class Storage(Asset):
 
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
-            ramp_up (float, dict, str):   Maximum increase of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
             ramp_up (float, StartEndValueDict, str):   Maximum increase of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
             ramp_down (float, StartEndValueDict, str): Maximum decrease of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
                                                        For ramps up or down: Positive value expected. Defaults to None. First point in time is unrestricted
