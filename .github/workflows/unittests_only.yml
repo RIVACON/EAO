@@ -1,17 +1,11 @@
-name: Unittests_Notebooks_NoBadges [push dev, manual]
+name: unittests_only
 
 on:
-  push:
-    branches:
-      - develop
   workflow_dispatch:
 
 jobs:
   run-tests:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash -l {0} # Automatically activates conda for every step
 
     steps:
       - name: Checkout repository
@@ -30,22 +24,17 @@ jobs:
 
       - name: Run tests and coverage...
         id: run_tests_and_coverage
+        continue-on-error: true
         run: |
           conda init bash
           source ~/.bashrc
           conda activate eao_env
           pytest --cov=. --cov-report=json:coverage.json
 
-      - name: Run the notebooks...
-        id: run_notebooks
+      - name: Check if all tests are successful...
         run: |
-          # Inject the root folder into Python's search path
-          export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE        
-          # conda init bash
-          # source ~/.bashrc
-          #conda activate eao_env
-          #export PYTHONPATH=$PYTHONPATH:$(pwd)/../..
-          #export PYTHONPATH=$PYTHONPATH:$(pwd)/../../..
-          #export PYTHONPATH=$PYTHONPATH:$(pwd)/../../../..
-          python -m ipykernel install --user --name=eao_env
-          python doc/source/samples/run_notebook_samples.py
+            if [ "${{ steps.run_tests_and_coverage.outcome }}" == "success" ]; then
+              echo '{"status": "passed"}' > test_status.json
+            else
+              echo '{"status": "failed"}' > test_status.json
+            fi

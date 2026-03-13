@@ -364,7 +364,7 @@ class BatteryTest(unittest.TestCase):
                 "__value__": "2026-01-27 23:00:00"
             }
         }"""
-        tg = eao.serialization.load_from_json(s)
+        tg = eao.serialization.from_json(s)
         s = """
             {
                 "__class__": "Portfolio",
@@ -445,7 +445,7 @@ class BatteryTest(unittest.TestCase):
         end = pd.Timestamp(2026, 1, 31, tz="CET")
         tg = eao.Timegrid(start, end, freq="h")
         #### basic test
-        portf = eao.serialization.load_from_json(s)
+        portf = eao.serialization.from_json(s)
         data = pd.read_pickle(join(test_data_path, "battery_test_data.pkl"))
         # check index is correct
         out = eao.optimize(portf=portf, timegrid=tg, data=data, split_interval_size="d")
@@ -572,7 +572,7 @@ class BatteryTest(unittest.TestCase):
                 "__value__": "2026-01-27 23:00:00"
             }
         }"""
-        tg = eao.serialization.load_from_json(s)
+        tg = eao.serialization.from_json(s)
         s = """
             {
                 "__class__": "Portfolio",
@@ -653,7 +653,7 @@ class BatteryTest(unittest.TestCase):
         end = pd.Timestamp(2026, 1, 31, tz="CET")
         tg = eao.Timegrid(start, end, freq="h")
         #### basic test
-        portf = eao.serialization.load_from_json(s)
+        portf = eao.serialization.from_json(s)
         data = pd.read_pickle(join(test_data_path, "battery_test_data.pkl"))
         mydata = tg.prices_to_grid(data).copy()
         # generate start/end dict price data
@@ -1112,13 +1112,11 @@ class TestBatteryWithMinLevel(unittest.TestCase):
 
     def test_battery_regression(self):
         """Regression test with realistic data"""
-        portf = eao.serialization.load_from_json(
+        portf = eao.serialization.from_json(
             file_name=join(test_data_path, "portf_dah.json")
         )
         b = portf.get_asset("battery")
-        tg = eao.serialization.load_from_json(
-            file_name=join(test_data_path, "tg_dah.json")
-        )
+        tg = eao.serialization.from_json(file_name=join(test_data_path, "tg_dah.json"))
         data = pd.read_csv(join(test_data_path, "data.csv"))
         data.set_index("Datetime", inplace=True)
         out = eao.optimize(portf, tg, data)
@@ -1135,8 +1133,9 @@ class TestBatteryWithMinLevel(unittest.TestCase):
             b.ramp_down,
             tg.restricted.dt[0],
         )
-        self.assertLessEqual(d["diff"].max(), r_up)
-        self.assertGreaterEqual(d["diff"].max(), r_dn)
+        self.assertAlmostEqual(d["diff"].max(), r_up, 3)
+        self.assertAlmostEqual(-d["diff"].min(), r_dn, 3)
+        pass
 
 
 class TestBatteryStorageCost(unittest.TestCase):

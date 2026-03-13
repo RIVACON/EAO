@@ -487,7 +487,7 @@ class CHPAssetTest(unittest.TestCase):
 
         # test serialization
         s = eao.serialization.to_json(a)
-        aa = eao.serialization.load_from_json(s)
+        aa = eao.serialization.from_json(s)
 
         prices = {"rand_price": -np.ones(timegrid.T)}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
@@ -1041,7 +1041,7 @@ class CHPAssetTest_with_threshhold(unittest.TestCase):
             max_cap=10.0,
         )
         tt = eao.serialization.to_json(a)
-        aa = eao.serialization.load_from_json(tt)
+        aa = eao.serialization.from_json(tt)
         self.assertAlmostEqual(aa.min_cap, a.min_cap, 5)
 
         a = eao.assets.CHPAsset_with_min_load_costs(
@@ -1054,7 +1054,7 @@ class CHPAssetTest_with_threshhold(unittest.TestCase):
             min_load_threshhold=1,
         )
         tt = eao.serialization.to_json(a)
-        aa = eao.serialization.load_from_json(tt)
+        aa = eao.serialization.from_json(tt)
         self.assertAlmostEqual(aa.min_cap, a.min_cap, 5)
         self.assertAlmostEqual(aa.min_load_costs, a.min_load_costs, 5)
 
@@ -1066,7 +1066,7 @@ class CHPAssetTest_with_threshhold(unittest.TestCase):
             max_cap=10.0,
         )
         tt = eao.serialization.to_json(a)
-        aa = eao.serialization.load_from_json(tt)
+        aa = eao.serialization.from_json(tt)
         self.assertAlmostEqual(aa.min_cap, a.min_cap, 5)
 
     def test_optimization(self):
@@ -1185,8 +1185,8 @@ class CHPAssetTest_with_threshhold(unittest.TestCase):
 
     def test_check_indexing(self):
         """Unit test. Test simple case with threshhold"""
-        # portf = eao.serialization.load_from_json(file_name='out_portf.json')
-        # tg = eao.serialization.load_from_json(file_name='out_timegrid.json')
+        # portf = eao.serialization.from_json(file_name='out_portf.json')
+        # tg = eao.serialization.from_json(file_name='out_timegrid.json')
         # prices = {'xx': np.ones(tg.T)}
         # op = portf.setup_optim_problem(prices = prices, timegrid = tg)
         node_power = eao.assets.Node("node_power")
@@ -1566,7 +1566,7 @@ class Plant(unittest.TestCase):
 
         # check serialization (new class...)
         s = eao.serialization.to_json(a)
-        aa = eao.serialization.load_from_json(s)
+        aa = eao.serialization.from_json(s)
 
     def test_PP_regression(self):
         """Unit test. Predefined data - checking result is same as checked"""
@@ -1633,7 +1633,7 @@ class Plant(unittest.TestCase):
 
         # check serialization (new class...)
         s = eao.serialization.to_json(a)
-        aa = eao.serialization.load_from_json(s)
+        aa = eao.serialization.from_json(s)
 
     def test_PP_check_start_ramp_smaller_mincap(self):
         """Unit test. Predefined data - checking result is same as checked"""
@@ -1700,7 +1700,7 @@ class Plant(unittest.TestCase):
 
         # check serialization (new class...)
         s = eao.serialization.to_json(a)
-        aa = eao.serialization.load_from_json(s)
+        aa = eao.serialization.from_json(s)
 
     def test_PP_check_start_ramp_vs_ramp(self):
         """What happens with ramp smaller / not equal start ramp? should be ignored"""
@@ -1999,10 +1999,10 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
         )
         portf = eao.portfolio.Portfolio([m, a, h])
         s = eao.serialization.to_json(a)
-        aa = eao.serialization.load_from_json(s)
+        aa = eao.serialization.from_json(s)
         self.assertEqual(a.pq_polygon, aa.pq_polygon)
         s = eao.serialization.to_json(portf)
-        pp = eao.serialization.load_from_json(s)
+        pp = eao.serialization.from_json(s)
         self.assertEqual(a.pq_polygon, pp.assets[1].pq_polygon)
 
     def test_polygon_basics(self):

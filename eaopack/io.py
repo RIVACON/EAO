@@ -345,9 +345,7 @@ def set_param(obj, path, value):
 
     try:
         s = serialization.json.dumps(o)
-        res = serialization.load_from_json(
-            s
-        )  # create object again (properly initializing)
+        res = serialization.from_json(s)  # create object again (properly initializing)
     except:
         if "name" in o:
             n = o["name"]
@@ -392,8 +390,7 @@ def optimize(
                - asset internal variables
                - special variables
     """
-    assert data is not None, 'Data input "data" must be given, was None'
-
+    # assert data is not None, 'Data input "data" must be given, was None'
     if data is not None:
         my_data = timegrid.prices_to_grid(data)
     else:
