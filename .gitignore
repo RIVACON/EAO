@@ -49,6 +49,8 @@ test_status.json
 notebooks_status.json
 /doc/source/_static
 .github/badges/*.svg
+.idea/workspace.xml
+.idea/*
 *__pycache__*
 eaopack/_assets_private.py
 tests/_test_assets_private.py

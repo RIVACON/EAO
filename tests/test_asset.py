@@ -42,6 +42,26 @@ class SimpleContractTest(unittest.TestCase):
         check = check and (tot_dcf == np.around(res.value, decimals=3))
         self.assertTrue(check)
 
+        ### same check with nd.array as input
+        myprice = np.random.rand(timegrid.T) - 0.5
+        a = eao.assets.SimpleContract(
+            name="SC", price=myprice, nodes=node, min_cap=-10.0, max_cap=10.0
+        )
+        op = a.setup_optim_problem(None, timegrid=timegrid)
+        res = op.optimize()
+        # check for this case if result makes sense. Easy: are signs correct?
+        # buy for negative price foll load, sell if opposite
+        # check = all(np.sign(np.around(res.x, decimals = 3)) != np.sign(op.c))
+        x = np.around(res.x, decimals=3)  # round
+        check = all(x[np.sign(op.c) == -1] == op.u[np.sign(op.c) == -1]) and all(
+            x[np.sign(op.c) == 1] == op.l[np.sign(op.c) == 1]
+        )
+        tot_dcf = np.around(
+            (a.dcf(op, res)).sum(), decimals=3
+        )  # asset dcf, calculated independently
+        check = check and (tot_dcf == np.around(res.value, decimals=3))
+        self.assertTrue(check)
+
     def test_optimization_ec(self):
         """Unit test. Setting up a simple contract with random prices
         and check that it buys full load at negative prices and opposite
@@ -723,7 +743,7 @@ class MultiCommodity(unittest.TestCase):
 
     def test_predefined_multicommodity(self):
         """test to reproduce the results in the sample "capture_heat_portfolio.py"""
-        portf = eao.serialization.load_from_json(
+        portf = eao.serialization.from_json(
             file_name=join(test_data_path, "test_portf_multi_commodity.JSON")
         )
         prices = pd.read_csv(join(test_data_path, "2020_price_sample.csv"))
@@ -1056,7 +1076,7 @@ class TestOrderOrderBooks(unittest.TestCase):
 
         portf = eao.portfolio.Portfolio([a, order_book])
         s = eao.serialization.to_json(order_book)
-        ob = eao.serialization.load_from_json(s)
+        ob = eao.serialization.from_json(s)
         portf2 = eao.portfolio.Portfolio([a, ob])
 
         prices = {"market": 10 * np.ones(timegrid.T)}

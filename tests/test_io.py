@@ -17,7 +17,7 @@ sys.path.append(join(mypath, ".."))
 
 import eaopack as eao
 from eaopack.serialization import json_serialize_objects, json_deserialize_objects
-from eaopack.serialization import to_json, load_from_json, run_from_json
+from eaopack.serialization import to_json, from_json, run_from_json
 from eaopack.network_graphs import create_graph
 
 
@@ -159,11 +159,13 @@ class IOTests(unittest.TestCase):
         myf = join(output_data_path, "test_portf.json")
 
         to_json(portf, myf)
-        x = load_from_json(file_name=myf)
-        xx = load_from_json(mys)
+        x = from_json(file_name=myf)
+        xx = from_json(mys)
 
         run_from_json(
-            file_name_in=myf, prices=prices, file_name_out=join(output_data_path, "test_results.xlsx")
+            file_name_in=myf,
+            prices=prices,
+            file_name_out=join(output_data_path, "test_results.xlsx"),
         )
         run_from_json(
             file_name_in=myf,
@@ -195,7 +197,7 @@ class IOTests(unittest.TestCase):
     def test_create_network(self):
         """simple test to create network graph"""
         myf = os.path.join(test_data_path, "demo_portf.json")
-        portf = load_from_json(file_name=myf)
+        portf = from_json(file_name=myf)
         graphf = os.path.join(output_data_path, "test_graph.pdf")
         create_graph(portf=portf, file_name=graphf)
         return True
@@ -203,7 +205,7 @@ class IOTests(unittest.TestCase):
     def test_create_network_output_no_image(self):
         """simple test to create network graph"""
         myf = os.path.join(test_data_path, "demo_portf.json")
-        portf = load_from_json(file_name=myf)
+        portf = from_json(file_name=myf)
         res = create_graph(portf=portf, no_image_output=True)
         assert res["nodes"][0]["id"] == "location A"
         return True
@@ -214,9 +216,7 @@ class IOTests(unittest.TestCase):
         ### capture asset and write to JSON
 
         ################################### define parameters
-        asset_file = os.path.join(
-            output_data_path, "test_result_asset.JSON"
-        )
+        asset_file = os.path.join(output_data_path, "test_result_asset.JSON")
         node_main = eao.assets.Node(name="main")
         node_internal = eao.assets.Node(name="int")
         battery = eao.assets.Storage(
@@ -265,7 +265,7 @@ class IOTests(unittest.TestCase):
         ## write to JSON
         eao.serialization.to_json(struct_battery, file_name=asset_file)
         ## get from JSON
-        myasset = eao.serialization.load_from_json(file_name=asset_file)
+        myasset = eao.serialization.from_json(file_name=asset_file)
 
         # check that dates remain the same
         dates1 = struct_battery.portfolio.assets[1].max_take["start"]
@@ -354,8 +354,8 @@ class OptimizeShortcutTests(unittest.TestCase):
             make_soft_problem=True,
         )
         ### write results to file
-        eao.io.output_to_file(out, join(output_data_path,"test_results_output.xlsx"))
-        eao.io.output_to_file(out, join(output_data_path,"test_results_output.csv"))
+        eao.io.output_to_file(out, join(output_data_path, "test_results_output.xlsx"))
+        eao.io.output_to_file(out, join(output_data_path, "test_results_output.csv"))
 
     def test_not_enough_data(self):
         """Unit test: cast data into timegrid - check error catching etc"""
@@ -405,8 +405,10 @@ class OptimizeShortcutTests(unittest.TestCase):
 
     def test_heat_portfolio(self):
         """given portfolio. test behaviour"""
-        tg = eao.serialization.load_from_json(file_name=join(test_data_path, "tg_heat.json"))
-        portf = eao.serialization.load_from_json(file_name=join(test_data_path, "portf_heat.json"))
+        tg = eao.serialization.from_json(file_name=join(test_data_path, "tg_heat.json"))
+        portf = eao.serialization.from_json(
+            file_name=join(test_data_path, "portf_heat.json")
+        )
         ### shorten
         data = pd.read_pickle(join(test_data_path, "data_heat.pkl"))
         # check index is correct
@@ -422,8 +424,10 @@ class OptimizeShortcutTests(unittest.TestCase):
     def test_io_with_signature(self):
         """try out signature to help filtering parameters when serializing"""
         ###### sample code to show principle
-        tg = eao.serialization.load_from_json(file_name=join(test_data_path, "tg_heat.json"))
-        portf = eao.serialization.load_from_json(file_name=join(test_data_path, "portf_heat.json"))
+        tg = eao.serialization.from_json(file_name=join(test_data_path, "tg_heat.json"))
+        portf = eao.serialization.from_json(
+            file_name=join(test_data_path, "portf_heat.json")
+        )
         import inspect
 
         a = portf.assets[0]
@@ -435,7 +439,7 @@ class OptimizeShortcutTests(unittest.TestCase):
         filtered_dict = {k: v for k, v in test_dict.items() if k in allowed_keys}
         #### do serialization
         s = eao.serialization.to_json(a)
-        aa = eao.serialization.load_from_json(s)
+        aa = eao.serialization.from_json(s)
         pass
 
 

@@ -233,10 +233,11 @@ class Asset:
 
     def make_vector(
         self,
-        value: Union[float, StartEndValueDict, str],
+        value: Union[float, StartEndValueDict, str, np.ndarray],
         prices: Union[None, dict, pd.DataFrame] = None,
         default_value: Union[None, float] = None,
         convert=False,
+        full_timegrid: bool = False,
     ):
         """
         Make a vector out of value
@@ -249,14 +250,19 @@ class Asset:
                                       str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
             prices (dict, pd.DataFrame): Dictionary of price arrays needed by assets in portfolio
             default_value (float): The value that is used if any of the entries of the resulting vector are not specified
+            full_timegrid (bool):  Make vector on the full timegrid (portfolio grid). Defaults to False
 
         Returns: vector in time grid
 
         """
         if prices is None:
             prices = {}
-        I = self.timegrid.restricted.I  # indices of restricted time grid
-        T = self.timegrid.restricted.T
+        if full_timegrid:
+            tg = self.timegrid
+        else:
+            tg = self.timegrid.restricted
+        I = tg.I  # indices of time grid
+        T = tg.T  # number of steps
         if value is None:
             if default_value is None:
                 return value
@@ -269,18 +275,21 @@ class Asset:
                 "data for " + value + " not found for asset  " + self.name
             )
             vec = prices[value].copy()
+            if isinstance(vec, list):
+                vec = np.asarray(vec)
             if isinstance(vec, pd.Series):
                 vec = (
                     vec.values
-                )  # may be given as Series (prices as DataFrame) (not prefered, but sometimes handy)
+                )  # may be given as Series (prices as DataFrame) (not preferred, but sometimes handy)
             vec = vec[I]  # only in asset time window
-        else:  # given in form of dict (start/end/values)
-            vec = self.timegrid.restricted.values_to_grid(value)
+        elif isinstance(value, dict):  # given in form of dict (start/end/values)
+            vec = tg.values_to_grid(value)
             if default_value is not None:
                 vec[np.isnan(vec)] = default_value
-
+        else:
+            raise ValueError("Unknown format of data input " + str(type(value)))
         if convert:
-            vec = vec * self.timegrid.restricted.dt
+            vec = vec * tg.dt
         return vec
 
     @property
@@ -305,7 +314,7 @@ def _calculate_effective_ramp(
 
 
 class Storage(Asset):
-    """Storage Class in Python"""
+    """Storage Asset Class"""
 
     def __init__(
         self,
@@ -340,7 +349,7 @@ class Storage(Asset):
         periodicity: Union[None, str] = None,
         periodicity_duration: Union[None, str] = None,
     ):
-        """Specific storage asset. A storage has the basic capability to
+        """Storage asset. A storage has the basic capability to
             (1) take in a commodity within a limited flow rate (capacity)
             (2) store a maximum volume of a commodity (size)
             (3) give out the commodity within a limited flow rate
@@ -385,7 +394,6 @@ class Storage(Asset):
 
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
-            ramp_up (float, dict, str):   Maximum increase of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
             ramp_up (float, StartEndValueDict, str):   Maximum increase of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
             ramp_down (float, StartEndValueDict, str): Maximum decrease of virtual dispatch in flow/main_time_unit (e.g. MW/h). May be time dependent
                                                        For ramps up or down: Positive value expected. Defaults to None. First point in time is unrestricted
@@ -991,7 +999,7 @@ class SimpleContract(Asset):
         start: dt.datetime = None,
         end: dt.datetime = None,
         wacc: float = 0,
-        price: str = None,
+        price: Union[str, StartEndValueDict, float, np.ndarray, None] = None,
         extra_costs: Union[float, StartEndValueDict, str] = 0.0,
         min_cap: Union[float, StartEndValueDict, str] = 0.0,
         max_cap: Union[float, StartEndValueDict, str] = 0.0,
@@ -1019,7 +1027,7 @@ class SimpleContract(Asset):
                                            dict['end']   = array
                                            dict['values'] = array
                                     str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
-            price (str): Name of price vector for buying / selling. Defaults to None
+            price (str, StartEndDict, nd.array, None): Name of price vector for buying / selling. Defaults to None (value of 0.)
             extra_costs (float, dict, str): extra costs added to price vector (in or out). Defaults to 0.
                                             float: constant value
                                             dict:  dict['start'] = array
@@ -1027,7 +1035,7 @@ class SimpleContract(Asset):
                                                    dict['values'] = array
                                             str:   refers to column in "prices" data that provides time series to set up OptimProblem (as for "price" below)
 
-            periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
+            periodicity (str, pd freq style): Makes assets behave periodically with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days over whole weeks)  (defaults to None)
         """
         super(SimpleContract, self).__init__(
@@ -1084,43 +1092,39 @@ class SimpleContract(Asset):
                 "Set timegrid of asset before creating optim problem. Asset: "
                 + self.name
             )
-        if not self.price is None:
-            assert isinstance(self.price, str), (
-                "Error in asset " + self.name + " --> price must be given as string"
+        # If the restricted timegrid has minor and major grids, need
+        # to average over prices across minor grids
+        if hasattr(self.timegrid.restricted, "I_minor_in_major"):
+            price = self.make_vector(
+                self.price, prices, convert=False, default_value=0.0, full_timegrid=True
             )
-            assert self.price in prices
-            price = prices[self.price].copy()
-            # convert to array
-            if isinstance(price, list):
-                price = np.asarray(price)
-            if isinstance(price, pd.Series):
-                price = price.values
-        else:
-            price = np.zeros(timegrid.T)
+            myprice = []
+            for myI in self.timegrid.restricted.I_minor_in_major:
+                myprice.append(price[myI].mean())
+            price = np.asarray(myprice)
+        else:  # simply restrict prices to asset time window
+            price = self.make_vector(
+                self.price,
+                prices,
+                convert=False,
+                default_value=0.0,
+                full_timegrid=False,
+            )
 
         if not (
-            len(price) == self.timegrid.T
+            len(price) == self.timegrid.restricted.T
         ):  # price vector must have right size for discretization
             raise ValueError(
                 "Length of price array must be equal to length of time grid. Asset: "
                 + self.name
             )
 
-        ##### using restricted timegrid for asset lifetime (save resources)
+        # ##### using restricted timegrid for asset lifetime (save resources)
         I = self.timegrid.restricted.I  # indices of restricted time grid
         T = self.timegrid.restricted.T  # length of restr. grid
         discount_factors = (
             self.timegrid.restricted.discount_factors
         )  # disc fctrs of restr. grid
-        # check: if the restricted timegrid has minor and major grids, need
-        # to do average over prices across minor grids
-        if hasattr(self.timegrid.restricted, "I_minor_in_major"):
-            myprice = []
-            for myI in self.timegrid.restricted.I_minor_in_major:
-                myprice.append(price[myI].mean())
-            price = np.asarray(myprice)
-        else:  # simply restrict prices to  asset time window
-            price = price[I]
 
         ##### important distinction:
         ## if extra costs are given, we need dispatch IN and OUT
