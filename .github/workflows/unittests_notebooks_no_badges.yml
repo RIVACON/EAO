@@ -41,5 +41,7 @@ jobs:
           source ~/.bashrc
           conda activate eao_env
           export PYTHONPATH=$PYTHONPATH:$(pwd)/../..
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/../../..
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/../../../..
           python -m ipykernel install --user --name=eao_env
           python doc/source/samples/run_notebook_samples.py
