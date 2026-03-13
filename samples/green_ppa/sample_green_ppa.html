@@ -125,7 +125,7 @@
 <section id="Basic-definitions">
 <h2>Basic definitions<a class="headerlink" href="#Basic-definitions" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -133,6 +133,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">HTML</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
 </pre></div>
 </div>
@@ -142,7 +143,7 @@
 <h2>Timegrid<a class="headerlink" href="#Timegrid" title="Link to this heading"></a></h2>
 <p>The timegrid defines start and end of the optimization, including discretization and conversion unit from flow (i.e. capacity, here MW) and volume (here MWh)</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Start</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
@@ -160,7 +161,7 @@
 <p>A node reflects a virtual trading point that all assets are connected to. In case of a setup with transport limitations, several nodes may be used. A node always comes with a commodity that is traded at it. Here it’s power. Note that commodity and unit serve for documentation only.</p>
 <p>In order to clearly separate “green power” from “grey power” we define two nodes</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">green_sources</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;green sources&#39;</span><span class="p">,</span> <span class="n">commodity</span><span class="o">=</span> <span class="s1">&#39;power&#39;</span><span class="p">)</span>
@@ -178,7 +179,7 @@
 </ol>
 <p>This is a rather complex asset and we make use of the StructuredAsset. This could be done in a simpler way, but allows us to encapsulate everything in one asset.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">min_fraction_green</span> <span class="o">=</span> <span class="mf">0.8</span>
@@ -190,7 +191,7 @@
 <h3>Starting with the load<a class="headerlink" href="#Starting-with-the-load" title="Link to this heading"></a></h3>
 <p>The asset is located in it’s own node to ensure delivery is channeled separate from green and grey sources Attention: As the consumer draws power, the load must have negative sign in the contract</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node_load</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;node load&#39;</span><span class="p">,</span> <span class="n">commodity</span><span class="o">=</span> <span class="s1">&#39;power&#39;</span><span class="p">)</span>
@@ -209,7 +210,7 @@
 <h3>Green restriction<a class="headerlink" href="#Green-restriction" title="Link to this heading"></a></h3>
 <p>To link green and grey sources to their delivery counterparts, we define transport assets. The green link implements a “minimum take”, i.e. a minimum volume over the optimization time</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">min_green</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="n">Start</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span><span class="n">End</span><span class="p">,</span> <span class="s1">&#39;values&#39;</span> <span class="p">:</span> <span class="n">volume_sold</span> <span class="o">*</span> <span class="n">min_fraction_green</span> <span class="p">}</span>
@@ -223,7 +224,7 @@
 <h3>Create contract object<a class="headerlink" href="#Create-contract-object" title="Link to this heading"></a></h3>
 <p>To wrap things up, we pack all assets together in a portfolio that defines our downstream contract. This in turn is used to define the new structured asset that connects to the outside world via the sourcing nodes</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">downstream_portfolio</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">load</span><span class="p">,</span> <span class="n">link_green</span><span class="p">,</span> <span class="n">link_grey</span><span class="p">])</span>
@@ -233,11 +234,10 @@
 </div>
 <p>How does it look like? The network graph explains:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#eao.network_graphs.create_graph(portf = downstream_portfolio, file_name=&#39;test.eps&#39;, title = &#39;Downstream contract structure&#39;)</span>
-<span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">downstream_portfolio</span><span class="p">,</span><span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Downstream contract structure&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">downstream_portfolio</span><span class="p">,</span><span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Downstream contract structure&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -254,16 +254,24 @@
 <h2>Green energy supply PPAs: PV and wind with a given generation profile<a class="headerlink" href="#Green-energy-supply-PPAs:-PV-and-wind-with-a-given-generation-profile" title="Link to this heading"></a></h2>
 <p>We are using a “contract” as the asset type. This gives us the opportunity to define a detailed minimum and maximum capacity that reflects available generation according to how wind blows and sun shines. We assume those assets are PPAs. Note that the minimum capacity is the same as max. We assume we have the obligation to take off all production at the fix price. They are attached to the “green node”</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PPA_fix_price</span> <span class="o">=</span> <span class="mf">75.</span> <span class="c1"># unit: €/MWh</span>
 <span class="n">PV_gen</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">timepoints</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
           <span class="s1">&#39;values&#39;</span><span class="p">:</span><span class="mi">5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">24</span> <span class="o">*</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">timepoints</span><span class="o">.</span><span class="n">hour</span><span class="o">.</span><span class="n">values</span><span class="p">))}</span>
-<span class="n">PV</span>         <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Contract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;PV&#39;</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="n">PV_gen</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span> <span class="n">PV_gen</span><span class="p">,</span> <span class="n">extra_costs</span> <span class="o">=</span> <span class="n">PPA_fix_price</span> <span class="p">,</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">green_sources</span><span class="p">)</span>
+<span class="n">PV</span>         <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">RenewableAsset</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;PV&#39;</span><span class="p">,</span>
+                                       <span class="n">profile</span> <span class="o">=</span> <span class="n">PV_gen</span><span class="p">,</span>
+                                       <span class="n">fixed_price</span> <span class="o">=</span> <span class="n">PPA_fix_price</span><span class="p">,</span>
+                                       <span class="n">controllable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                       <span class="n">nodes</span> <span class="o">=</span> <span class="n">green_sources</span><span class="p">)</span>
 <span class="n">wind_gen</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">timepoints</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>\
             <span class="s1">&#39;values&#39;</span><span class="p">:</span> <span class="mf">5.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">)}</span>
-<span class="n">wind</span>        <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Contract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;wind&#39;</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="n">wind_gen</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span> <span class="n">wind_gen</span><span class="p">,</span> <span class="n">extra_costs</span> <span class="o">=</span> <span class="n">PPA_fix_price</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">green_sources</span><span class="p">)</span>
+<span class="n">wind</span>        <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">RenewableAsset</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;wind&#39;</span><span class="p">,</span>
+                                        <span class="n">profile</span><span class="o">=</span> <span class="n">wind_gen</span><span class="p">,</span>
+                                        <span class="n">controllable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                        <span class="n">fixed_price</span><span class="o">=</span> <span class="n">PPA_fix_price</span><span class="p">,</span>
+                                        <span class="n">nodes</span> <span class="o">=</span> <span class="n">green_sources</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -273,7 +281,7 @@
 <p>Green sources are not always available. The storage enables us to flatten green production to match the load The storage is placed at the node “green_sources” so that we ensure there is no mixture of green and grey power. A storage comes with a defined capacity in and out (MW) and storage volume (MWh). Furthermore we define efficiency, costs, etc</p>
 <p>Note that in order to take out computational complexity we define a daily block size. This has the effect that the battery is optimized per day only, going back to start/end fill level each day.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">storage</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Storage</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;battery&#39;</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">green_sources</span><span class="p">,</span> <span class="n">cap_in</span><span class="o">=</span> <span class="mi">1</span><span class="o">*</span><span class="n">max_load</span><span class="p">,</span> <span class="n">cap_out</span><span class="o">=</span><span class="mi">1</span><span class="o">*</span><span class="n">max_load</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">4</span><span class="o">*</span><span class="n">max_load</span><span class="p">,</span> <span class="n">cost_in</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">cost_out</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">eff_in</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="n">start_level</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">max_load</span><span class="p">,</span> <span class="n">end_level</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">max_load</span><span class="p">)</span>
@@ -285,7 +293,7 @@
 <h2>The market<a class="headerlink" href="#The-market" title="Link to this heading"></a></h2>
 <p>We may buy and sell energy from/to the spot market at given spot prices. The market is modeled in a simplistic way here, assuming high market depth. If required, more complexity may be added. Note it’s attached to the “grey node”. We also add an external market for surplus green power (sales only)</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">prices</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;spot market&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="o">+</span><span class="mf">12.</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">100.</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">.</span><span class="n">T</span><span class="p">)))}</span>
@@ -303,14 +311,13 @@
 <li><p>As a portfolio with separate assets. This is the complete structure</p></li>
 </ol>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">portfolio_separate</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span> <span class="n">load</span><span class="p">,</span><span class="n">link_grey</span><span class="p">,</span><span class="n">link_green</span><span class="p">,</span>   <span class="n">spot_market</span><span class="p">,</span>  <span class="n">wind</span><span class="p">,</span> <span class="n">PV</span><span class="p">,</span><span class="n">green_sales</span><span class="p">,</span> <span class="n">storage</span><span class="p">])</span>
 <span class="n">op_separate</span> <span class="o">=</span> <span class="n">portfolio_separate</span><span class="o">.</span><span class="n">setup_optim_problem</span><span class="p">(</span><span class="n">prices</span> <span class="o">=</span> <span class="n">prices</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">=</span><span class="n">timegrid</span><span class="p">)</span>
 <span class="n">res_separate</span> <span class="o">=</span> <span class="n">op_separate</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
 <span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">portfolio_separate</span><span class="p">,</span><span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Complete portfolio with separate assets&#39;</span><span class="p">)</span>
-<span class="c1">#eao.network_graphs.create_graph(portf = portfolio_separate,title = &#39;&#39;, file_name = &#39;full_portfolio.pdf&#39;)</span>
 </pre></div>
 </div>
 </div>
@@ -329,7 +336,7 @@
 <section id="Optimize">
 <h1>Optimize<a class="headerlink" href="#Optimize" title="Link to this heading"></a></h1>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">portfolio_struct</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">downstream_contract</span><span class="p">,</span> <span class="n">wind</span><span class="p">,</span> <span class="n">PV</span><span class="p">,</span> <span class="n">spot_market</span><span class="p">,</span> <span class="n">green_sales</span><span class="p">,</span> <span class="n">storage</span><span class="p">])</span>
@@ -350,7 +357,7 @@
 <section id="Interpret-the-results">
 <h1>Interpret the results<a class="headerlink" href="#Interpret-the-results" title="Link to this heading"></a></h1>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">output</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">extract_output</span><span class="p">(</span><span class="n">portfolio_struct</span><span class="p">,</span> <span class="n">op_struct</span><span class="p">,</span> <span class="n">res_struct</span> <span class="p">,</span> <span class="n">prices</span><span class="p">)</span>
@@ -359,7 +366,7 @@
 </div>
 <p>The overall portfolio value is the following (plus an indication that the optimization was successful). In case we want to evaluate how much the promise of 80% renewable energy costs, we can easily recalculate the portcolio, changing this parameter</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">])</span>
@@ -374,14 +381,14 @@
                  Values
 Parameter
 status       successful
-value      58000.576053
+value      57946.389765
 </pre></div></div>
 </div>
 <section id="Detailed-results">
 <h2>Detailed results<a class="headerlink" href="#Detailed-results" title="Link to this heading"></a></h2>
 <p>Plotting and saving results to file for further inspection</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eao</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">output_to_file</span><span class="p">(</span><span class="n">output</span><span class="p">,</span>  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;results.xlsx&#39;</span><span class="p">))</span>
@@ -423,21 +430,21 @@ value      58000.576053
   <tbody>
     <tr>
       <th>2021-01-01 06:00:00</th>
-      <td>-9.3</td>
-      <td>-0.0</td>
-      <td>0.4</td>
+      <td>-9.2</td>
+      <td>-0.1</td>
+      <td>2.2</td>
       <td>0.0</td>
-      <td>0.0</td>
+      <td>0.1</td>
       <td>-0.0</td>
-      <td>8.9</td>
+      <td>7.0</td>
     </tr>
     <tr>
       <th>2021-01-01 07:00:00</th>
-      <td>-4.8</td>
-      <td>-7.9</td>
-      <td>3.5</td>
+      <td>-3.2</td>
+      <td>-9.4</td>
+      <td>1.9</td>
       <td>1.3</td>
-      <td>7.9</td>
+      <td>9.4</td>
       <td>-0.0</td>
       <td>0.0</td>
     </tr>
@@ -453,100 +460,100 @@ value      58000.576053
     </tr>
     <tr>
       <th>2021-01-01 09:00:00</th>
-      <td>-2.2</td>
-      <td>-2.7</td>
-      <td>1.3</td>
+      <td>-4.5</td>
+      <td>-0.4</td>
+      <td>2.1</td>
       <td>3.5</td>
-      <td>2.7</td>
+      <td>0.4</td>
       <td>-0.0</td>
-      <td>-2.6</td>
+      <td>-1.1</td>
     </tr>
     <tr>
       <th>2021-01-01 10:00:00</th>
       <td>-0.0</td>
       <td>-0.3</td>
-      <td>2.6</td>
+      <td>0.7</td>
       <td>4.3</td>
       <td>0.3</td>
       <td>-0.0</td>
-      <td>-7.0</td>
+      <td>-5.1</td>
     </tr>
     <tr>
       <th>2021-01-01 11:00:00</th>
       <td>-0.0</td>
       <td>-0.8</td>
-      <td>3.3</td>
+      <td>3.0</td>
       <td>4.8</td>
       <td>0.8</td>
       <td>-0.0</td>
-      <td>-8.2</td>
+      <td>-7.8</td>
     </tr>
     <tr>
       <th>2021-01-01 12:00:00</th>
       <td>-2.6</td>
       <td>-0.0</td>
-      <td>1.5</td>
+      <td>3.4</td>
       <td>5.0</td>
       <td>0.0</td>
       <td>-0.0</td>
-      <td>-3.9</td>
+      <td>-5.8</td>
     </tr>
     <tr>
       <th>2021-01-01 13:00:00</th>
       <td>-5.2</td>
       <td>-0.0</td>
-      <td>2.9</td>
+      <td>1.7</td>
       <td>4.8</td>
       <td>0.0</td>
       <td>-0.0</td>
-      <td>-2.5</td>
+      <td>-1.3</td>
     </tr>
     <tr>
       <th>2021-01-01 14:00:00</th>
       <td>-3.4</td>
       <td>-0.0</td>
-      <td>2.4</td>
+      <td>1.2</td>
       <td>4.3</td>
       <td>0.0</td>
       <td>-0.0</td>
-      <td>-3.3</td>
+      <td>-2.1</td>
     </tr>
     <tr>
       <th>2021-01-01 15:00:00</th>
       <td>-1.8</td>
       <td>-0.0</td>
-      <td>2.8</td>
+      <td>4.1</td>
       <td>3.5</td>
       <td>0.0</td>
       <td>-0.0</td>
-      <td>-4.5</td>
+      <td>-5.9</td>
     </tr>
     <tr>
       <th>2021-01-01 16:00:00</th>
       <td>-5.5</td>
       <td>-0.0</td>
-      <td>1.4</td>
+      <td>4.9</td>
       <td>2.5</td>
       <td>0.0</td>
+      <td>-1.8</td>
       <td>-0.0</td>
-      <td>1.6</td>
     </tr>
     <tr>
       <th>2021-01-01 17:00:00</th>
       <td>-4.2</td>
       <td>-0.0</td>
-      <td>0.4</td>
+      <td>1.7</td>
       <td>1.3</td>
       <td>0.0</td>
       <td>-0.0</td>
-      <td>2.5</td>
+      <td>1.2</td>
     </tr>
   </tbody>
 </table>
 </div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>

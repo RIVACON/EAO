@@ -144,8 +144,8 @@
 <span class="c1">## input data</span>
 <span class="n">sample_file</span>   <span class="o">=</span> <span class="s1">&#39;portfolio_robust_optimization.json&#39;</span>
 <span class="n">timegrid_file</span> <span class="o">=</span> <span class="s1">&#39;timegrid.json&#39;</span>
-<span class="n">portf</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">serialization</span><span class="o">.</span><span class="n">load_from_json</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span> <span class="n">sample_file</span><span class="p">)</span>
-<span class="n">timegrid</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">serialization</span><span class="o">.</span><span class="n">load_from_json</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">timegrid_file</span><span class="p">)</span>
+<span class="n">portf</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">serialization</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span> <span class="n">sample_file</span><span class="p">)</span>
+<span class="n">timegrid</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">serialization</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">timegrid_file</span><span class="p">)</span>
 <span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span> <span class="o">=</span> <span class="n">portf</span><span class="p">,</span><span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Simple sample portfolio&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
