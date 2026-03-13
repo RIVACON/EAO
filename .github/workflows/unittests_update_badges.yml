@@ -1,4 +1,4 @@
-name: TestsAndBadges [push main, manual]
+name: unittests_create_badges [push main, manual]
 
 on:
   push:
