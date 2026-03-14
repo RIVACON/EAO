@@ -31,7 +31,9 @@ jobs:
           source ~/.bashrc
           conda activate eao_env
           conda install pandoc
-          pip install eaopack
+          # Inject the root folder into Python's search path
+          export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE        
+          # pip install eaopack
           pip install sphinx nbsphinx sphinx_rtd_theme
           sphinx-build -b html doc/source/ doc/build
 
