@@ -124,10 +124,10 @@ def extract_output(
                     internal_variables.loc[times[r.time_step], myCol] += (
                         min(0, -res.x[i]) * r.disp_factor
                     )
-                ### extract ... fill level
-                myCol = a.name + "_fill_level"
-                internal_variables[myCol] = 0.0
-                internal_variables.loc[:, myCol] = a.fill_level(op, res, prices)
+                # ### extract ... fill level
+                # myCol = a.name + "_fill_level"
+                # internal_variables[myCol] = 0.0
+                # internal_variables.loc[:, myCol] = a.fill_level(op, res, prices)
         # extract duals from nodal restrictions
         # looping through nodes and their recorded nodal restrictions and extract dual
         if not res.duals is None and not res.duals["N"] is None:

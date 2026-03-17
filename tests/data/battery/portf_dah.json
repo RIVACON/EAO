@@ -48,7 +48,6 @@
             "max_cycles_freq": "d",
             "max_cycles_no": 2.0,
             "max_level": null,
-            "max_store_duration": null,
             "min_level": null,
             "name": "battery",
             "no_simult_in_out": true,

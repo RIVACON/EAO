@@ -160,12 +160,15 @@ class Asset:
         # and generate remaining minor grid items
         for i, r in mymap.iterrows():
             rr = r.copy()
-            I = self.timegrid.restricted.I_minor_in_major[i]
+            # get index of window
+            i_window = (self.timegrid.restricted.I == r["time_step"]).argmax()
+            I = self.timegrid.restricted.I_minor_in_major[i_window]
             for my_t in I:
                 rr["time_step"] = int(my_t)
                 weight = (
-                    self.timegrid.dt[r["time_step"]] / self.timegrid.restricted.dt[i]
-                )  # potentially to be refined with profile
+                    self.timegrid.dt[r["time_step"]]
+                    / self.timegrid.restricted.dt[i_window]
+                )
                 if "disp_factor" in r:
                     rr["disp_factor"] = weight * rr["disp_factor"]
                 else:
@@ -341,7 +344,7 @@ class Storage(Asset):
         no_zero_transition_within_ramp=False,
         inflow: float = 0.0,
         no_simult_in_out: bool = False,
-        max_store_duration: Union[None, float] = None,
+        # max_store_duration: Union[None, float] = None,
         price: Union[None, str] = None,
         freq: Union[None, str] = None,
         max_cycles_no: Union[None, float] = None,
@@ -390,7 +393,6 @@ class Storage(Asset):
 
             inflow (float, str, StartEndValueDict, optional): Inflow volumes (flow in each time step. E.g. water inflow in hydro storage). Defaults to 0.
             no_simult_in_out (boolean, optional): Enforce no simultaneous dispatch in/out in case of costs or efficiency!=1. Makes problem MIP. Defaults to False
-            max_store_duration (float, optional): Maximal duration in main time units that charged commodity can be held. Makes problem a MIP. Defaults to none
 
             periodicity (str, pd freq style): Makes assets behave periodicly with given frequency. Periods are repeated up to freq intervals (defaults to None)
             periodicity_duration (str, pd freq style): Intervals in which periods repeat (e.g. repeat days ofer whole weeks)  (defaults to None)
@@ -445,7 +447,7 @@ class Storage(Asset):
             self.block_size = block_size  # defines the block size (as pandas frequency)
         assert len(self.nodes) <= 2, "for storage only one or two nodes valid"
         self.no_simult_in_out = no_simult_in_out
-        self.max_store_duration = max_store_duration
+        # self.max_store_duration = max_store_duration
         self.max_cycles_no = max_cycles_no
         self.max_cycles_freq = max_cycles_freq
         #### periodicity
@@ -507,7 +509,6 @@ class Storage(Asset):
         ct = self.make_vector(self.cap_out, prices, default_value=0.0, convert=True)
         cp = self.make_vector(self.cap_in, prices, default_value=0.0, convert=True)
         inflow = self.make_vector(self.inflow, prices, default_value=0.0, convert=True)
-        inflow = np.cumsum(inflow)
         discount = self.timegrid.restricted.discount_factors
 
         if self.price is not None:
@@ -580,7 +581,7 @@ class Storage(Asset):
         assert (min_level <= max_level).all(), (
             "Storage "
             + self.name
-            + ": min_level must not be greater than size/ max_level"
+            + ": min_level must not be greater than size and max_level"
         )
         assert start_level[0] >= min_level[0], (
             "Storage " + self.name + ": start_level must be >= min_level[0]"
@@ -589,16 +590,17 @@ class Storage(Asset):
             "Storage " + self.name + ": end_level must be >= min_level[-1]"
         )
         assert start_level[0] <= max_level[0], (
-            "Storage " + self.name + ": start_level must be <= size/ max_level[0]"
+            "Storage " + self.name + ": start_level must be <= size and max_level[0]"
         )
         assert end_level[-1] <= max_level[-1], (
-            "Storage " + self.name + ": end_level must be <= size/ max_level[-1]"
+            "Storage " + self.name + ": end_level must be <= size and max_level[-1]"
         )
-        if self.cost_store != 0:
-            cost_store = self.cost_store * dt * discount
-            cost_store = np.asarray(
-                [cost_store[ii:].sum() for ii in range(0, len(cost_store))]
+        cost_store = (
+            self.make_vector(
+                self.cost_store, prices=prices, default_value=0.0, convert=False
             )
+            * discount
+        )
 
         # costs in and out
         if sep_needed:
@@ -610,89 +612,112 @@ class Storage(Asset):
             if self.price is not None:
                 c -= np.asarray(price)
             c = c * (np.tile(discount, (2, 1)))
-            if self.cost_store != 0:
-                c -= np.vstack((cost_store * self.eff_in, cost_store / self.eff_out))
         else:
             u = ct
             l = -cp
             c = np.zeros(n)
             if self.price is not None:
                 c -= np.asarray(price) * discount
-            if self.cost_store != 0:
-                c -= cost_store
         c = c.flatten("C")  # make all one columns
-        # switch to return costs only
-        if costs_only:
-            return c
+
         # Storage restriction --  cumulative sums must fit into reservoir
+        ####### new variable: fill level (cum sum of dispatch)
         ## treatment eff_in: only eff_in reaches storage
-        ## treatment of eff_out: discharge disaptch up to cap_out -- but storage is drained cap_out/eff_out
-        if self.block_size is None:
-            A = -sp.tril(np.ones((n, n), float))
-            # Maximum: max volume not exceeded
-            b = (max_level - start_level[0]) - inflow
-            b[-1] = end_level[-1] - start_level[0] - inflow[-1]
-            # Minimum: empty
-            b_min = min_level - start_level[0] * np.ones(n, float) - inflow
-            b_min[-1] = end_level[-1] - start_level[0] - inflow[-1]
-        else:  ## creating block matrices on the diagonal
-            A = sp.lil_matrix((n, n))
-            b = np.empty(n)
-            b.fill(np.nan)
-            b_min = np.empty(n)
-            b_min.fill(np.nan)
+        ## treatment of eff_out: discharge dispatch up to cap_out -- but storage is drained cap_out/eff_out
+        ### old: formulation with cumsum on x directly
+        # if self.block_size is None:
+        # A = -sp.tril(np.ones((n, 2*n), float))
+        # # Maximum: max volume not exceeded
+        # b = (max_level - start_level[0]) - inflow
+        # b[-1] = end_level[-1] - start_level[0] - inflow[-1]
+        # # Minimum: empty
+        # b_min = min_level - start_level[0] * np.ones(n, float) - inflow
+        # b_min[-1] = end_level[-1] - start_level[0] - inflow[-1]
+        ### new: formulation with fill level
+        # (1) fill level constraints s_0           - x_0   =  start + inflow_0
+        #                            s_t - s_(t-1) - x_t   =  0     + inflow_t
+        #       attention:  sign convention. loading: neg. dispatch
+        #       attention:  take into account efficiencies if != 1
+        if not sep_needed:
+            A = sp.hstack((sp.eye(n), sp.eye(n) - sp.eye(n, k=-1)))
+        else:
+            A = sp.hstack(
+                (
+                    sp.eye(n) * self.eff_in,
+                    sp.eye(n) / self.eff_out,
+                    sp.eye(n) - sp.eye(n, k=-1),
+                )
+            )
+        b = np.zeros(n)
+        b[0] = start_level[0]
+        b += inflow
+        cType = "S" * n  # equal constraints
+        # (2) fill level within min and max level
+        #     min_level_t <= s_t <= max_level_t
+        fl_max = max_level  # potentially adjusted for block-wise optimization
+        fl_min = min_level
+        # adjust for end_level
+        fl_min[-1] = end_level[-1]
+        fl_max[-1] = end_level[-1]
+
+        if self.block_size is not None:  ## block_wise optimization
+            # A = sp.lil_matrix((n, n))
+            # b = np.empty(n)
+            # b.fill(np.nan)
+            # b_min = np.empty(n)
+            # b_min.fill(np.nan)
             ### identify blocks in time grid
-            indBlocks = pd.date_range(
+            ind_blocks = pd.date_range(
                 start=self.timegrid.restricted.start,
                 end=self.timegrid.restricted.end,
                 freq=self.block_size,
             )
             # ensure start & end are included
-            indBlocks = indBlocks.union([self.timegrid.restricted.start])
-            indBlocks = indBlocks.union([self.timegrid.restricted.end])
-            ### via bools indicating weather timepoint is in interval
+            ind_blocks = ind_blocks.union([self.timegrid.restricted.start])
+            ind_blocks = ind_blocks.union([self.timegrid.restricted.end])
+            ### via bools indicating whether timepoint is in interval
             ti = self.timegrid.restricted.I
             tp = self.timegrid.restricted.timepoints
             block_ind = []
-            for i in range(0, (len(indBlocks) - 1)):
-                new_block = ti[(tp >= indBlocks[i]) & (tp < indBlocks[i + 1])]
+            for i in range(0, (len(ind_blocks) - 1)):
+                new_block = ti[(tp >= ind_blocks[i]) & (tp < ind_blocks[i + 1])]
                 if len(new_block) > 0:
                     block_ind.append(new_block)
             ### for i, a in enumerate(aa[0:-1]):  # go through the blocks
             for ib, block in enumerate(block_ind):
-                len_block = len(block)
-                A[np.ix_(block, block)] = -sp.tril(
-                    np.ones((len_block, len_block), float)
-                )  # triangle matrix for time block
                 ### for first block start value is start_level - for others we start with the end level
                 if ib == 0:
                     my_start = start_level[0]
                 else:
-                    my_start = my_end  # value from prefious loop
+                    my_start = my_end  # value from previous loop
                 ### for blocks we may have an end level not consistent with min_level and size (if time dependent)
                 # adjust to lie within range of min_level and size
                 my_end = max(end_level[block[-1]], min_level[block[-1]])
                 my_end = min(my_end, max_level[block[-1]])
 
-                # Maximum: max volume not exceeded
-                parts_b = (max_level[block] - my_start) - inflow[block]
-                # due to earlier assert final end level should always fit and therefore be self.end_level
-                parts_b[-1] = my_end - my_start - inflow[block[-1]]
-                b[block] = parts_b
-                # Minimum: empty
-                parts_b_min = (
-                    min_level[block] - my_start * np.ones(len_block) - inflow[block]
-                )
-                parts_b_min[-1] = my_end - my_start - inflow[block[-1]]
-                b_min[block] = parts_b_min
+                ## adjust bounds for fill level
+                fl_max[block[-1]] = my_end
+                fl_min[block[-1]] = my_end
+                # # Maximum: max volume not exceeded
+                # parts_b = (max_level[block] - my_start) - inflow[block]
+                # # due to earlier assert final end level should always fit and therefore be self.end_level
+                # parts_b[-1] = my_end - my_start - inflow[block[-1]]
+                # b[block] = parts_b
+                # # Minimum: empty
+                # parts_b_min = (
+                #     min_level[block] - my_start * np.ones(len_block) - inflow[block]
+                # )
+                # parts_b_min[-1] = my_end - my_start - inflow[block[-1]]
+                # b_min[block] = parts_b_min
+                # # join restrictions for in, out, full, empty
+                # b = np.hstack((b, b_min))
+                # A = sp.vstack((A, A))
+                # cType = "U" * n + "L" * n
 
-        # join restrictions for in, out, full, empty
-        b = np.hstack((b, b_min))
-        A = sp.vstack((A, A))
-        cType = "U" * n + "L" * n
-
-        if sep_needed:
-            A = sp.hstack((A * self.eff_in, A / self.eff_out))  # for in and out
+        # add fill level costs & bounds
+        u = np.hstack((u, fl_max))
+        l = np.hstack((l, fl_min))
+        c = np.hstack((c, cost_store))
 
         ### Ramp constraints
         # Max capacity change .. here in flow, not volume (MW, not MWh)!
@@ -707,6 +732,11 @@ class Storage(Asset):
             D = D[1:, :]
             if sep_needed:
                 D = sp.hstack((D, D))
+            myn, mym = A.shape
+            myn_d, mym_d = D.shape
+            D = sp.hstack(
+                (D, sp.lil_matrix((myn_d, mym - mym_d)))
+            )  # fill up for addt'l variables (fill level, pot. others)
         if self.ramp_up is not None:
             # cp: charge, ct: discharge
             if self.no_zero_transition_within_ramp:
@@ -773,7 +803,8 @@ class Storage(Asset):
                     cycle_quant = (
                         self.max_cycles_no * size[myI].mean()
                     )  # in case of time-dependent size use mean over cycle interval
-                    myA = sp.lil_matrix((1, 2 * n))
+                    myn, mym = A.shape
+                    myA = sp.lil_matrix((1, mym))
                     myA[0, self.timegrid.restricted.I[myI]] = (
                         -self.eff_in
                     )  # restriction only for disp_in - referring to effective storage size (disp_in is negative!)
@@ -805,6 +836,15 @@ class Storage(Asset):
             mapping["var_name"] = "disp"
         mapping["asset"] = self.name
         mapping["type"] = "d"
+        ## add mapping part for fill level
+        my_map = pd.DataFrame()
+        my_map["time_step"] = self.timegrid.restricted.I
+        my_map["node"] = np.nan
+        my_map["asset"] = self.name
+        my_map["type"] = "i"  # internal
+        my_map["var_name"] = "fill_level"
+        mapping = pd.concat([mapping, my_map])
+        mapping.reset_index(inplace=True, drop=True)
 
         ### in case of forcing no_simult_in_out - add binary variables and restrictions
         if (self.no_simult_in_out) and (
@@ -820,88 +860,91 @@ class Storage(Asset):
             map_bool["bool"] = True
             map_bool["var_name"] = "bool_1"
             mapping = pd.concat([mapping, map_bool])
-            mapping.reset_index(
-                inplace=True, drop=True
-            )  # need to reset index (which enumerates variables)
-            # extend costs
+            mapping.reset_index(inplace=True, drop=True)
+            # extend costs and bounds
             c = np.hstack((c, np.zeros(n)))
             l = np.hstack((l, np.zeros(n)))
             u = np.hstack((u, np.ones(n)))
             # extend A for binary variables (not relevant in exist. restrictions)
             # in:  (1-b)*min <= in  <= 0
             # out:        0  <= out <= (b) * max
-            myn = A.shape[0]  # current number of rows
+            myn, mym = A.shape  # current number of rows
             A = sp.hstack((A, sp.lil_matrix((myn, n))))
             # create extra restrictions
-            myA = sp.lil_matrix((n, 3 * n))
+            myA = sp.lil_matrix((n, mym + n))
             # "0" means mode "in"
             myA[0:n, 0:n] = sp.eye(n)
-            myA[0:n, 2 * n : 3 * n] = sp.diags(-cp, 0)
+            myA[0:n, mym : mym + n] = sp.diags(-cp, 0)
             A = sp.vstack((A, myA))
             b = np.hstack((b, -cp))
             cType += "L" * n
             # "1" means mode "out"
-            myA = sp.lil_matrix((n, 3 * n))
+            myA = sp.lil_matrix((n, mym + n))
             myA[0:n, n : 2 * n] = sp.eye(n)
-            myA[0:n, 2 * n : 3 * n] = sp.diags(-ct, 0)
+            myA[0:n, mym : mym + n] = sp.diags(-ct, 0)
             A = sp.vstack((A, myA))
             b = np.hstack((b, np.zeros(n)))
             cType += "U" * n
 
-        ### in case of max_store_duration - add binary variables and restrictions
-        if (
-            not self.max_store_duration is None
-        ):  # without sep_needed no need for forcing
-            if "bool" not in mapping:
-                mapping["bool"] = False
-            # n new binary variables ... indicating that fill level is not equal to zero
-            map_bool = pd.DataFrame()
-            map_bool["time_step"] = self.timegrid.restricted.I
-            map_bool["node"] = np.nan
-            map_bool["asset"] = self.name
-            map_bool["type"] = "i"  # internal
-            map_bool["bool"] = True
-            map_bool["var_name"] = "bool_2"
-            mapping = pd.concat([mapping, map_bool])
-            mapping.reset_index(
-                inplace=True, drop=True
-            )  # need to reset index (which enumerates variables)
-            # extend costs
-            c = np.hstack((c, np.zeros(n)))
-            l = np.hstack((l, np.zeros(n)))
-            u = np.hstack((u, np.ones(n)))
-            # extend A for binary variables (not relevant in exist. restrictions)
-            (n_exist, m) = A.shape
-            # (1) reformulate fill level restrictions and extend A with bool ("is filled") variables:
-            # replace 0 <= fill_level_i <= size with 0 <=fill_level_i <= new_bool_var_i * size for i = 0, ..., n - 2
-            # and replace end_level <= fill_level_i <= end_level with
-            # new_bool_var_i * end_level <= fill_level_i <= new_bool_var_i * end_level for the end timestep i = n-1
-            # n restrictions for max fill level
-            diag = -size
-            diag[n - 1] = -end_level[-1]
-            rest = sp.lil_matrix((n_exist - n, n))
-            rest[n - 1, n - 1] = -end_level[-1]
-            A = sp.hstack((A, sp.vstack((sp.diags(diag, 0), rest))))
-            b[0 : n - 1] = b[0 : n - 1] - size[0 : n - 1]
-            b[n - 1] = b[n - 1] - end_level[-1]
-            b[2 * n - 1] = b[2 * n - 1] - end_level[-1]
-            # (2) create extra restrictions for booleans ("1 --> fill level non zero") - one for each time step
-            # -->  all windows of size max_duration (md) plus one, sum of vars is <= md
-            for myi in range(0, n):
-                myI = (
-                    dt[myi:].cumsum() <= self.max_store_duration
-                )  # those fall into time window
-                if len(np.where(~myI)[0]) != 0:  # full interval left
-                    myI[np.where(~myI)[0][0]] = True
-                    myA = sp.lil_matrix((1, m + n))
-                    myA[0, np.where(myI)[0] + m + myi] = 1
-                    A = sp.vstack((A, myA))
-                    b = np.hstack((b, myA.sum() - 1))
-                    cType += "U"  # at most md elements may be one == fill level not md+1 times non-zero)
+            # ### in case of max_store_duration - add binary variables and restrictions
+            #### not needed in any case seen in a long time - deleted for simplification
+            # if (
+            #     not self.max_store_duration is None
+            # ):  # without sep_needed no need for forcing
+            #     if "bool" not in mapping:
+            #         mapping["bool"] = False
+            #     # n new binary variables ... indicating that fill level is not equal to zero
+            #     map_bool = pd.DataFrame()
+            #     map_bool["time_step"] = self.timegrid.restricted.I
+            #     map_bool["node"] = np.nan
+            #     map_bool["asset"] = self.name
+            #     map_bool["type"] = "i"  # internal
+            #     map_bool["bool"] = True
+            #     map_bool["var_name"] = "bool_2"
+            #     mapping = pd.concat([mapping, map_bool])
+            #     mapping.reset_index(
+            #         inplace=True, drop=True
+            #     )  # need to reset index (which enumerates variables)
+            #     # extend costs
+            #     c = np.hstack((c, np.zeros(n)))
+            #     l = np.hstack((l, np.zeros(n)))
+            #     u = np.hstack((u, np.ones(n)))
+            #     # extend A for binary variables (not relevant in exist. restrictions)
+            #     (n_exist, m) = A.shape
+            #     # (1) reformulate fill level restrictions and extend A with bool ("is filled") variables:
+            #     # replace 0 <= fill_level_i <= size with 0 <=fill_level_i <= new_bool_var_i * size for i = 0, ..., n - 2
+            #     # and replace end_level <= fill_level_i <= end_level with
+            #     # new_bool_var_i * end_level <= fill_level_i <= new_bool_var_i * end_level for the end timestep i = n-1
+            #     # n restrictions for max fill level
+            #     diag = -size
+            #     diag[n - 1] = -end_level[-1]
+            #     rest = sp.lil_matrix((n_exist - n, n))
+            #     rest[n - 1, n - 1] = -end_level[-1]
+            #     A = sp.hstack((A, sp.vstack((sp.diags(diag, 0), rest))))
+            #     b[0 : n - 1] = b[0 : n - 1] - size[0 : n - 1]
+            #     b[n - 1] = b[n - 1] - end_level[-1]
+            #     b[2 * n - 1] = b[2 * n - 1] - end_level[-1]
+            #     # (2) create extra restrictions for booleans ("1 --> fill level non zero") - one for each time step
+            #     # -->  all windows of size max_duration (md) plus one, sum of vars is <= md
+            #     for myi in range(0, n):
+            #         myI = (
+            #             dt[myi:].cumsum() <= self.max_store_duration
+            #         )  # those fall into time window
+            #         if len(np.where(~myI)[0]) != 0:  # full interval left
+            #             myI[np.where(~myI)[0][0]] = True
+            #             myA = sp.lil_matrix((1, m + n))
+            #             myA[0, np.where(myI)[0] + m + myi] = 1
+            #             A = sp.vstack((A, myA))
+            #             b = np.hstack((b, myA.sum() - 1))
+            #             cType += "U"  # at most md elements may be one == fill level not md+1 times non-zero)
         # if we're using a less granular asset timegrid, add dispatch for every minor grid point
         # Effectively we concat the mapping for each minor point (one row each)
         if hasattr(self.timegrid.restricted, "I_minor_in_major"):
             mapping = self.__extend_mapping_to_minor_grid__(mapping)
+
+        # switch to return costs only
+        if costs_only:
+            return c
 
         return OptimProblem(
             c=c,
@@ -931,61 +974,17 @@ class Storage(Asset):
         Returns:
             np.array: array with fill level per time step as per timegrid of asset
         """
-        if input_data is not None:
-            # data which is potentially time dependent
-            inflow = self.make_vector(
-                self.inflow, input_data, default_value=0.0, convert=True
-            )
-            inflow = np.cumsum(inflow)
-            start_level = self.make_vector(
-                self.start_level, input_data, default_value=0.0, convert=False
-            )[0]
-        else:
-            inflow = self.inflow
-            if inflow is None:
-                inflow = 0.0
-            assert isinstance(
-                inflow, (float, int)
-            ), "If no input_data is given, inflow must be given as float or None"
-            start_level = self.start_level
-            if start_level is None:
-                start_level = 0.0
-            assert isinstance(
-                start_level, (float, int)
-            ), "If no input_data is given, start_level must be given as float or None"
-            inflow = (
-                np.cumsum(inflow) * self.timegrid.restricted.dt
-            )  # in case of time dependent inflow, need to cumulate and adjust for time step size
-        ## deal with the case where tg.restricted != timegrid
-        if self.timegrid.restricted.T != self.timegrid.T:
-            # inflow defined only on tg.restricted. Extend, where inflow in wider tg is same as last value in tg.restricted
-            inf = pd.Series(index=self.timegrid.timepoints, data=0.0)
-            inf.loc[self.timegrid.restricted.timepoints] = inflow
-            # within in case asset freq is different
-            if hasattr(self.timegrid.restricted, "I_minor_in_major"):
-                for myi, myI in enumerate(self.timegrid.restricted.I_minor_in_major):
-                    inf.loc[self.timegrid.timepoints[myI]] = inflow[myi]
-            inflow = inf.values
-        ######### missing: mapping in optim problem
-        fill_level = np.zeros(self.timegrid.T)
-        # filter for right asset in case larger problem is given
-        my_mapping = optim_problem.mapping.loc[
+        v = "fill_level"
+
+        I = (
             (optim_problem.mapping["asset"] == self.name)
-            & (optim_problem.mapping["type"] == "d")
-        ].copy()
-        # drop duplicate index - since mapping may contain several rows per variable (indexes enumerate variables)
-        my_mapping = pd.DataFrame(
-            my_mapping[~my_mapping.index.duplicated(keep="first")]
+            & (optim_problem.mapping["type"] == "i")
+            & (optim_problem.mapping["var_name"] == v)
         )
-
+        my_mapping = optim_problem.mapping.loc[I, :]
         fill_level = np.zeros(self.timegrid.T)
-        for i, r in my_mapping.iterrows():
-            fill_level[r["time_step"]] += (
-                max(0, -results.x[i]) * self.eff_in
-                + min(0, -results.x[i]) / self.eff_out
-            )
+        fill_level[my_mapping["time_step"].values] = results.x[my_mapping.index]
 
-        fill_level = fill_level.cumsum() + start_level + inflow
         return fill_level
 
 
@@ -2090,7 +2089,8 @@ class ScaledAsset(Asset):
         fix_costs: float = 0.0,
     ):
         """Initialize scaled asset, which optimizes the scale of a given base asset
-            and fix costs associated with it
+            and fix costs associated with it.
+            Note that all restrictions are scaled along!
 
         Args:
             name (str): Name of the asset. Must be unique in a portfolio
@@ -2154,23 +2154,25 @@ class ScaledAsset(Asset):
 
         # scale variable: s
         # (1) scale base restrictions
-        #  Ax < b  --->  Ax - b*s/S < 0
+        #  Ax < b  ---> Ax - b*s/S < 0
+
+        #  only for dispatch variables!
+        Idisp = (op.mapping["type"] == "d").values
+        # For transport or some other assets there may be >1 entries for one variable. Take only first index
+        Idisp = op.mapping.index[(op.mapping["type"] == "d")].unique()
         if op.A is None:
-            op.A = sp.lil_matrix((0, 0))
+            n_vars = len(op.mapping.index.unique())
+            op.A = sp.lil_matrix((0, n_vars + 1))  # adding one for the scale
             op.b = np.zeros(0)
             op.cType = ""
         else:
-            op.A = sp.hstack(
-                (op.A, np.reshape(-op.b.copy(), (len(op.b), 1)) / self.norm_scale)
-            )
+            col = np.reshape(-op.b.copy(), (len(op.b), 1)) / self.norm_scale
+            op.A = sp.hstack((op.A, col))
             op.b = 0.0 * op.b
         # (2) add scaling restriction. All DISPATCH variables scaled down
         ###  difficulty here is the generic formulation, as there may be other internal variables
         ###  however, since we scale down the restriction (b's in Ax<b), there is no need
         ###  to scale down the l/u for the other variables
-        Idisp = (op.mapping["type"] == "d").values
-        # For transport or some other assets there may be >1 entries for one variable. Take only first index
-        Idisp = op.mapping.index[(op.mapping["type"] == "d")].unique()
         nD = len(Idisp)
         l = op.l.copy()  # retain old value
         u = op.u.copy()  # retain old value
@@ -2179,26 +2181,37 @@ class ScaledAsset(Asset):
         ### attention - at scale zero can be zero.
         op.l[Idisp] = np.minimum(0.0, op.l[Idisp]) * self.max_scale / self.norm_scale
         op.u[Idisp] = np.maximum(0.0, op.u[Idisp]) * self.max_scale / self.norm_scale
+        # scale = np.ones(mym)
+        ## add bounds * scale as restrictions
+        myn, mym = op.A.shape
+        # col = np.reshape(-u[Idisp], (nD, 1)) / self.norm_scale
+        myA = sp.lil_matrix((nD, mym))
+        myA[:, -1] = -u[Idisp] / self.norm_scale
+        myA[Idisp, Idisp] = 1.0  # "diagonal" affecting the resp. dispatch
+        op.A = sp.vstack((op.A, myA))
 
-        op.A = sp.vstack(
-            (
-                op.A,
-                sp.hstack(
-                    (sp.eye(nD), np.reshape(-u[Idisp], (nD, 1)) / self.norm_scale)
-                ),
-            )
-        )
+        # op.A = sp.vstack(
+        #     (
+        #         op.A,
+        #         sp.hstack((sp.eye(nD), col)),
+        #     )
+        # )
         op.b = np.hstack((op.b, np.zeros(nD)))
         op.cType += nD * "U"
 
-        op.A = sp.vstack(
-            (
-                op.A,
-                sp.hstack(
-                    (sp.eye(nD), np.reshape(-l[Idisp], (nD, 1)) / self.norm_scale)
-                ),
-            )
-        )
+        myA = sp.lil_matrix((nD, mym))
+        myA[:, -1] = -l[Idisp] / self.norm_scale
+        myA[Idisp, Idisp] = 1.0  # "diagonal" affecting the resp. dispatch
+        op.A = sp.vstack((op.A, myA))
+
+        # op.A = sp.vstack(
+        #     (
+        #         op.A,
+        #         sp.hstack(
+        #             (sp.eye(nD), np.reshape(-l[Idisp], (nD, 1)) / self.norm_scale)
+        #         ),
+        #     )
+        # )
         op.b = np.hstack((op.b, np.zeros(nD)))
         op.cType += nD * "L"
 
@@ -2218,7 +2231,6 @@ class ScaledAsset(Asset):
             self.name
         )  # in case scaled asset has a different name than the base asset
         op.mapping.loc[op.mapping.index.max() + 1] = mymap
-
         return op
 
 
@@ -2259,7 +2271,7 @@ class OrderBook(Asset):
         if isinstance(orders, pd.DataFrame):
             myorders = dict()
             for col in orders.columns:
-                myorders[col] = orders[col].values
+                myorders[col] = orders[col].to_list()
             orders = myorders
         if isinstance(orders, Dict):
             assert "start" in orders.keys(), '"start" dates must be given for orders'

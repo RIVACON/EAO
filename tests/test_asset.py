@@ -131,6 +131,32 @@ class StorageTest(unittest.TestCase):
         self.assertAlmostEqual(res.value, 10, 5)
         print(res)
 
+    def test_optim_try_out_new_formulation(self):
+        """Trying out new formulation with fill level"""
+        node = eao.assets.Node("testNode")
+        timegrid = eao.assets.Timegrid(
+            dt.date(2021, 1, 1), dt.date(2021, 1, 5), freq="d"
+        )
+        a = eao.assets.Storage(
+            "STORAGE",
+            node,
+            start=dt.date(2021, 1, 1),
+            end=dt.date(2021, 2, 1),
+            size=10,
+            cap_in=1,
+            cap_out=1,
+            start_level=0,
+            end_level=0,
+            price="price",
+        )
+        price = np.ones([timegrid.T])
+        price[:2] = 0  # load first hours!
+        prices = {"price": price}
+        op = a.setup_optim_problem(prices, timegrid=timegrid)
+        res = op.optimize()
+        self.assertAlmostEqual(res.value, 10, 5)
+        print(res)
+
     def test_optim_trivial_blocks(self):
         """Simple test where first ten times price is zero and afterwards price is one, zero costs"""
         #### case 1: with days (same block length)
@@ -278,7 +304,7 @@ class StorageTest(unittest.TestCase):
         op = a.setup_optim_problem(prices, timegrid=timegrid)
         res = op.optimize()
         self.assertAlmostEqual(res.value, 10 - 10 * 0.2, 5)
-        dispatch = res.x[:31] + res.x[31:]
+        dispatch = res.x[:31] + res.x[31:62]
         for x in dispatch:
             self.assertLessEqual(np.abs(x), 1.0)
 
@@ -309,7 +335,7 @@ class StorageTest(unittest.TestCase):
         op = a.setup_optim_problem(prices, timegrid=timegrid)
         res = op.optimize()
         T = timegrid.T
-        d = res.x[0:T] + res.x[T:]
+        d = res.x[0:T] + res.x[T : 2 * T]
         # result should be exactly the inflow
         self.assertAlmostEqual((d - 1).sum(), 0, 5)
 
@@ -770,7 +796,7 @@ class MultiCommodity(unittest.TestCase):
         heat_res = out["dispatch"]["heat_demand (heat)"].values
         self.assertAlmostEqual(heat_res.sum(), -287.6800669895399, 4)
         ## fill level 0 at 23:00? Should be end_level for each day
-        fl = out["internal_variables"]["heat_storage_fill_level"]
+        fl = out["internal_variables"]["heat_storage (fill_level)"]
         np.testing.assert_almost_equal(
             fl[fl.index.hour == 23].values, portf.assets[0].end_level, 3
         )

@@ -222,10 +222,12 @@ class AssetFrequency(unittest.TestCase):
             self.assertAlmostEqual(disp[weeks == t_week]["st"].sum(), 0.0, 4)
         # check var naming
         self.assertTrue(
-            len(op.mapping[op.mapping["asset"] == "lt"]["var_name"].unique()) == 1
+            len(op.mapping[op.mapping["asset"] == "lt"]["var_name"].unique())
+            == 2  # disp and fill_level
         )
         self.assertTrue(
-            len(op.mapping[op.mapping["asset"] == "st"]["var_name"].unique()) == 2
+            len(op.mapping[op.mapping["asset"] == "st"]["var_name"].unique())
+            == 3  # disp in, out and fill_level
         )  # costs generate more vars
         self.assertTrue(
             len(op.mapping[op.mapping["asset"] == "SC_1"]["var_name"].unique()) == 2
