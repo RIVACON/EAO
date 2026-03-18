@@ -304,7 +304,7 @@ battery usage from this 50% target fill level.</p>
 <span class="c1"># fill_level[fill_level&gt;0] *= efficiency</span>
 <span class="c1"># fill_level = fill_level.cumsum()+20</span>
 <span class="c1">### this is the automatic output</span>
-<span class="n">fill_level</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;internal_variables&#39;</span><span class="p">][</span><span class="s1">&#39;battery_fill_level&#39;</span><span class="p">]</span>
+<span class="n">fill_level</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;internal_variables&#39;</span><span class="p">][</span><span class="s1">&#39;battery (fill_level)&#39;</span><span class="p">]</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fill_level</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;battery fill level&#39;</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;fill level battery in MWh&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span> <span class="o">=</span> <span class="s1">&#39;upper left&#39;</span><span class="p">)</span>

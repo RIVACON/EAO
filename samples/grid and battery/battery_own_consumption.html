@@ -110,7 +110,7 @@
 <section id="Import-required-packages">
 <h2>Import required packages<a class="headerlink" href="#Import-required-packages" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
@@ -126,7 +126,7 @@
 <p>In this case we load a year of hourly power market data for Germany. Downloaded from smard.de (Bundesnetzagentur | SMARD.de); 01/11/2023 - 01/11/2024. We will use day ahead prices as well as PV production profiles. In addition we will use a standard load profile of German commercial consumers.</p>
 <p>We make some basic assumptions on grid fees for commercial consumers (actual example for 2025 in the medium voltage grid) and define the characteristics on site: yearly consumption, own PV and battery.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s1">&#39;DE_dataset.xlsx&#39;</span><span class="p">)</span>
@@ -149,7 +149,7 @@
 </div>
 <p>For the actual optimization we need to do some settings: Defining the time grid for optimization and defining which data to use in our assets.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">######## prepare everything</span>
@@ -171,7 +171,7 @@
 </div>
 <p>Now we define the structure of our optimization problem – our portfolio. The assets may be physical assets such as the battery or contracts such as supply via the grid.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">### Structural setup, distinguishing own assets and supply from the grid</span>
@@ -234,7 +234,7 @@
 </div>
 <p>This is how the portfolio looks like. See below. We could set it up in a simpler way (without distinction into in-front-of-the-meter and behind-the-meter). However, this way everything becomes very explicit in formulation as well as later analysis.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eao</span><span class="o">.</span><span class="n">network_graphs</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">portf</span><span class="p">)</span>
@@ -253,7 +253,7 @@
 <h2>Optimization<a class="headerlink" href="#Optimization" title="Link to this heading"></a></h2>
 <p>The actual optimization is very simple. We collect all assets in the portfolio object and go. “extract_output” will generate straight-forward tables that can also be exported to Excel. Note that we are optimizing a full year on an hourly basis including a battery. This takes ~1 min.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="o">=</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="o">=</span><span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">input_ts</span><span class="p">)</span>
@@ -275,7 +275,7 @@ value     -29973.552824
 </div>
 <p>Defining the benchmark to calculate the value of the battery: The same portfolio without the battery</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">portf_benchmark</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">supply</span><span class="p">,</span> <span class="n">consumption</span><span class="p">,</span> <span class="n">grid_feedin</span><span class="p">,</span> <span class="n">grid_consumption</span><span class="p">,</span> <span class="n">pv</span><span class="p">,</span> <span class="n">feedin</span><span class="p">])</span>
@@ -288,7 +288,7 @@ value     -29973.552824
 <h2>Interpretation of the results<a class="headerlink" href="#Interpretation-of-the-results" title="Link to this heading"></a></h2>
 <p>Let us analyze the overall costs with and without battery and look into the dispatch behaviour</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Overall costs with battery:    &#39;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="o">-</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;Values&#39;</span><span class="p">])))</span>
@@ -310,7 +310,7 @@ So the battery saved us:       19520
 <p>There is a significant saving. But where does the saving come from? Let us look into the details, starting with the overall quantities. See below. Note how quantities are always balanced at nodes. Transport always balances as well – transporting from one node to the other.</p>
 <p>Check out the output “out” in detail. It contains detailed dispatch, cash flows and internal variables such as battery fill levels.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Quantities (MWh) with battery:</span><span class="se">\n</span><span class="s1">.................................... </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;dispatch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())))</span>
@@ -351,7 +351,7 @@ dtype: float64
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Costs (EUR) with battery:</span><span class="se">\n</span><span class="s1">.................................... </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;DCF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())))</span>
@@ -400,7 +400,7 @@ Total:  -49494.0
 <p>Everything is optimized in a consistent manner in one go!</p>
 <p>The grid connection is a special case: Besides avoiding variable grid fees, we’re sizing the capacity over the course of the year, utilizing the battery to reduce peaks. Here the results. “Value” gives the required capacity:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Grid fixed costs (EUR) with battery:</span><span class="se">\n</span><span class="s1">.................................................. </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;special&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -429,7 +429,7 @@ Grid fixed costs (EUR) without battery:
 <h2>Another benchmark: Own PV<a class="headerlink" href="#Another-benchmark:-Own-PV" title="Link to this heading"></a></h2>
 <p>To make the picture more complete, let us add another step in the benchmark: to compute the value of the own PV (i.e. a portfolio without PV and battery as the overall starting point)</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">portf_start</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">portfolio</span><span class="o">.</span><span class="n">Portfolio</span><span class="p">([</span><span class="n">supply</span><span class="p">,</span> <span class="n">consumption</span><span class="p">,</span> <span class="n">grid_feedin</span><span class="p">,</span> <span class="n">grid_consumption</span><span class="p">,</span> <span class="n">feedin</span><span class="p">])</span>
@@ -442,7 +442,7 @@ Grid fixed costs (EUR) without battery:
 <h2>Putting everything together<a class="headerlink" href="#Putting-everything-together" title="Link to this heading"></a></h2>
 <p>Let us now put all the data together to analyze the effects of our PV and battery assets. Naturally, we could also do this in Excel, using the output generated by the optimization. This may feel more natural to many users.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## bookkeeping - looking at cost components in different scenarios. Attention - costs are negative numbers</span>
@@ -454,7 +454,7 @@ Grid fixed costs (EUR) without battery:
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## create a waterfall chart. Thanks for the great module provided by the waterfall_ax team! Very handy</span>
