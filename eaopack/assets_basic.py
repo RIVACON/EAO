@@ -348,7 +348,7 @@ class Storage(Asset):
         price: Union[None, str] = None,
         freq: Union[None, str] = None,
         max_cycles_no: Union[None, float] = None,
-        max_cycles_freq: str = "1d",
+        max_cycles_freq: str = "d",
         periodicity: Union[None, str] = None,
         periodicity_duration: Union[None, str] = None,
     ):
