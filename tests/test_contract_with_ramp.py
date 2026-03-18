@@ -501,8 +501,6 @@ class Test_Ramp_Fast_and_Slow(unittest.TestCase):
             portfB = eao.portfolio.Portfolio([cc, bb])
             outA = eao.optimize(portfA, timegrid, prices)
             outB = eao.optimize(portfB, timegrid, prices)
-            # flA = outA["internal_variables"]["bat_fill_level"].values
-            # flB = outB["internal_variables"]["bat_fill_level"].values
             dA = outA["dispatch"]["bat"].values
             dB = outB["dispatch"]["bat"].values
             diffA = abs(dA[1:] - dA[:-1])

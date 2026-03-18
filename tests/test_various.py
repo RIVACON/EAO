@@ -32,7 +32,6 @@ class various(unittest.TestCase):
                     "end_level": 50.0,
                     "freq": null,
                     "inflow": 0.0,
-                    "max_store_duration": null,
                     "name": "battery",
                     "no_simult_in_out": false,
                     "nodes": [
@@ -111,7 +110,7 @@ class various(unittest.TestCase):
         self.assertGreaterEqual(100, np.round(fill_level.max(), 3))
         self.assertAlmostEqual(abs(fill_level_check.values - fill_level).sum(), 0, 4)
         # get fill level from output and check
-        fl_out = out["internal_variables"].loc[:, "battery_fill_level"].values
+        fl_out = out["internal_variables"].loc[:, "battery (fill_level)"].values
         self.assertAlmostEqual(abs(fill_level - fl_out).sum(), 0, 4)
         self.assertAlmostEqual(res.value, 1137.69104689219, 3)  # reversion test
         self.assertAlmostEqual(
@@ -138,7 +137,6 @@ class various(unittest.TestCase):
                     "end_level": 50.0,
                     "freq": null,
                     "inflow": 0.0,
-                    "max_store_duration": null,
                     "name": "battery",
                     "no_simult_in_out": false,
                     "nodes": [
@@ -215,7 +213,7 @@ class various(unittest.TestCase):
         self.assertGreaterEqual(100, np.round(fill_level.max(), 3))
         self.assertAlmostEqual(abs(fill_level_check.values - fill_level).sum(), 0, 4)
         # get fill level from output and check
-        fl_out = out["internal_variables"].loc[:, "battery_fill_level"].values
+        fl_out = out["internal_variables"].loc[:, "battery (fill_level)"].values
         self.assertAlmostEqual(abs(fill_level - fl_out).sum(), 0, 4)
 
     def test_battery_efficiency_asset_only(self):
@@ -237,7 +235,6 @@ class various(unittest.TestCase):
                     "end_level": 50.0,
                     "freq": null,
                     "inflow": 0.0,
-                    "max_store_duration": null,
                     "name": "battery",
                     "no_simult_in_out": false,
                     "nodes": [
@@ -305,7 +302,7 @@ class various(unittest.TestCase):
         fill_level_asset = a.fill_level(op, res)
         # calculate fill level from dispatch
         d_in = -res.x[: tg.T]
-        d_out = -res.x[tg.T :]
+        d_out = -res.x[tg.T : 2 * tg.T]
         fill_level = eff * d_in + d_out
         fill_level = fill_level.cumsum() + 50
         self.assertGreaterEqual(fill_level.min(), 0)
@@ -387,7 +384,6 @@ class various(unittest.TestCase):
                     "end_level": 50.0,
                     "freq": null,
                     "inflow": 0.0,
-                    "max_store_duration": null,
                     "name": "battery",
                     "no_simult_in_out": false,
                     "nodes": [

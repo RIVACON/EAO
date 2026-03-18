@@ -43,30 +43,21 @@ class RenewableAsset(Asset):
             A renewable asset (PPA) produces (delivers) green power according to a given profile
             Fixed payments according to subsidy schemes or PPA terms are added
 
-        General asset parameters:
+        Args:
             name (str): Unique name of the asset
             node (Node): Node, the contract is located in
             start (dt.datetime) : start of asset being active. defaults to none
             end (dt.datetime)   : end of asset being active. defaults to none
             wacc (float): Weighted average cost of capital to discount cash flows in target
-            freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq)
-                                    The more granular frequency of portf & asset is used
-
-        Overall characteristics:
+            freq (str, optional):   Frequency for optimization - in case different from portfolio (defaults to None, using portfolio's freq). The more granular frequency of portf & asset is used
             profile (float, StartEndValueDict, str, optional): Production profile given e.g. by wind or PV availability. Defaults to 0.
-            controllable (bool, optional):                     Production can be regulated down to zero. Defaults to True
+            controllable (bool, optional): Production can be regulated down to zero. Defaults to True
             short_position (bool, optional): For PPAs - if True, capacity is negative (i.e. to be delivered). Defaults to False
-
-        Payment characteristics:
-            fixed_price (float, str, StartEndValueDict, optional): Subsidy or PPA fixed payment per volume, e.g. EUR/MWh. Defaults to 0.
-                                                                   Convention: cost for production: positive
-                                                                               payment/ subsidy: negative
+            fixed_price (float, str, StartEndValueDict, optional): Subsidy or PPA fixed payment per volume, e.g. EUR/MWh. Defaults to 0. Convention: cost for production: positive payment/ subsidy: negative
             market_price (float, str, StartEndValueDict, optional): Underlying market price for payment terms. Defaults to 0.
-            n_hour_rule_payment (int, optional):  Number of hours defining a minimum period length. If for this period market prices are below zero
-                                                  no fixed_price is paid. Defaults to None.
+            n_hour_rule_payment (int, optional):  Number of hours defining a minimum period length. If for this period market prices are below zero. No fixed_price is paid. Defaults to None.
             n_hour_rule_delivery (int, optional): Rule as for n_hour_rule_payment. Here: if applies no delivery (e.g. for PPAs). Defaults to None
-            cfd_type (bool, optional):            If True, (fixed_price + market_price) is paid. If False, fixed_price. Defaults to False
-                                                  Attention: convention is subsidy payment is negative (thus effectively difference to marpet price)
+            cfd_type (bool, optional):If True, (fixed_price + market_price) is paid. If False, fixed_price. Defaults to False. Attention: convention is subsidy payment is negative (thus effectively difference to marpet price)
         """
 
         assert profile is not None, "RenewableAsset argument profile cannot be None."
