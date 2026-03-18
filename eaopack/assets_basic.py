@@ -348,7 +348,7 @@ class Storage(Asset):
         price: Union[None, str] = None,
         freq: Union[None, str] = None,
         max_cycles_no: Union[None, float] = None,
-        max_cycles_freq: str = "d",
+        max_cycles_freq: str = "1d",
         periodicity: Union[None, str] = None,
         periodicity_duration: Union[None, str] = None,
     ):
@@ -601,7 +601,6 @@ class Storage(Asset):
             )
             * discount
         )
-
         # costs in and out
         if sep_needed:
             u = np.hstack((np.zeros(n, float), ct))
@@ -624,15 +623,6 @@ class Storage(Asset):
         ####### new variable: fill level (cum sum of dispatch)
         ## treatment eff_in: only eff_in reaches storage
         ## treatment of eff_out: discharge dispatch up to cap_out -- but storage is drained cap_out/eff_out
-        ### old: formulation with cumsum on x directly
-        # if self.block_size is None:
-        # A = -sp.tril(np.ones((n, 2*n), float))
-        # # Maximum: max volume not exceeded
-        # b = (max_level - start_level[0]) - inflow
-        # b[-1] = end_level[-1] - start_level[0] - inflow[-1]
-        # # Minimum: empty
-        # b_min = min_level - start_level[0] * np.ones(n, float) - inflow
-        # b_min[-1] = end_level[-1] - start_level[0] - inflow[-1]
         ### new: formulation with fill level
         # (1) fill level constraints s_0           - x_0   =  start + inflow_0
         #                            s_t - s_(t-1) - x_t   =  0     + inflow_t
@@ -648,24 +638,18 @@ class Storage(Asset):
                     sp.eye(n) - sp.eye(n, k=-1),
                 )
             )
-        b = np.zeros(n)
-        b[0] = start_level[0]
-        b += inflow
+        b = inflow
+        b[0] += start_level[0]
         cType = "S" * n  # equal constraints
         # (2) fill level within min and max level
         #     min_level_t <= s_t <= max_level_t
-        fl_max = max_level  # potentially adjusted for block-wise optimization
-        fl_min = min_level
+        fl_max = max_level.copy()  # potentially adjusted for block-wise optimization
+        fl_min = min_level.copy()
         # adjust for end_level
         fl_min[-1] = end_level[-1]
         fl_max[-1] = end_level[-1]
 
         if self.block_size is not None:  ## block_wise optimization
-            # A = sp.lil_matrix((n, n))
-            # b = np.empty(n)
-            # b.fill(np.nan)
-            # b_min = np.empty(n)
-            # b_min.fill(np.nan)
             ### identify blocks in time grid
             ind_blocks = pd.date_range(
                 start=self.timegrid.restricted.start,
@@ -698,21 +682,6 @@ class Storage(Asset):
                 ## adjust bounds for fill level
                 fl_max[block[-1]] = my_end
                 fl_min[block[-1]] = my_end
-                # # Maximum: max volume not exceeded
-                # parts_b = (max_level[block] - my_start) - inflow[block]
-                # # due to earlier assert final end level should always fit and therefore be self.end_level
-                # parts_b[-1] = my_end - my_start - inflow[block[-1]]
-                # b[block] = parts_b
-                # # Minimum: empty
-                # parts_b_min = (
-                #     min_level[block] - my_start * np.ones(len_block) - inflow[block]
-                # )
-                # parts_b_min[-1] = my_end - my_start - inflow[block[-1]]
-                # b_min[block] = parts_b_min
-                # # join restrictions for in, out, full, empty
-                # b = np.hstack((b, b_min))
-                # A = sp.vstack((A, A))
-                # cType = "U" * n + "L" * n
 
         # add fill level costs & bounds
         u = np.hstack((u, fl_max))
@@ -959,12 +928,7 @@ class Storage(Asset):
             timegrid=self.timegrid,
         )
 
-    def fill_level(
-        self,
-        optim_problem: OptimProblem,
-        results: Results,
-        input_data: Union[dict, pd.DataFrame, None] = None,
-    ) -> np.array:
+    def fill_level(self, optim_problem: OptimProblem, results: Results) -> np.array:
         """Calculate fill level of the storage incl. efficiencies etc
 
         Args:

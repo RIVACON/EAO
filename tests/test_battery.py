@@ -117,10 +117,10 @@ class BatteryTest(unittest.TestCase):
 
         ######################### settings
         battery_data = {}  # capacity, size and efficiency of an on-site battery
-        battery_data["cap"] = 1  # MW
-        battery_data["size"] = 2 * battery_data["cap"]  # 2 hours
-        battery_data["eff_in"] = 0.8
-        battery_data["eff_out"] = 0.9
+        battery_data["cap"] = 1.0  # MW
+        battery_data["size"] = 2.0 * battery_data["cap"]  # 2 hours
+        battery_data["eff_in"] = 0.9
+        battery_data["eff_out"] = 0.8
         battery_data["max_roundtrip"] = 2.2
         battery_data["max_roundtrip_freq"] = "d"
         battery_data["simult_in_out"] = True
@@ -143,19 +143,20 @@ class BatteryTest(unittest.TestCase):
         )
 
         buy = eao.assets.SimpleContract(
-            name="buy", nodes=node_power, price="buy", min_cap=0, max_cap=1000
+            name="buy", nodes=node_power, price="buy", min_cap=0, max_cap=1000.0
         )
         buy_max_take = eao.assets.Contract(
             name="buy",
             nodes=node_power,
             price="buy",
-            min_cap=0,
-            max_cap=1000,
+            min_cap=0.0,
+            max_cap=1000.0,
             max_take=max_take,
         )
         sell = eao.assets.SimpleContract(
-            name="sell", nodes=node_power, price="sell", min_cap=-1000, max_cap=0
+            name="sell", nodes=node_power, price="sell", min_cap=-1000.0, max_cap=0.0
         )
+
         ### Our battery
         battery = eao.assets.Storage(
             name="battery",
@@ -167,7 +168,7 @@ class BatteryTest(unittest.TestCase):
             start_level=0.5 * battery_data["size"] * battery_data["eff_out"],
             end_level=0.5 * battery_data["size"] * battery_data["eff_out"],
             no_simult_in_out=battery_data["simult_in_out"],
-            block_size="2d",
+            block_size="1d",
         )
 
         battery_new = eao.assets.Storage(
@@ -183,22 +184,16 @@ class BatteryTest(unittest.TestCase):
             max_cycles_no=battery_data["max_roundtrip"],
             max_cycles_freq=battery_data["max_roundtrip_freq"],
             no_simult_in_out=battery_data["simult_in_out"],
-            block_size="2d",
+            block_size="1d",
         )
 
         portf = eao.portfolio.Portfolio([battery, buy_max_take, sell])
         portf_new = eao.portfolio.Portfolio([battery_new, buy, sell])
 
-        out = eao.optimize(portf=portf, timegrid=timegrid, data=prices, solver="SCIP")
-        new = eao.optimize(
-            portf=portf_new, timegrid=timegrid, data=prices, solver="SCIP"
-        )
-        self.assertAlmostEqual(
-            out["summary"].loc["value", "Values"],
-            new["summary"].loc["value", "Values"],
-            4,
-        )
-
+        out = eao.optimize(portf=portf, timegrid=timegrid, data=prices)
+        new = eao.optimize(portf=portf_new, timegrid=timegrid, data=prices)
+        eao.io.output_to_file(out, "x_v1.xlsx")
+        eao.io.output_to_file(new, "x_v2.xlsx")
         myrange = pd.date_range(
             start=timegrid.start,
             end=timegrid.end + pd.Timedelta("1d"),
@@ -217,12 +212,20 @@ class BatteryTest(unittest.TestCase):
             if any(myI):
                 mysum = out["internal_variables"].loc[myI, "battery_charge"].sum()
                 self.assertGreater(mymax + 1e-3, mysum)
+                # self.assertAlmostEqual(mymax, mysum, 3)
                 mysum = new["internal_variables"].loc[myI, "battery_charge"].sum()
                 self.assertGreater(mymax + 1e-3, mysum)
+                # self.assertAlmostEqual(mymax, mysum, 3)
 
         self.assertGreater(
             battery_data["size"] + 1e-3,
             out["internal_variables"].loc[:, "battery_charge"].max(),
+        )
+
+        self.assertAlmostEqual(
+            out["summary"].loc["value", "Values"],
+            new["summary"].loc["value", "Values"],
+            4,
         )
 
     def test_blocks_split(self):
@@ -448,6 +451,7 @@ class BatteryTest(unittest.TestCase):
         data = pd.read_pickle(join(test_data_path, "battery_test_data.pkl"))
         # check index is correct
         out = eao.optimize(portf=portf, timegrid=tg, data=data, split_interval_size="d")
+        # eao.io.output_to_file(out, "xxx_out.xlsx")
         self.assertEqual(tg.start, out["dispatch"].index[0])
         self.assertTrue(all(tg.timepoints == out["dispatch"].index))
 
@@ -1006,7 +1010,7 @@ class TestBatteryWithMinLevel(unittest.TestCase):
         ### block-wise optimization: expect end level at end of each block (day)
         op = a.setup_optim_problem(data, timegrid=timegrid)
         res = op.optimize(solver="SCIP")
-        fl = a.fill_level(op, res, input_data=data)
+        fl = a.fill_level(op, res)
         # blocks: each end of day reach end level
         ### we have adjusted the end level for blocks to lie within min/max range of level
         # here, the max level was the limit
