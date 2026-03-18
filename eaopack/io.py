@@ -11,6 +11,7 @@ from eaopack.optimization import Results, OptimProblem
 from eaopack import serialization
 from eaopack.assets import Storage
 from eaopack.basic_classes import Timegrid, StartEndValueDict
+from copy import deepcopy
 
 
 def extract_output(
@@ -124,10 +125,6 @@ def extract_output(
                     internal_variables.loc[times[r.time_step], myCol] += (
                         min(0, -res.x[i]) * r.disp_factor
                     )
-                ### extract ... fill level
-                myCol = a.name + "_fill_level"
-                internal_variables[myCol] = 0.0
-                internal_variables.loc[:, myCol] = a.fill_level(op, res, prices)
         # extract duals from nodal restrictions
         # looping through nodes and their recorded nodal restrictions and extract dual
         if not res.duals is None and not res.duals["N"] is None:
@@ -214,20 +211,21 @@ def output_to_file(output, file_name: str, csv_ger: bool = False):
         file_name (str):      Target file name incl. extension (e.g. .xlsx, .csv)
         csv_ger (bool):       For csv files: English (False) or German (True) csv format. Defaults to False.
     """
-    for myk in output:
-        if not isinstance(output[myk], pd.DataFrame):
-            if output[myk] is None:
-                output[myk] = pd.DataFrame()
-            elif isinstance(output[myk], dict):
-                output[myk] = pd.DataFrame.from_dict(output[myk], orient="index")
+    out = deepcopy(output)  # do not alter output (e.g. removing tz)
+    for myk in out:
+        if not isinstance(out[myk], pd.DataFrame):
+            if out[myk] is None:
+                out[myk] = pd.DataFrame()
+            elif isinstance(out[myk], dict):
+                out[myk] = pd.DataFrame.from_dict(out[myk], orient="index")
     file_extension = Path(file_name).suffix.lower()
     if file_extension in (".xlsx", ".xls"):
         writer = pd.ExcelWriter(file_name)
-        for myk in output:
-            if isinstance(output[myk].index, pd.DatetimeIndex):
-                if not output[myk].index.tzinfo is None:
-                    output[myk].index = output[myk].index.tz_localize(None)
-            output[myk].to_excel(writer, sheet_name=myk)
+        for myk in out:
+            if isinstance(out[myk].index, pd.DatetimeIndex):
+                if not out[myk].index.tzinfo is None:
+                    out[myk].index = out[myk].index.tz_localize(None)
+            out[myk].to_excel(writer, sheet_name=myk)
         writer.close()
     elif file_extension == ".csv":
         # output filename without extension:
@@ -238,8 +236,8 @@ def output_to_file(output, file_name: str, csv_ger: bool = False):
         else:
             sep = ";"
             decimal = ","
-        for myk in output:
-            output[myk].to_csv(
+        for myk in out:
+            out[myk].to_csv(
                 out_file_name + "_" + myk + file_extension, sep=sep, decimal=decimal
             )
     else:
