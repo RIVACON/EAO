@@ -1,0 +1,15 @@
+{
+    "__class__": "Timegrid",
+    "end": {
+        "__class__": "datetime",
+        "__tz__": "Europe/Berlin",
+        "__value__": "2026-03-01 23:00:00"
+    },
+    "freq": "15min",
+    "main_time_unit": "h",
+    "start": {
+        "__class__": "datetime",
+        "__tz__": "Europe/Berlin",
+        "__value__": "2026-03-01 02:15:00"
+    }
+}
