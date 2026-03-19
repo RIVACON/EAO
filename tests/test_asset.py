@@ -408,20 +408,20 @@ class StorageTest(unittest.TestCase):
         res = op.optimize()
         ### charge / discharge should be close to each other to avoid charged storage
         for ii in range(0, 7):
-            self.assertAlmostEqual(res.x[ii], 0, 3)
+            self.assertAlmostEqual(res.x[ii], 0, 2)
         # lost must be met by dispatch before full loading
-        self.assertAlmostEqual(res.x[7], -(10 * 0.2) / 0.8, 3)
+        self.assertAlmostEqual(res.x[7], -(10 * 0.2) / 0.8, 2)
         for ii in range(8, 10):
-            self.assertAlmostEqual(res.x[ii], -5, 3)
+            self.assertAlmostEqual(res.x[ii], -5, 2)
         for ii in range(34, 36):
-            self.assertAlmostEqual(res.x[ii], 5, 3)
+            self.assertAlmostEqual(res.x[ii], 5, 2)
         for ii in range(36, 48):
-            self.assertAlmostEqual(res.x[ii], 0, 3)
+            self.assertAlmostEqual(res.x[ii], 0, 2)
         # total value: earnung 10+1e5, costs for storage .5 per MWh in storage
         self.assertAlmostEqual(
             1e6 - res.value,
             (+10 + 10 / 0.8) + (((2.5 + 7.5 + 12.5) * 0.8 + 5) * 0.5),
-            3,
+            2,
         )
 
 

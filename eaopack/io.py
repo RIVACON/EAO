@@ -365,6 +365,7 @@ def optimize(
     split_interval_size: Union[str, None] = None,
     solver: Union[str, None] = None,
     make_soft_problem: bool = False,
+    n_threads: Union[int, None] = None,
 ) -> Dict:
     """Optimization shortcut: Cast data into timegrid, do the optimization and extract the results in one go
 
@@ -379,6 +380,8 @@ def optimize(
         solver (str, optional): Solver to be used. Defaults to None (uses default solver)
                                 Note: CVXPY is used as interface to solvers. See details on solvers here:  https://www.cvxpy.org/tutorial/solvers/index.html
         make_soft_problem (bool, optional): Make a soft problem (relax booleans in MIP to create LP) --> speedup. Defaults to False.
+        n_threads (int, None, optional): Number of threads to be used by solver. Defaults to None (parameter not set, use standard)
+
 
     Returns: Output dictionary with keys (if optimization feasible):
                - summary
@@ -401,6 +404,8 @@ def optimize(
         op = portf.setup_split_optim_problem(
             prices=my_data, timegrid=timegrid, interval_size=split_interval_size
         )
-    res = op.optimize(solver=solver, make_soft_problem=make_soft_problem)
+    res = op.optimize(
+        solver=solver, make_soft_problem=make_soft_problem, n_threads=n_threads
+    )
     out = extract_output(portf, op, res, my_data)
     return out

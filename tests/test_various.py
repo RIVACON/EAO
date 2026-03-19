@@ -461,6 +461,19 @@ class various(unittest.TestCase):
             out["dispatch"].abs().sum().sum(), out2["dispatch"].abs().sum().sum(), 2
         )
 
+    def test_specific_order_book(self):
+        """Regression Test on order book sample"""
+        ob_path = join(mypath, "data", "ob")
+        data = pd.read_csv(join(ob_path, "data.csv"))
+        portf = eao.serialization.from_json(file_name=join(ob_path, "pf.json"))
+        tg = eao.serialization.from_json(file_name=join(ob_path, "tg.json"))
+        out = eao.optimize(
+            portf,
+            timegrid=tg,
+            data=data,
+        )
+        self.assertAlmostEqual(out["summary"].loc["value", "Values"], 126.859, 2)
+
 
 ###########################################################################################################
 ###########################################################################################################
