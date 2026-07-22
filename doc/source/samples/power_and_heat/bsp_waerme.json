@@ -4,7 +4,7 @@
         {
             "__class__": "Asset",
             "asset_type": "Storage",
-            "block_size": "d",
+            "block_size": "D",
             "cap_in": 0.5,
             "cap_out": 0.5,
             "cost_in": 0.0,

@@ -235,7 +235,6 @@ class LinkedAsset(StructuredAsset):
             else:
                 condition = condition & (op.mapping["node"].isnull())
             I1_t = op.mapping.index[condition]
-            assert I1_t[0].size == 1
             for i in np.arange(-time_back, time_forward + 1):
                 if i + t < -asset2_time_already_running:
                     # asset2 has not been running long enough, so variable1 of asset1 has to be 0

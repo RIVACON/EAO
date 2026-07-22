@@ -12,6 +12,7 @@ from eaopack.basic_classes import (
     Node,
     StartEndValueDict,
     convert_time_unit,
+    _mapping_create_empty
 )
 from eaopack.optimization import OptimProblem
 from eaopack.optimization import Results
@@ -204,32 +205,17 @@ class Asset:
                 raise ValueError("Timegrid is not specified.")
         if old_freq is None:
             old_freq = timegrid.main_time_unit
-        time_value_converted = convert_time_unit(
-            time_value, old_freq=old_freq, new_freq=timegrid.freq
-        )
+        time_value_converted = convert_time_unit(time_value, old_freq=old_freq, new_freq=timegrid.freq)
         if round:
             if not time_value_converted.is_integer():
-                print(
-                    "Warning for asset ",
-                    self.name,
-                    ": ",
-                    attribute_name,
-                    " is ",
-                    time_value,
-                    " in freq '",
-                    old_freq,
-                    "' which corresponds to ",
-                    time_value_converted,
-                    " in freq '",
-                    timegrid.freq,
-                    "'. ",
-                    "This is not an integer and will therefore be rounded to ",
+                print( "Warning for asset ",self.name,": ",
+                    attribute_name," is ",
+                    time_value," in freq '",
+                    old_freq,"' which corresponds to ",
+                    time_value_converted," in freq '",
+                    timegrid.freq, "'. ","This is not an integer and will therefore be rounded to ",
                     np.ceil(time_value_converted),
-                    " in freq '",
-                    timegrid.freq,
-                    "'.",
-                    sep="",
-                )
+                    " in freq '",timegrid.freq,"'.",sep=""  )
                 time_value_converted = np.ceil(time_value_converted)
             time_value_converted = int(time_value_converted)
         return time_value_converted
@@ -1293,8 +1279,9 @@ class Transport(Asset):
         efficiency = self.make_vector(
             self.efficiency, prices, default_value=1.0, convert=False
         )
-
-        mapping = pd.DataFrame()  ## mapping of variables for use in portfolio
+        mapping = _mapping_create_empty()
+        ### changed to directly creating mapping with all columns and dtypes
+        # mapping = pd.DataFrame()  ## mapping of variables for use in portfolio
         c = costs  #  + self.costs_const
         if ((all(max_cap <= 0.0)) or (all(min_cap >= 0.0))) or (all(c == 0)):
             # in this case  one variable per time step and node needed
@@ -1325,12 +1312,12 @@ class Transport(Asset):
             # one variable per time step, two rows in mapping (node 1 and node 2)
             mapping["time_step"] = np.hstack((I, I))
             # first set belongs to node 1, second to node 2
-            mapping["node"] = np.vstack(
+            mapping["node"] = np.concatenate(
                 (
                     np.tile(self.nodes[0].name, (T, 1)),
                     np.tile(self.nodes[1].name, (T, 1)),
                 )
-            )
+            ).ravel().astype("str")
             # specific column that implements the efficiency  x (node 1) ---> eff.x (node 2)
             mapping["disp_factor"] = np.hstack((-np.ones(T), efficiency))
             mapping["var_name"] = "disp"  # name variables for use e.g. in RI

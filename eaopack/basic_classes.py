@@ -362,20 +362,56 @@ class Timegrid:
             grid[I] = v
         return grid
 
+from pandas.tseries.offsets import Day
+
+def _freq_to_timedelta(freq):
+    """ helper function to cope with 'D' (day) frequency, 
+    which is not a fixed duration but we want to assume 24 hours for conversion purposes. """
+    
+    offset = pd.tseries.frequencies.to_offset(freq)
+    if isinstance(offset, Day):
+        return pd.to_timedelta(f"{24 * offset.n}h")
+    return pd.to_timedelta(offset)  # let ValueError propagate for non-fixed-duration offsets
 
 def convert_time_unit(value: float, old_freq: str, new_freq: str) -> float:
     """
     Convert time value from old_freq to new_freq
     Args:
         value (float): the time value to convert
-        old_freq: pandas frequency string, e.g. 'd', 'h', 'min', '15min', '1d1h'
-        new_freq: pandas frequency string, e.g. 'd', 'h', 'min', '15min', '1d1h'
+        old_freq: pandas frequency string, e.g. 'D', 'h', 'min', '15min', '1d1h'
+        new_freq: pandas frequency string, e.g. 'D', 'h', 'min', '15min', '1d1h'
+        
+        Interpretation: "D" - day cannot be converted strictly (pandas 3.0), since there may be summer/winter time. Therefore, 
+        the conversion is done by using the average length of a day (24 hours).
 
     Returns:
         the time value converted from old_freq to new_freq
     """
     return (
         value
-        * pd.to_timedelta(pd.tseries.frequencies.to_offset(old_freq))
-        / pd.to_timedelta(pd.tseries.frequencies.to_offset(new_freq))
+        * _freq_to_timedelta(pd.tseries.frequencies.to_offset(old_freq))
+        / _freq_to_timedelta(pd.tseries.frequencies.to_offset(new_freq))
     )
+
+def _mapping_create_empty() -> pd.DataFrame:
+    """ Create an empty mapping dataframe with the required columns for asset mapping.
+        Columns:
+            time_step        int64
+            node               str
+            disp_factor    float64
+            var_name           str
+            asset              str
+            type               str
+    Returns: empty mapping dataframe """
+    df = pd.DataFrame(
+        {
+            "time_step": pd.Series(dtype="int64"),
+            "node": pd.Series(dtype="str"),
+            "disp_factor": pd.Series(dtype="float64"),
+            "var_name": pd.Series(dtype="string"),
+            "asset": pd.Series(dtype="string"),
+            "type": pd.Series(dtype="string"),
+            "bool": pd.Series(dtype="bool"),
+        }
+    )
+    return df
