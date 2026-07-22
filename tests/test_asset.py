@@ -1067,7 +1067,7 @@ class TestOrderOrderBooks(unittest.TestCase):
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
         res = op.optimize()
         out = eao.io.extract_output(portf=portf, op=op, res=res)
-        self.assertAlmostEqual(out["dispatch"].sum()[1], 4.4 * 24 * 8 - 2.2 * 3 * 24, 3)
+        self.assertAlmostEqual(out["dispatch"].sum().iloc[1], 4.4 * 24 * 8 - 2.2 * 3 * 24, 3)
         self.assertAlmostEqual(res.value, 1161.6, 3)
 
     def test_order_serialize(self):

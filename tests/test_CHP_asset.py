@@ -912,7 +912,7 @@ class CHPAssetTest(unittest.TestCase):
         res = op.optimize()
         out = eao.io.extract_output(portf, op, res, prices)
         # need to start power an hour before heat
-        self.assertAlmostEqual(out["dispatch"]["CHP (node_power)"][9], 10, 4)
+        self.assertAlmostEqual(out["dispatch"]["CHP (node_power)"].iloc[9], 10, 4)
 
     def test_start_and_shutdown_ramp_heat_2(self):
         """Testing heat start ramp"""

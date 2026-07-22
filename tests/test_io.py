@@ -1,5 +1,4 @@
 import numpy as np
-from numpy.core.shape_base import block
 import pandas as pd
 import datetime as dt
 import json
@@ -86,7 +85,6 @@ class IOTests(unittest.TestCase):
         )
 
         assert check
-        return check
 
     def test_serialize_portfolio(self):
         """Unit test serialize portfolio"""
@@ -192,7 +190,7 @@ class IOTests(unittest.TestCase):
         for pr in prices:
             check = check and all(prices[pr] == pp[pr])
 
-        return check
+        assert check
 
     def test_create_network(self):
         """simple test to create network graph"""
@@ -200,7 +198,6 @@ class IOTests(unittest.TestCase):
         portf = from_json(file_name=myf)
         graphf = os.path.join(output_data_path, "test_graph.pdf")
         create_graph(portf=portf, file_name=graphf)
-        return True
 
     def test_create_network_output_no_image(self):
         """simple test to create network graph"""
@@ -208,7 +205,6 @@ class IOTests(unittest.TestCase):
         portf = from_json(file_name=myf)
         res = create_graph(portf=portf, no_image_output=True)
         assert res["nodes"][0]["id"] == "location A"
-        return True
 
     def test_dates_serialize(self):
         """test how to ensure correct serialization of dates in arrays"""

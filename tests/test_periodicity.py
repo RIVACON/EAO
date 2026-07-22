@@ -40,7 +40,7 @@ class PeriodicityTests(unittest.TestCase):
         # all hours equal
         d = d[(d.index>=pd.Timestamp(dt.date(2021,1,3)))&(d.index<pd.Timestamp(dt.date(2021,1,25)))]
         for h in range(0,24):
-            assert all(d.loc[d.index.hour == h, 'SC'] == d.loc[d.index.hour == h, 'SC'][0])
+            assert all(d.loc[d.index.hour == h, 'SC'] == d.loc[d.index.hour == h, 'SC'].iloc[0])
 
     def test_periodic_contract_max_capa(self):
         node = eao.assets.Node('testNode')
@@ -145,7 +145,7 @@ class PeriodicityTests(unittest.TestCase):
         # all hours equal
         d = d[(d.index>=pd.Timestamp(dt.date(2021,1,3)))&(d.index<pd.Timestamp(dt.date(2021,1,25)))]
         for h in range(0,24):
-            self.assertAlmostEqual(abs(d.loc[d.index.hour == h, 'SC (n1)'] - d.loc[d.index.hour == h, 'SC (n1)'][0]).sum(), 0, 4)
+            self.assertAlmostEqual(abs(d.loc[d.index.hour == h, 'SC (n1)'] - d.loc[d.index.hour == h, 'SC (n1)'].iloc[0]).sum(), 0, 4)
 
     def test_period_storage(self):
         """ Periodization. Unit test. Setting up a simple contract with random prices 
@@ -166,7 +166,7 @@ class PeriodicityTests(unittest.TestCase):
         d = out['dispatch']
         for ii in range(0,4):
             dd = timegrid.timepoints[ii::4]
-            self.assertAlmostEqual(abs(d.loc[dd, 'st'] - d.loc[dd, 'st'][0]).sum(), 0, 4)
+            self.assertAlmostEqual(abs(d.loc[dd, 'st'] - d.loc[dd, 'st'].iloc[0]).sum(), 0, 4)
 
 
 ###########################################################################################################

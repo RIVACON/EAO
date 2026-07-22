@@ -3,7 +3,6 @@ import datetime as dt
 import numpy as np
 import pandas as pd
 
-
 class StartEndValueDict(TypedDict):
     """New type to contain info of the type start, end, value
     dict with
@@ -236,7 +235,7 @@ class Timegrid:
             if pd.api.types.is_any_real_numeric_dtype(prices.index):
                 prices.index = self.timepoints
             else:
-                prices.index = pd.to_datetime(prices.index)
+                prices.index = pd.to_datetime(prices.index, format = "mixed")
         # check: time grid covered by data?
         if prices.index[0] > self.timepoints[0]:
             raise ValueError(

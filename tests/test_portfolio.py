@@ -68,7 +68,7 @@ class PortfolioTests(unittest.TestCase):
         res = op.optimize()
 
         check = True  # simple run-through test
-        return check
+        assert check
 
     def test_portfolio_with_transport(self):
         """Unit test. Setting up a simple portfolio to check restrictions on nodes and
@@ -140,7 +140,6 @@ class PortfolioTests(unittest.TestCase):
             + out["dispatch"]["SC_2 (node_1)"]
         ).sum()
         self.assertAlmostEqual(check, 0.0, 5)
-        return
 
     def test_various_vars_in_mapping(self):
         """testing more efficient approach where more than one row in mapping
