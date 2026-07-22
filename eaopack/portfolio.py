@@ -143,7 +143,8 @@ class Portfolio:
         if "disp_factor" not in mapping.columns:
             mapping["disp_factor"] = 1.0
         # mapping['disp_factor'].fillna(1., inplace = True)   ### deprecated in pandas
-        mapping["disp_factor"] = mapping["disp_factor"].fillna(1.0)
+        # mapping["disp_factor"] = mapping["disp_factor"].fillna(1.0)
+        mapping["disp_factor"] = mapping["disp_factor"].astype(float).fillna(1.0)
         # mapping['nodal_restr'] = None
 
         def create_nodal_restr(

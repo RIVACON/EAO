@@ -192,8 +192,8 @@ class BatteryTest(unittest.TestCase):
 
         out = eao.optimize(portf=portf, timegrid=timegrid, data=prices)
         new = eao.optimize(portf=portf_new, timegrid=timegrid, data=prices)
-        eao.io.output_to_file(out, "x_v1.xlsx")
-        eao.io.output_to_file(new, "x_v2.xlsx")
+        eao.io.output_to_file(out, "test_result_x_v1.xlsx")
+        eao.io.output_to_file(new, "test_result_x_v2.xlsx")
         myrange = pd.date_range(
             start=timegrid.start,
             end=timegrid.end + pd.Timedelta("1d"),
