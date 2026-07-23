@@ -284,7 +284,7 @@ class Portfolio:
         self,
         prices: Union[dict, None] = None,
         timegrid: Union[None, Timegrid] = None,
-        interval_size: str = "d",
+        interval_size: str = "D",
         skip_nodes: list = [],
         fix_time_window: Union[None, Dict] = None,
     ):
@@ -295,7 +295,7 @@ class Portfolio:
             prices (dict): Dictionary of price arrays needed by assets in portfolio. Defaults to None
             timegrid (Timegrid, optional): Discretization grid for portfolio and all assets within.
                                            Defaults to None, in which case it must have been set previously
-            interval_size (bool): Interval size according to pandas notation ('15min', 'h', 'd', ...). Defaults to 'd'
+            interval_size (bool): Interval size according to pandas notation ('15min', 'h', 'd', ...). Defaults to 'D'
             skip_nodes (List): Nodes to be skipped in nodal restrictions (defaults to [])
             fix_time_window (Dict): Fix results for given indices on time grid to given values. Defaults to None
                            fix_time_window['I']: Indices on timegrid or alternatively date (all dates before date taken)

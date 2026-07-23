@@ -375,7 +375,7 @@ def optimize(
         data (StartEndValueDict, DataFrame, optional): input time series. Defaults to None (optional). Will be cast into timegrid
         split_interval_size (str, optional, default to None): Interval size for split optimization
                                              Hard cut of optimization into time split for faster calculation.
-                                             Pandas convention 'd', 'h', 'W', ...
+                                             Pandas convention 'D', 'h', 'W', ...
                                              (none for no split)
         solver (str, optional): Solver to be used. Defaults to None (uses default solver)
                                 Note: CVXPY is used as interface to solvers. See details on solvers here:  https://www.cvxpy.org/tutorial/solvers/index.html

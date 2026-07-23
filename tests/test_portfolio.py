@@ -22,7 +22,7 @@ class PortfolioTests(unittest.TestCase):
         node1 = eao.assets.Node("node_1")
         node2 = eao.assets.Node("node_2")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a1 = eao.assets.SimpleContract(
             name="SC_1",
@@ -68,7 +68,7 @@ class PortfolioTests(unittest.TestCase):
         res = op.optimize()
 
         check = True  # simple run-through test
-        return check
+        assert check
 
     def test_portfolio_with_transport(self):
         """Unit test. Setting up a simple portfolio to check restrictions on nodes and
@@ -78,7 +78,7 @@ class PortfolioTests(unittest.TestCase):
         node1 = eao.assets.Node("node_1")
         node2 = eao.assets.Node("node_2")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a1 = eao.assets.SimpleContract(
             name="SC_1",
@@ -140,7 +140,6 @@ class PortfolioTests(unittest.TestCase):
             + out["dispatch"]["SC_2 (node_1)"]
         ).sum()
         self.assertAlmostEqual(check, 0.0, 5)
-        return
 
     def test_various_vars_in_mapping(self):
         """testing more efficient approach where more than one row in mapping
@@ -153,8 +152,8 @@ class PortfolioTests(unittest.TestCase):
         tg = eao.assets.Timegrid(
             start=pd.Timestamp(1980, 1, 1),
             end=pd.Timestamp(1981, 1, 1),
-            freq="d",
-            main_time_unit="d",
+            freq="D",
+            main_time_unit="D",
         )
         b = eao.assets.SimpleContract(
             name="b", nodes=node1, min_cap=-100, max_cap=100, price="Z"
@@ -201,7 +200,7 @@ class PortfolioTests(unittest.TestCase):
         node1 = eao.assets.Node("node_1")
         node2 = eao.assets.Node("node_2")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a1 = eao.assets.SimpleContract(
             name="SC_1", price="rand_price_1", nodes=node1, min_cap=-20.0, max_cap=20.0
@@ -268,7 +267,7 @@ class StructuredAssetsTests(unittest.TestCase):
         import datetime as dt
 
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a1 = eao.assets.SimpleContract(
             name="SC_1",

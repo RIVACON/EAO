@@ -68,7 +68,7 @@ def create_graph(
             plt.show()
             plt.close()
     else:
-        res = nx.node_link_data(G)
+        res = nx.node_link_data(G, edges="edges")
         res["position"] = pos
         return res
 

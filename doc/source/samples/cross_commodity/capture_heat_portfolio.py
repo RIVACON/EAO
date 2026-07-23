@@ -42,7 +42,7 @@ def capture_asset():
                                 start_level = 0., 
                                 end_level   = 0.,
                                 eff_in      = 0.9, 
-                                block_size  = 'd')     # optimization for each day independently 
+                                block_size  = 'D')     # optimization for each day independently 
 
     power2heat   = eao.assets.Transport(name = 'power-2-heat', efficiency = 4., nodes = [node_power, node_heat])
     power_gen    = eao.assets.MultiCommodityContract(name = 'CHP', extra_costs = 50, min_cap= 0, max_cap=1, nodes = [node_power, node_heat], factors_commodities=[0.8, 2.2])
@@ -50,7 +50,7 @@ def capture_asset():
 
     Start = dt.date(2020,1,1)
     End   = dt.date(2021,1,1)
-    dates = pd.date_range(Start, End, freq = 'd').values
+    dates = pd.date_range(Start, End, freq = 'D').values
 
     heat_curve = {'start'  : dates, 
                  'values' : - np.sin(np.linspace(0,10, len(dates)))}

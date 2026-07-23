@@ -45,7 +45,7 @@
             "end_level": 100.0,
             "freq": null,
             "inflow": 0.0,
-            "max_cycles_freq": "d",
+            "max_cycles_freq": "D",
             "max_cycles_no": 2.0,
             "max_level": null,
             "min_level": null,

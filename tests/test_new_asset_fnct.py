@@ -18,7 +18,7 @@ class two_node_storage(unittest.TestCase):
         """
         node1 = eao.assets.Node('N1')
         node2 = eao.assets.Node('N2')
-        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,2,1), freq = 'd')
+        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,2,1), freq = 'D')
         a = eao.assets.Storage('STORAGE', [node1, node2], start=dt.date(2021,1,1), end=dt.date(2021,2,1),size=10,\
              cap_in=1, cap_out=1, start_level=0, end_level=0, price='price')
         price = np.ones([timegrid.T])
@@ -34,7 +34,7 @@ class two_node_storage(unittest.TestCase):
         """
         node1 = eao.assets.Node('N1')
         node2 = eao.assets.Node('N2')
-        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,2,1), freq = 'd')
+        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,2,1), freq = 'D')
         a = eao.assets.Storage('STORAGE', [node1, node2], start=dt.date(2021,1,1), end=dt.date(2021,2,1),size=10,\
              cap_in=1, cap_out=1, start_level=0, end_level=0, cost_in=.1)
         buy  = eao.assets.SimpleContract(name = 'buy', nodes = node1, min_cap=-10, max_cap=10, price = 'price')

@@ -1,5 +1,4 @@
 import numpy as np
-from numpy.core.shape_base import block
 import pandas as pd
 import datetime as dt
 import json
@@ -29,7 +28,7 @@ class IOTests(unittest.TestCase):
         """
         node = eao.assets.Node("testNode")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a = eao.assets.SimpleContract(
             name="SC",
@@ -86,7 +85,6 @@ class IOTests(unittest.TestCase):
         )
 
         assert check
-        return check
 
     def test_serialize_portfolio(self):
         """Unit test serialize portfolio"""
@@ -94,7 +92,7 @@ class IOTests(unittest.TestCase):
         node1 = eao.assets.Node("node_1")
         node2 = eao.assets.Node("node_2")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a1 = eao.assets.SimpleContract(
             name="SC_1",
@@ -192,7 +190,7 @@ class IOTests(unittest.TestCase):
         for pr in prices:
             check = check and all(prices[pr] == pp[pr])
 
-        return check
+        assert check
 
     def test_create_network(self):
         """simple test to create network graph"""
@@ -200,7 +198,6 @@ class IOTests(unittest.TestCase):
         portf = from_json(file_name=myf)
         graphf = os.path.join(output_data_path, "test_graph.pdf")
         create_graph(portf=portf, file_name=graphf)
-        return True
 
     def test_create_network_output_no_image(self):
         """simple test to create network graph"""
@@ -208,7 +205,6 @@ class IOTests(unittest.TestCase):
         portf = from_json(file_name=myf)
         res = create_graph(portf=portf, no_image_output=True)
         assert res["nodes"][0]["id"] == "location A"
-        return True
 
     def test_dates_serialize(self):
         """test how to ensure correct serialization of dates in arrays"""
@@ -227,14 +223,14 @@ class IOTests(unittest.TestCase):
             size=11,
             start_level=2.5,
             end_level=2.5,
-            block_size="2d",
+            block_size="2D",
         )  # 2 daily blocks
         # charging -- with maximum volume transported
         # since I have a daily restriction, I need to provide it for all days. I choose a validity for the asset
         # as "daily" is not implemented in the asset (yet)
         Start = dt.date(2021, 1, 1)
         End = dt.date(2021, 1, 10)
-        dates = pd.date_range(Start, End, freq="d").values
+        dates = pd.date_range(Start, End, freq="D").values
         maxCharge = {
             "start": dates[:-1],
             "end": dates[1:],
@@ -275,7 +271,7 @@ class IOTests(unittest.TestCase):
 
         ## now optimize
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 1, 10), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 1, 10), freq="D"
         )
         prices = {"price": -(5 + 5 * (np.cos(np.linspace(0.0, 10.0, timegrid.T))))}
 
@@ -298,7 +294,7 @@ class OptimizeShortcutTests(unittest.TestCase):
         node1 = eao.assets.Node("node_1")
         node2 = eao.assets.Node("node_2")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a1 = eao.assets.SimpleContract(
             name="SC_1",
@@ -344,13 +340,13 @@ class OptimizeShortcutTests(unittest.TestCase):
         # res = op.optimize()
         out = eao.optimize(portf=portf, data=prices, timegrid=timegrid)
         out = eao.optimize(
-            portf=portf, data=prices, timegrid=timegrid, split_interval_size="d"
+            portf=portf, data=prices, timegrid=timegrid, split_interval_size="D"
         )
         out = eao.optimize(
             portf=portf,
             data=prices,
             timegrid=timegrid,
-            split_interval_size="d",
+            split_interval_size="D",
             make_soft_problem=True,
         )
         ### write results to file
@@ -412,7 +408,7 @@ class OptimizeShortcutTests(unittest.TestCase):
         ### shorten
         data = pd.read_pickle(join(test_data_path, "data_heat.pkl"))
         # check index is correct
-        out = eao.optimize(portf=portf, timegrid=tg, data=data, split_interval_size="d")
+        out = eao.optimize(portf=portf, timegrid=tg, data=data, split_interval_size="D")
         out["internal_variables"].head()
         np.testing.assert_almost_equal(
             -out["dispatch"]["heat_storage (heat_net)"].values,

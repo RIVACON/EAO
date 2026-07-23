@@ -21,7 +21,7 @@ class CHPAssetTest(unittest.TestCase):
         node_power = eao.assets.Node("node_power")
         node_heat = eao.assets.Node("node_heat")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a = eao.assets.CHPAsset(
             name="CHP",
@@ -111,7 +111,7 @@ class CHPAssetTest(unittest.TestCase):
         node_power = eao.assets.Node("node_power")
         node_heat = eao.assets.Node("node_heat")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         heat_price = 5
         a = eao.assets.CHPAsset(
@@ -142,7 +142,7 @@ class CHPAssetTest(unittest.TestCase):
         timegrid = eao.assets.Timegrid(Start, End, freq="h")
 
         # capacities
-        restr_times = pd.date_range(Start, End, freq="d", inclusive="left")
+        restr_times = pd.date_range(Start, End, freq="D", inclusive="left")
         min_cap = {}
         min_cap["start"] = restr_times.to_list()
         min_cap["end"] = (restr_times + dt.timedelta(days=1)).to_list()
@@ -193,7 +193,7 @@ class CHPAssetTest(unittest.TestCase):
         timegrid = eao.assets.Timegrid(Start, End, freq="h")
 
         # capacities
-        restr_times = pd.date_range(Start, End, freq="d", inclusive="left")
+        restr_times = pd.date_range(Start, End, freq="D", inclusive="left")
         min_cap = {}
         min_cap["start"] = restr_times.to_list()
         min_cap["end"] = (restr_times + dt.timedelta(days=1)).to_list()
@@ -510,7 +510,7 @@ class CHPAssetTest(unittest.TestCase):
         """
         old_value = 10 * 30
         new_value = eao.basic_classes.convert_time_unit(
-            old_value, old_freq="h", new_freq="d"
+            old_value, old_freq="h", new_freq="D"
         )
         self.assertAlmostEqual(new_value - old_value / 24, 0, 5)
 
@@ -522,7 +522,7 @@ class CHPAssetTest(unittest.TestCase):
 
         old_value = 14 * 30
         new_value = eao.basic_classes.convert_time_unit(
-            old_value, old_freq="d", new_freq="15min"
+            old_value, old_freq="D", new_freq="15min"
         )
         self.assertAlmostEqual(new_value - old_value * 24 * 4, 0, 5)
 
@@ -912,7 +912,7 @@ class CHPAssetTest(unittest.TestCase):
         res = op.optimize()
         out = eao.io.extract_output(portf, op, res, prices)
         # need to start power an hour before heat
-        self.assertAlmostEqual(out["dispatch"]["CHP (node_power)"][9], 10, 4)
+        self.assertAlmostEqual(out["dispatch"]["CHP (node_power)"].iloc[9], 10, 4)
 
     def test_start_and_shutdown_ramp_heat_2(self):
         """Testing heat start ramp"""
@@ -1002,7 +1002,7 @@ class CHPAssetTest_with_threshhold(unittest.TestCase):
         node_power = eao.assets.Node("node_power")
         node_heat = eao.assets.Node("node_heat")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a = eao.assets.CHPAsset_with_min_load_costs(
             name="CHP",
@@ -1239,7 +1239,7 @@ class CHPAssetTest_no_heat(unittest.TestCase):
         node_power = eao.assets.Node("node_power")
         node_heat = eao.assets.Node("node_heat")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a = eao.assets.CHPAsset(
             name="CHP",
@@ -1429,7 +1429,7 @@ class Plant(unittest.TestCase):
         node_power = eao.assets.Node("node_power")
         node_heat = eao.assets.Node("node_heat")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a = eao.assets.CHPAsset(
             name="CHP",
@@ -1780,7 +1780,7 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
         node_power = eao.assets.Node("node_power")
         node_heat = eao.assets.Node("node_heat")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a = eao.assets.CHP_PQ_diagram(
             name="CHP",

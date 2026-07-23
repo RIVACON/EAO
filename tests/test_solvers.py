@@ -20,7 +20,7 @@ class Solvers(unittest.TestCase):
         except: pass
         else:
             node = eao.assets.Node('testNode')
-            timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,2,1), freq = 'd')
+            timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,2,1), freq = 'D')
             a = eao.assets.SimpleContract(name = 'SC', price = 'rand_price', nodes = node ,
                             min_cap= -10., max_cap=10.)
             #a.set_timegrid(timegrid)

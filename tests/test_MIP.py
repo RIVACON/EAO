@@ -19,7 +19,7 @@ class MIP(unittest.TestCase):
         """artificial MIP"""
         node = eao.assets.Node("N1")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a = eao.assets.SimpleContract(name="c", max_cap=1.1, price="price", nodes=node)
         price = np.ones([timegrid.T])
@@ -40,7 +40,7 @@ class MIP(unittest.TestCase):
         ### (1) without MIP constraint --- will "burn" electricity by simultaneous charging/discharging
         node = eao.assets.Node("N1")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 1, 10), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 1, 10), freq="D"
         )
         a = eao.assets.Storage(
             name="c",
