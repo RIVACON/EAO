@@ -32,7 +32,7 @@ class AssetFrequency(unittest.TestCase):
         # solve optim problem
         prices = {"rand_price": np.random.rand(timegrid.T) - 0.5}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         x = res.x.round(2)
         p = prices["rand_price"]
         # check: are costs the average prices?
@@ -74,7 +74,7 @@ class AssetFrequency(unittest.TestCase):
         # solve optim problem
         prices = {"rand_price": np.random.rand(timegrid.T) - 0.5}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         x = res.x.round(2)
         p = prices["rand_price"]
         pass
@@ -123,7 +123,7 @@ class AssetFrequency(unittest.TestCase):
 
         portf = eao.portfolio.Portfolio([a1, a2, a3])
         op = portf.setup_optim_problem(prices, timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         disp = out["dispatch"]
         # eao.io.output_to_file(out, 'test_XXX.xlsx')
@@ -194,7 +194,7 @@ class AssetFrequency(unittest.TestCase):
 
         portf = eao.portfolio.Portfolio([a1, st, lt])
         op = portf.setup_optim_problem(prices, timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         disp = out["dispatch"]
         # eao.io.output_to_file(out, 'test_XXX.xlsx')
@@ -254,7 +254,7 @@ class AssetFrequency(unittest.TestCase):
             )
         }
         op = portf.setup_optim_problem(prices)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         # checking against known value --> no change
         self.assertAlmostEqual(res.value, 2971.151578, 4)
         out = eao.io.extract_output(portf, op, res, prices)

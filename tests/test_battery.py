@@ -53,7 +53,7 @@ class BatteryTest(unittest.TestCase):
 
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         xin = res.x[0:24]
         xout = res.x[24:48]
         fl = a.fill_level(op, res)
@@ -84,7 +84,7 @@ class BatteryTest(unittest.TestCase):
         price = np.sin(np.linspace(0, 200, timegrid.T)) + 3
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         n = int(timegrid.T)
         xin = res.x[0:n]
         xout = res.x[n : 2 * n]
@@ -190,8 +190,8 @@ class BatteryTest(unittest.TestCase):
         portf = eao.portfolio.Portfolio([battery, buy_max_take, sell])
         portf_new = eao.portfolio.Portfolio([battery_new, buy, sell])
 
-        out = eao.optimize(portf=portf, timegrid=timegrid, data=prices)
-        new = eao.optimize(portf=portf_new, timegrid=timegrid, data=prices)
+        out = eao.optimize(portf=portf, timegrid=timegrid, data=prices, solver="SCIP")
+        new = eao.optimize(portf=portf_new, timegrid=timegrid, data=prices, solver="SCIP")
         eao.io.output_to_file(out, "x_v1.xlsx")
         eao.io.output_to_file(new, "x_v2.xlsx")
         myrange = pd.date_range(
@@ -253,7 +253,7 @@ class BatteryTest(unittest.TestCase):
 
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         xin = res.x[0 : timegrid.T]
         xout = res.x[timegrid.T :]
         fl = a.fill_level(op, res)
@@ -286,7 +286,7 @@ class BatteryTest(unittest.TestCase):
         data = {"price": price}
         data["size"] = np.linspace(1, 10, timegrid.T)
         op = a.setup_optim_problem(data, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         # every 2nd time step completely full to changing level
         np.testing.assert_almost_equal(
             -res.x.cumsum()[0 : timegrid.T : 2], data["size"][0 : timegrid.T : 2], 4
@@ -314,7 +314,7 @@ class BatteryTest(unittest.TestCase):
         data = {"price": price}
         data["capa_in"] = np.linspace(1, 10, timegrid.T)
         op = a.setup_optim_problem(data, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         # every 2nd should be full power (changing capa)
         np.testing.assert_almost_equal(
             -res.x[0 : timegrid.T : 2], data["capa_in"][0 : timegrid.T : 2], 4
@@ -342,7 +342,7 @@ class BatteryTest(unittest.TestCase):
         data = {"price": price}
         data["capa_out"] = np.linspace(2, 8, timegrid.T)
         op = a.setup_optim_problem(data, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         # every 2nd should be full power (changing capa)
         np.testing.assert_almost_equal(
             res.x[1 + timegrid.T : 2 * timegrid.T : 2],
@@ -450,7 +450,7 @@ class BatteryTest(unittest.TestCase):
         portf = eao.serialization.from_json(s)
         data = pd.read_pickle(join(test_data_path, "battery_test_data.pkl"))
         # check index is correct
-        out = eao.optimize(portf=portf, timegrid=tg, data=data, split_interval_size="d")
+        out = eao.optimize(portf=portf, timegrid=tg, data=data, split_interval_size="d", solver="SCIP")
         # eao.io.output_to_file(out, "xxx_out.xlsx")
         self.assertEqual(tg.start, out["dispatch"].index[0])
         self.assertTrue(all(tg.timepoints == out["dispatch"].index))
@@ -479,7 +479,7 @@ class BatteryTest(unittest.TestCase):
             portf.get_asset("battery").block_size = "d"
             bat = portf.get_asset("battery").copy
             op_wb = bat.setup_optim_problem(timegrid=tg)
-            out = eao.optimize(portf=portf, timegrid=tg, data=data)
+            out = eao.optimize(portf=portf, timegrid=tg, data=data, solver="SCIP")
             d = out["dispatch"]
             d["price"] = out["prices"]["input data: dah"]
             self.assertAlmostEqual(
@@ -542,9 +542,9 @@ class BatteryTest(unittest.TestCase):
 
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()  # via asset
+        res = op.optimize(solver="SCIP")  # via asset
         portf.get_asset("STORAGE").price = None
-        out = eao.optimize(portf=portf, timegrid=timegrid, data=prices)  # via portf
+        out = eao.optimize(portf=portf, timegrid=timegrid, data=prices, solver="SCIP")  # via portf
 
         x = res.x[: timegrid.T]
         fl = a.fill_level(op, res)
@@ -681,7 +681,7 @@ class BatteryTest(unittest.TestCase):
         # res = op.optimize()
         # out = eao.io.extract_output(portf, op, res, mydata)
         out = eao.optimize(
-            portf=portf, timegrid=tg, data=mydata, split_interval_size="d"
+            portf=portf, timegrid=tg, data=mydata, split_interval_size="d", solver="SCIP"
         )
         myd = portf.get_asset("dah").make_vector(myprice)
         np.testing.assert_almost_equal(
@@ -732,7 +732,7 @@ class TestBatteryWithRamp(unittest.TestCase):
         self.storage.ramp_up = convert_ramps(
             5.0, self.timegrid.dt[0], self.storage.cap_out + self.storage.cap_in
         )
-        out = eao.optimize(self.portf, self.timegrid, prices)
+        out = eao.optimize(self.portf, self.timegrid, prices, solver="SCIP")
         np.testing.assert_almost_equal(
             out["dispatch"]["Battery"].values[0:4], [-20, -15, -10, -5], 4
         )
@@ -754,7 +754,7 @@ class TestBatteryWithRamp(unittest.TestCase):
         self.storage.ramp_down = convert_ramps(
             5.0, self.timegrid.dt[0], self.storage.cap_out + self.storage.cap_in
         )
-        out = eao.optimize(self.portf, self.timegrid, prices)
+        out = eao.optimize(self.portf, self.timegrid, prices, solver="SCIP")
         np.testing.assert_almost_equal(
             out["dispatch"]["Battery"].values[0:4], [20, 15, 10, 5], 4
         )
@@ -777,7 +777,7 @@ class TestBatteryWithRamp(unittest.TestCase):
         self.storage.ramp_down = convert_ramps(
             1.0, self.timegrid.dt[0], self.storage.cap_out + self.storage.cap_in
         )
-        out = eao.optimize(self.portf, self.timegrid, self.prices)
+        out = eao.optimize(self.portf, self.timegrid, self.prices, solver="SCIP")
         disp = out["dispatch"]["Battery"].values
         diff = disp[1:] - disp[0:-1]
         self.assertGreaterEqual(
@@ -799,7 +799,7 @@ class TestBatteryWithRamp(unittest.TestCase):
         self.contract.ramp_down = convert_ramps(
             5.0, self.timegrid.dt[0], self.storage.cap_out + self.storage.cap_in
         )
-        out = eao.optimize(self.portf, self.timegrid, prices)
+        out = eao.optimize(self.portf, self.timegrid, prices, solver="SCIP")
         np.testing.assert_almost_equal(
             out["dispatch"]["Battery"].values[0 : T - 4], 0.0, 4
         )
@@ -811,7 +811,7 @@ class TestBatteryWithRamp(unittest.TestCase):
         # No ramps: At largest t the same maximal d(dispatch)/dt = capacity is observed:
         T = self.timegrid.T
         prices = {"price": np.linspace(1, 100, T)}
-        out = eao.optimize(self.portf, self.timegrid, prices)
+        out = eao.optimize(self.portf, self.timegrid, prices, solver="SCIP")
         np.testing.assert_almost_equal(
             out["dispatch"]["Battery"].values[1 : T - 1], 0.0, 4
         )
@@ -848,7 +848,7 @@ class TestBatteryWithMinLevel(unittest.TestCase):
 
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         xin = res.x[0:24]
         xout = res.x[24:48]
         fl = a.fill_level(op, res)
@@ -889,7 +889,7 @@ class TestBatteryWithMinLevel(unittest.TestCase):
         soc_min[20:22] = 4.5
         prices = {"price": price, "soc_min": soc_min}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         fl = a.fill_level(op, res)
         np.testing.assert_almost_equal(fl[20:22], 4.5, 3)
 
@@ -921,7 +921,7 @@ class TestBatteryWithMinLevel(unittest.TestCase):
 
         prices = {"price": price, "soc_min": soc_min, "soc_max": soc_max}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         fl = a.fill_level(op, res)
         np.testing.assert_almost_equal(fl[::2], soc_min[::2], 3)
         np.testing.assert_almost_equal(fl[1:-1:2], soc_max[1:-1:2], 3)
@@ -1121,7 +1121,7 @@ class TestBatteryWithMinLevel(unittest.TestCase):
         tg = eao.serialization.from_json(file_name=join(test_data_path, "tg_dah.json"))
         data = pd.read_csv(join(test_data_path, "data.csv"))
         data.set_index("Datetime", inplace=True)
-        out = eao.optimize(portf, tg, data)
+        out = eao.optimize(portf, tg, data, solver="SCIP")
         d = out["dispatch"]
         d["diff"] = d["battery"].diff(1)
         print(f"Max_change: {d["diff"].max():.1f}")

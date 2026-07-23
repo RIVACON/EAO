@@ -32,7 +32,7 @@ class CHPAssetTest(unittest.TestCase):
         )
         prices = {"rand_price": np.random.rand(timegrid.T) - 0.5}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         x_power = np.around(res.x[: timegrid.T], decimals=3)  # round
         x_heat = np.around(res.x[timegrid.T : 2 * timegrid.T], decimals=3)  # round
 
@@ -87,7 +87,7 @@ class CHPAssetTest(unittest.TestCase):
         portf = eao.portfolio.Portfolio([chp, power, heat])
         prices = {"priceP": np.ones(timegrid.T), "priceH": np.ones(timegrid.T)}
         # check for correct costs
-        out = eao.optimize(portf=portf, data=prices, timegrid=timegrid)
+        out = eao.optimize(portf=portf, data=prices, timegrid=timegrid, solver="SCIP")
         disp = out["dispatch"]
         ### assertions
         share_heat = disp["CHP (node_heat)"] / disp["CHP (node_power)"]
@@ -96,7 +96,7 @@ class CHPAssetTest(unittest.TestCase):
         self.assertAlmostEqual(share_heat.max(), 100, 2)
         #### check without max_share
         portf.get_asset("CHP").max_share_heat = None
-        out = eao.optimize(portf=portf, data=prices, timegrid=timegrid)
+        out = eao.optimize(portf=portf, data=prices, timegrid=timegrid, solver="SCIP")
         disp = out["dispatch"]
         self.assertAlmostEqual(disp["CHP (node_heat)"].max(), 100, 2)
         self.assertAlmostEqual(disp["CHP (node_heat)"].min(), 100, 2)
@@ -168,7 +168,7 @@ class CHPAssetTest(unittest.TestCase):
         p = eao.portfolio.Portfolio([a, sc_power])
 
         op = p.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         x_power = np.around(res.x[: timegrid.T], decimals=3)  # round
         x_heat = np.around(res.x[timegrid.T : 2 * timegrid.T], decimals=3)  # round
 
@@ -210,7 +210,7 @@ class CHPAssetTest(unittest.TestCase):
 
         prices = {"rand_price": -np.ones(timegrid.T)}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         self.assertAlmostEqual(
             np.abs(
                 res.x[: timegrid.T]
@@ -243,7 +243,7 @@ class CHPAssetTest(unittest.TestCase):
         )
         prices = {"rand_price": np.random.randint(low=-1, high=2, size=timegrid.T)}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         start_variables = res.x[3 * timegrid.T :]
         for i in range(1, timegrid.T):
             if np.sign(op.c[i]) == -1 and np.sign(np.sign(op.c[i - 1])) == 1:
@@ -271,7 +271,7 @@ class CHPAssetTest(unittest.TestCase):
         prices["price"][0:10] = -100.0
 
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         on_variables = res.x[2 * timegrid.T : 3 * timegrid.T]
         disp_variables = res.x[0 * timegrid.T : 1 * timegrid.T]
         start_variables = res.x[3 * timegrid.T :]
@@ -291,7 +291,7 @@ class CHPAssetTest(unittest.TestCase):
         prices["price"][0:10] = -100.0
 
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         on_variables = res.x[2 * timegrid.T : 3 * timegrid.T]
         disp_variables = res.x[0 * timegrid.T : 1 * timegrid.T]
         start_variables = res.x[3 * timegrid.T :]
@@ -314,7 +314,7 @@ class CHPAssetTest(unittest.TestCase):
         prices["price"][0:10] = -100.0
 
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         on_variables = res.x[2 * timegrid.T : 3 * timegrid.T]
         disp_variables = res.x[0 * timegrid.T : 1 * timegrid.T]
         start_variables = res.x[3 * timegrid.T :]
@@ -343,7 +343,7 @@ class CHPAssetTest(unittest.TestCase):
         prices["price"][10] = 100
 
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         on_variables = res.x[2 * timegrid.T : 3 * timegrid.T]
         self.assertAlmostEqual(on_variables.sum(), timegrid.T - 9, 4)
         # Asset is off for the first 4 timesteps, and off again for min_downtime=5 timesteps around hour 10 when price
@@ -403,7 +403,7 @@ class CHPAssetTest(unittest.TestCase):
         prices["price"][0:5] = -100.0
         portf = eao.portfolio.Portfolio([a, b, c, d])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         # check manually checked values
         check = out["dispatch"]["CHP (node_power)"].sum()
@@ -443,7 +443,7 @@ class CHPAssetTest(unittest.TestCase):
         )
         prices = {"rand_price": np.ones(timegrid.T)}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         disp_power = res.x[: timegrid.T]
         disp_heat = res.x[timegrid.T : 2 * timegrid.T]
 
@@ -491,7 +491,7 @@ class CHPAssetTest(unittest.TestCase):
 
         prices = {"rand_price": -np.ones(timegrid.T)}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         disp_power = res.x[: timegrid.T]
         disp_heat = res.x[timegrid.T : 2 * timegrid.T]
 
@@ -575,7 +575,7 @@ class CHPAssetTest(unittest.TestCase):
         price1 = 20 * np.random.rand(timegrid1.T) - 10
         prices["price1"] = price1
         op1 = a1.setup_optim_problem(prices, timegrid=timegrid1)
-        res1 = op1.optimize()
+        res1 = op1.optimize(solver="SCIP")
 
         timegrid2 = eao.assets.Timegrid(Start, End, freq="15min", main_time_unit="h")
         a2 = eao.assets.CHPAsset(
@@ -602,7 +602,7 @@ class CHPAssetTest(unittest.TestCase):
         price2 = np.vstack([price1] * 4).T.reshape(-1)
         prices["price2"] = price2
         op2 = a2.setup_optim_problem(prices, timegrid=timegrid2)
-        res2 = op2.optimize()
+        res2 = op2.optimize(solver="SCIP")
 
         self.assertAlmostEqual(res1.value, res2.value, 4)
 
@@ -629,7 +629,7 @@ class CHPAssetTest(unittest.TestCase):
         prices["price"][15:] = 100
 
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         # Asset starts out with the last 2 steps of the startramp, then runs at maximum capacity for 9 steps and then
         # follows the shutdown ramp
         self.assertAlmostEqual(res.value, 3 + 4 + 9 * 10 + 7 + 6 + 4 + 1, 4)
@@ -668,7 +668,7 @@ class CHPAssetTest(unittest.TestCase):
         prices = {"price": 1.0 * np.ones(timegrid.T)}
 
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         power_variables = res.x[0 * timegrid.T : 1 * timegrid.T]
         heat_variables = res.x[1 * timegrid.T : 2 * timegrid.T]
         on_variables = res.x[2 * timegrid.T : 3 * timegrid.T]
@@ -715,7 +715,7 @@ class CHPAssetTest(unittest.TestCase):
         ] = -1
 
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         power_variables = res.x[0 * timegrid.T : 1 * timegrid.T]
         heat_variables = res.x[1 * timegrid.T : 2 * timegrid.T]
         on_variables = res.x[2 * timegrid.T : 3 * timegrid.T]
@@ -780,7 +780,7 @@ class CHPAssetTest(unittest.TestCase):
         ] = -1
 
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         power_variables = res.x[0 * timegrid.T : 1 * timegrid.T]
         heat_variables = res.x[1 * timegrid.T : 2 * timegrid.T]
         on_variables = res.x[2 * timegrid.T : 3 * timegrid.T]
@@ -909,7 +909,7 @@ class CHPAssetTest(unittest.TestCase):
         prices["heat_demand"][10:20] = -1
         portf = eao.portfolio.Portfolio([a, b, c, d])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         # need to start power an hour before heat
         self.assertAlmostEqual(out["dispatch"]["CHP (node_power)"][9], 10, 4)
@@ -982,7 +982,7 @@ class CHPAssetTest(unittest.TestCase):
         prices["price"][10:20] = 1000
         portf = eao.portfolio.Portfolio([a, b, c, d])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         # need to start power an hour before heat
         myr = out["dispatch"]["CHP (node_heat)"][6:10].values
@@ -1013,7 +1013,7 @@ class CHPAssetTest_with_threshhold(unittest.TestCase):
         )
         prices = {"rand_price": np.random.rand(timegrid.T) - 0.5}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         x_power = np.around(res.x[: timegrid.T], decimals=3)  # round
         x_heat = np.around(res.x[timegrid.T : 2 * timegrid.T], decimals=3)  # round
 
@@ -1095,7 +1095,7 @@ class CHPAssetTest_with_threshhold(unittest.TestCase):
         }
         portf = eao.portfolio.Portfolio([demand, a])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         costs = out["DCF"]["CHP"].values
         disp = out["dispatch"]["CHP (node_power)"].values
@@ -1131,7 +1131,7 @@ class CHPAssetTest_with_threshhold(unittest.TestCase):
         }
         portf = eao.portfolio.Portfolio([demand, a])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         costs = out["DCF"]["CHP"].values
         disp = out["dispatch"]["CHP (node_power)"].values
@@ -1172,7 +1172,7 @@ class CHPAssetTest_with_threshhold(unittest.TestCase):
         prices["demand"][0:5] = 0
         portf = eao.portfolio.Portfolio([demand, a])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         costs = out["DCF"]["CHP"].values
         disp = out["dispatch"]["CHP (node_power)"].values
@@ -1220,7 +1220,7 @@ class CHPAssetTest_with_threshhold(unittest.TestCase):
         prices["demand"][0:5] = 0
         portf = eao.portfolio.Portfolio([demand, a, gas])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         costs = out["DCF"]["CHP"].values
         disp = out["dispatch"]["CHP (node_power)"].values
@@ -1251,7 +1251,7 @@ class CHPAssetTest_no_heat(unittest.TestCase):
         np.random.seed(2709)
         prices = {"rand_price": np.random.rand(timegrid.T) - 0.5}
         op_o = a.setup_optim_problem(prices, timegrid=timegrid)
-        res_o = op_o.optimize()
+        res_o = op_o.optimize(solver="SCIP")
         x_power_o = np.around(res_o.x[: timegrid.T], decimals=3)  # round
         x_heat = np.around(res_o.x[timegrid.T : 2 * timegrid.T], decimals=3)  # round
         # heat or power / exchangable --> need to look at sum
@@ -1268,7 +1268,7 @@ class CHPAssetTest_no_heat(unittest.TestCase):
             _no_heat=True,
         )
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         x_power = np.around(res.x[: timegrid.T], decimals=3)  # round
         self.assertTrue(all(x_power == x_power_o))
 
@@ -1323,7 +1323,7 @@ class CHPAssetTest_no_heat(unittest.TestCase):
         prices["price"][0:5] = -100.0
         portf = eao.portfolio.Portfolio([a, b, c, d])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         # check manually checked values
         check = out["dispatch"]["CHP (node_power)"].sum()
@@ -1369,7 +1369,7 @@ class CHPAssetTest_no_heat(unittest.TestCase):
         prices["price"][0:5] = -100.0
         portf = eao.portfolio.Portfolio([a, b, c])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         # check manually checked values
         check = out["dispatch"]["CHP (node_power)"].sum()
@@ -1405,7 +1405,7 @@ class CHPAssetTest_no_heat(unittest.TestCase):
         }
         portf = eao.portfolio.Portfolio([demand, a])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         costs = out["DCF"]["CHP"].values
         disp = out["dispatch"]["CHP"].values
@@ -1441,7 +1441,7 @@ class Plant(unittest.TestCase):
         np.random.seed(2709)
         prices = {"rand_price": np.random.rand(timegrid.T) - 0.5}
         op_o = a.setup_optim_problem(prices, timegrid=timegrid)
-        res_o = op_o.optimize()
+        res_o = op_o.optimize(solver="SCIP")
         x_power_o = np.around(res_o.x[: timegrid.T], decimals=3)  # round
         x_heat = np.around(res_o.x[timegrid.T : 2 * timegrid.T], decimals=3)  # round
         # heat or power / exchangable --> need to look at sum
@@ -1457,7 +1457,7 @@ class Plant(unittest.TestCase):
             max_cap=10.0,
         )
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         x_power = np.around(res.x[: timegrid.T], decimals=3)  # round
         self.assertTrue(all(x_power == x_power_o))
 
@@ -1512,7 +1512,7 @@ class Plant(unittest.TestCase):
         prices["price"][0:5] = -100.0
         portf = eao.portfolio.Portfolio([a, b, c, d])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         # check manually checked values
         check = out["dispatch"]["CHP (node_power)"].sum()
@@ -1556,7 +1556,7 @@ class Plant(unittest.TestCase):
         prices["price"][0:5] = -100.0
         portf = eao.portfolio.Portfolio([a, b, c])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         # check manually checked values
         check = out["dispatch"]["PP (node_power)"].sum()
@@ -1620,7 +1620,7 @@ class Plant(unittest.TestCase):
         )
         portf = eao.portfolio.Portfolio([a, b, c])
         op = portf.setup_optim_problem(df, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, df)
         ##### for manual check: eao.io.output_to_file(out, 'results_plant.xlsx')
         # # check manually checked values
@@ -1690,7 +1690,7 @@ class Plant(unittest.TestCase):
         )
         portf = eao.portfolio.Portfolio([a, b, c])
         op = portf.setup_optim_problem(df, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, df)
         ### for checks: eao.io.output_to_file(out, 'results_plant.xlsx')
         # # check manually checked values
@@ -1759,7 +1759,7 @@ class Plant(unittest.TestCase):
         )
         portf = eao.portfolio.Portfolio([a, b, c])
         op = portf.setup_optim_problem(df, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, df)
         # dispatch should follow start ramp and then add ramp
         self.assertAlmostEqual(out["dispatch"].iloc[0, 0], 0, 4)
@@ -1856,7 +1856,7 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
         self.assertTrue(all(op.l[ind] == 15))
         self.assertTrue(all(op.u[ind] == 25))
         ##### optimize
-        out = eao.optimize(portf, timegrid, data)
+        out = eao.optimize(portf, timegrid, data, solver="SCIP")
         self.assertTrue(
             out["summary"]["status"] == "not successful"
         )  # heat delivery cannot be met with given poly
@@ -1899,7 +1899,7 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
         )
         portf = eao.portfolio.Portfolio([m, a, h])
         ##### optimize
-        out = eao.optimize(portf, timegrid, data)
+        out = eao.optimize(portf, timegrid, data, solver="SCIP")
         x = out["dispatch"]["poly (node_heat)"].values
         y = out["dispatch"]["poly (node_power)"].values
         ### look at dispatch along edges
@@ -1958,7 +1958,7 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
         )
         portf = eao.portfolio.Portfolio([m, a, h])
         ##### optimize
-        out = eao.optimize(portf, timegrid, data)
+        out = eao.optimize(portf, timegrid, data, solver="SCIP")
         x = out["dispatch"]["poly (node_heat)"].values
         y = out["dispatch"]["poly (node_power)"].values
         #### test: any dispatch outside polygon?
@@ -2049,7 +2049,7 @@ class CHPAssetTest_with_PQ_polygon(unittest.TestCase):
         )
         portf = eao.portfolio.Portfolio([m, a, h, h1])
         ##### optimize
-        out = eao.optimize(portf, timegrid, data)
+        out = eao.optimize(portf, timegrid, data, solver="SCIP")
         print(out)
         h = out["dispatch"]["poly (node_heat)"].values
         p = out["dispatch"]["poly (node_power)"].values

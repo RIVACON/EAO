@@ -65,7 +65,7 @@ class PortfolioTests(unittest.TestCase):
 
         portf = eao.portfolio.Portfolio([a1, a2, a3, a5])
         op = portf.setup_optim_problem(prices, timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
 
         check = True  # simple run-through test
         return check
@@ -116,7 +116,7 @@ class PortfolioTests(unittest.TestCase):
 
         portf = eao.portfolio.Portfolio([a1, a2, a3, a4])
         op = portf.setup_optim_problem(prices, timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         ### checks
         # transport constitutes the bottleneck
         x = np.around(res.x, 2)
@@ -184,7 +184,7 @@ class PortfolioTests(unittest.TestCase):
 
         portf = eao.portfolio.Portfolio([b, s, t])
         op = portf.setup_optim_problem(timegrid=tg, prices=price)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf=portf, op=op, res=res)
         df = out["dispatch"]
 
@@ -246,7 +246,7 @@ class PortfolioTests(unittest.TestCase):
 
         portf = eao.portfolio.Portfolio([a1, a2, a3, a5])
         op = portf.setup_optim_problem(prices, timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         cap_out = out["prices"]["input data: CAP"].values
         disp = out["dispatch"]["SC_2 (node_1)"].values / 24  # 24h per day!
@@ -314,7 +314,7 @@ class StructuredAssetsTests(unittest.TestCase):
 
         portf2 = eao.portfolio.Portfolio([a1, a2, a3, a4, a1a])
         op2 = portf2.setup_optim_problem(prices, timegrid)
-        res_separate = op2.optimize()
+        res_separate = op2.optimize(solver="SCIP")
         print(res_separate.value)
 
         portfStr = eao.portfolio.Portfolio([a1, a2, a4, a1a])
@@ -324,7 +324,7 @@ class StructuredAssetsTests(unittest.TestCase):
         opStr = portfStr2.setup_optim_problem(prices, timegrid)
         # test "only costs"
         c_only = portfStr2.setup_optim_problem(prices, timegrid, costs_only=True)
-        res_struct = opStr.optimize()
+        res_struct = opStr.optimize(solver="SCIP")
         assert all(opStr.c == c_only)
 
         self.assertAlmostEqual(res_struct.value, res_separate.value, 5)
@@ -367,7 +367,7 @@ class StructuredAssetsTests(unittest.TestCase):
         check_op = linked.setup_optim_problem(prices=[], timegrid=timegrid)
         portf = eao.portfolio.Portfolio([linked, demand])
         op = portf.setup_optim_problem(prices=[], timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res)
         # if asset a1 must run first, before a2 can gererate, costs must be 5*10 + 5*5 = 75
         self.assertAlmostEqual(

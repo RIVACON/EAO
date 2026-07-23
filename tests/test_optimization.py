@@ -59,11 +59,11 @@ class OptimizationTests(unittest.TestCase):
         ###############################################   std optimization
 
         op_std = portf.setup_optim_problem(prices, timegrid)
-        res_std = op_std.optimize()
+        res_std = op_std.optimize(solver="SCIP")
 
         ###############################################   robust optimization - twice the original prices as samples
         trivial_sample = [op_std.c, op_std.c]
-        res_check = op_std.optimize(target="robust", samples=trivial_sample)
+        res_check = op_std.optimize(target="robust", samples=trivial_sample, solver="SCIP")
 
         self.assertAlmostEqual(res_std.value, res_check.value, 5)
 
@@ -108,7 +108,7 @@ class OptimizationTests(unittest.TestCase):
         prices_full = {"price1": fullSet1, "price2": fullSet2}
         portf = eao.portfolio.Portfolio([a1, a2, a3, a4])
         op = portf.setup_optim_problem(prices_full, timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         op_slp = eao.stoch_lin_prog.make_slp(
             portf=portf,
             optim_problem=deepcopy(op),
@@ -117,7 +117,7 @@ class OptimizationTests(unittest.TestCase):
             samples=[prices_full] * 3,
         )
         # check optimization
-        res_slp = op_slp.optimize()
+        res_slp = op_slp.optimize(solver="SCIP")
         # both must give same result, since I also gave the SLP the identical price samples
         self.assertAlmostEqual(res.value, res_slp.value, 5)
 
@@ -173,10 +173,10 @@ class OptimizationTests(unittest.TestCase):
         portf = eao.portfolio.Portfolio([a1, a2, a3, a5])
         ### original
         opA = portf.setup_optim_problem(pricesA, timegrid)
-        resA = opA.optimize()
+        resA = opA.optimize(solver="SCIP")
         ### not fixed, new situation
         opB = portf.setup_optim_problem(pricesB, timegrid)
-        resB = opB.optimize()
+        resB = opB.optimize(solver="SCIP")
         assert abs(resA.value - resB.value) >= 1e-5  # would result really be different?
         ### now fixed, but prices would result in different solution
         fix_time_window = {"I": fix_date, "x": resA.x}
@@ -185,7 +185,7 @@ class OptimizationTests(unittest.TestCase):
         )
         I = timegrid.timepoints <= pd.Timestamp(fix_date)
         I = opC.mapping["time_step"].isin(timegrid.I[I])
-        resC = opC.optimize()
+        resC = opC.optimize(solver="SCIP")
         self.assertAlmostEqual(sum(abs((resA.x[I] - resC.x[I]))), 0.0, 5)
 
     def test_flag_MIP(self):
@@ -276,11 +276,11 @@ class SplitOptimizationTests(unittest.TestCase):
         portf = eao.portfolio.Portfolio([a1, a2, a3, a5])
         ### original
         opA = portf.setup_optim_problem(pricesA, timegrid)
-        resA = opA.optimize()
+        resA = opA.optimize(solver="SCIP")
         outA = eao.io.extract_output(portf, opA, resA)
         ### split_optim
         opB = portf.setup_split_optim_problem(pricesA, timegrid, interval_size="d")
-        resB = opB.optimize()
+        resB = opB.optimize(solver="SCIP")
         outB = eao.io.extract_output(portf, opB, resB)
         # all results must be equal
         self.assertAlmostEqual(resA.value, resB.value, 4)
@@ -338,7 +338,7 @@ class SplitOptimizationTests(unittest.TestCase):
         pricesA["c2"][-10] = 0  # infeasible
         portf = eao.portfolio.Portfolio([a1, a2, a3, a5])
         ### split_optim
-        out = eao.optimize(portf, timegrid, pricesA, split_interval_size="d")
+        out = eao.optimize(portf, timegrid, pricesA, split_interval_size="d", solver="SCIP")
         assert isinstance(out["summary"]["status"], str)
 
 

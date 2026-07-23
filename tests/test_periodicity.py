@@ -30,7 +30,7 @@ class PeriodicityTests(unittest.TestCase):
         portf = eao.portfolio.Portfolio([a,b])
         prices ={'price': np.sin(30*np.linspace(0,10,timegrid.T))}
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         ### checks
         d = out['dispatch']
@@ -65,7 +65,7 @@ class PeriodicityTests(unittest.TestCase):
         prices = {'rand_price': np.sin(np.linspace(0,50,timegrid.T))}
         portf = eao.portfolio.Portfolio([a,b])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         disp = out['dispatch']['SC']
         # for each hour expect the mean of the max capa - since we average l & u
@@ -111,7 +111,7 @@ class PeriodicityTests(unittest.TestCase):
         portf = eao.portfolio.Portfolio([a,b])
         prices = {'rand_price': np.ones(timegrid.T)}
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         #periodicity must not affect max_take
         sdisp = out['dispatch']['SC'].sum() * (End-Start)/(End-startA)  
@@ -135,7 +135,7 @@ class PeriodicityTests(unittest.TestCase):
         prices ={'price': np.sin(30*np.linspace(0,10,timegrid.T))}
         #opt = t.setup_optim_problem(prices, timegrid=timegrid)
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         ### checks
         d = out['dispatch']
@@ -161,7 +161,7 @@ class PeriodicityTests(unittest.TestCase):
         prices ={'price': np.sin(30*np.linspace(0,10,timegrid.T))}
         portf = eao.portfolio.Portfolio([a,b])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         d = out['dispatch']
         for ii in range(0,4):

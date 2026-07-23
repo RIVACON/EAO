@@ -73,7 +73,7 @@ class Test_Contract_Ramp(unittest.TestCase):
         # Idea: Give c2 a ramp later on to see the effect
         # a3.set_timegrid(timegrid)
         portf = eao.portfolio.Portfolio([c1, c2])
-        out = eao.optimize(portf, timegrid, prices)
+        out = eao.optimize(portf, timegrid, prices, solver="SCIP")
         return out
 
     def test_simple_case_without_ramp(self):
@@ -258,7 +258,7 @@ class Test_CHPAsset_Ramp(unittest.TestCase):
             name="c2", price="price_2", nodes=node, min_cap=-10.0, max_cap=0
         )
         portf = eao.portfolio.Portfolio([c1, c2])
-        out_c = eao.optimize(portf, timegrid, prices)
+        out_c = eao.optimize(portf, timegrid, prices, solver="SCIP")
         a = out_c["dispatch"]["c1"][5:10]
         b = np.array([4, 8, 12, 8, 4])
         np.testing.assert_almost_equal(a, b, 4)
@@ -267,7 +267,7 @@ class Test_CHPAsset_Ramp(unittest.TestCase):
             name="c1", price="price_1", nodes=node, min_cap=0, max_cap=10.0, ramp=2
         )
         portf = eao.portfolio.Portfolio([p1, c2])
-        out_p = eao.optimize(portf, timegrid, prices)
+        out_p = eao.optimize(portf, timegrid, prices, solver="SCIP")
         a = out_p["dispatch"]["c1"][5:10]
         np.testing.assert_almost_equal(a, b, 4)
         ### case with multi
@@ -283,7 +283,7 @@ class Test_CHPAsset_Ramp(unittest.TestCase):
             ramp_down=2,
         )
         portf = eao.portfolio.Portfolio([m1, c2])
-        out_m = eao.optimize(portf, timegrid, prices)
+        out_m = eao.optimize(portf, timegrid, prices, solver="SCIP")
         a = out_m["dispatch"]["c1 (power_node)"][5:10]
         np.testing.assert_almost_equal(a, b, 4)
         self.assertAlmostEqual(
@@ -321,7 +321,7 @@ class Test_Battery_Ramp(unittest.TestCase):
             end_level=2,
         )
         portf = eao.portfolio.Portfolio([c, b])
-        out = eao.optimize(portf, timegrid, prices)
+        out = eao.optimize(portf, timegrid, prices, solver="SCIP")
         a = out["dispatch"]["markt"].values
         diffs = abs(a[:-1] - a[1:])
         np.testing.assert_array_less(diffs, ramp, ramp + 1e-4)
@@ -355,7 +355,7 @@ class Test_Battery_Ramp(unittest.TestCase):
             end_level=2,
         )
         portf = eao.portfolio.Portfolio([c, b])
-        out = eao.optimize(portf, timegrid, prices)
+        out = eao.optimize(portf, timegrid, prices, solver="SCIP")
         a = out["dispatch"]["markt"].values
         diffs = abs(a[:-1] - a[1:])
         np.testing.assert_array_less(diffs, ramp[1:] + 1e-4)
@@ -388,7 +388,7 @@ class Test_ExtraCosts_Ramp(unittest.TestCase):
             name="c2", price="price_2", nodes=node, min_cap=-10.0, max_cap=10
         )
         portf = eao.portfolio.Portfolio([c1, c2])
-        out_c = eao.optimize(portf, timegrid, prices)
+        out_c = eao.optimize(portf, timegrid, prices, solver="SCIP")
         a = out_c["dispatch"]["c1"]
         b = -20 * np.ones(12)
         b[-2] = -14
@@ -429,7 +429,7 @@ class Test_ExtraCosts_Ramp(unittest.TestCase):
             prices["price_1"][5:] = 0
             prices["price_2"][5:] = 2
             portf = eao.portfolio.Portfolio([c1, c2])
-            out_c = eao.optimize(portf, timegrid, prices)
+            out_c = eao.optimize(portf, timegrid, prices, solver="SCIP")
             a = out_c["dispatch"]["c1"]
             b = np.array(
                 [
@@ -499,8 +499,8 @@ class Test_Ramp_Fast_and_Slow(unittest.TestCase):
             cc.ramp_up = ramp_conv
             cc.ramp_down = ramp_conv
             portfB = eao.portfolio.Portfolio([cc, bb])
-            outA = eao.optimize(portfA, timegrid, prices)
-            outB = eao.optimize(portfB, timegrid, prices)
+            outA = eao.optimize(portfA, timegrid, prices, solver="SCIP")
+            outB = eao.optimize(portfB, timegrid, prices, solver="SCIP")
             dA = outA["dispatch"]["bat"].values
             dB = outB["dispatch"]["bat"].values
             diffA = abs(dA[1:] - dA[:-1])

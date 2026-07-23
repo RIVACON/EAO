@@ -96,7 +96,7 @@ class various(unittest.TestCase):
         tg = eao.assets.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 3), freq="h")
         prices = {"price": np.sin(np.linspace(0, 40, tg.T))}
         op = portf.setup_optim_problem(timegrid=tg, prices=prices)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf=portf, op=op, res=res, prices=prices)
         # eao.io.output_to_file(out, 'test.xlsx')
         # get fill level from asset
@@ -199,7 +199,7 @@ class various(unittest.TestCase):
         tg = eao.assets.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 3), freq="h")
         prices = {"price": np.sin(np.linspace(0, 40, tg.T))}
         op = portf.setup_optim_problem(timegrid=tg, prices=prices)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf=portf, op=op, res=res)
         # eao.io.output_to_file(out, 'test.xlsx')
         # get fill level from asset
@@ -297,7 +297,7 @@ class various(unittest.TestCase):
         tg = eao.assets.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 10), freq="h")
         prices = {"price": np.sin(np.linspace(0, 30, tg.T))}
         op = a.setup_optim_problem(timegrid=tg, prices=prices)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         # get fill level from asset
         fill_level_asset = a.fill_level(op, res)
         # calculate fill level from dispatch
@@ -350,11 +350,11 @@ class various(unittest.TestCase):
         }
         portf = eao.portfolio.Portfolio([a1, a2, a3, a4])
         op = portf.setup_optim_problem(prices, timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, prices)
         # shortcut
         # out2 = eao.io.optimize(portf, timegrid, prices)
-        out2 = eao.optimize(portf, timegrid, prices)
+        out2 = eao.optimize(portf, timegrid, prices, solver="SCIP")
         self.assertAlmostEqual(
             out["summary"].loc["value", "Values"],
             out2["summary"].loc["value", "Values"],
@@ -448,10 +448,10 @@ class various(unittest.TestCase):
         op = portf.setup_split_optim_problem(
             timegrid=tg, prices=prices, interval_size="d"
         )
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf=portf, op=op, res=res)
         # shortcut
-        out2 = eao.optimize(portf, tg, prices, split_interval_size="d")
+        out2 = eao.optimize(portf, tg, prices, split_interval_size="d", solver="SCIP")
         self.assertAlmostEqual(
             out["summary"].loc["value", "Values"],
             out2["summary"].loc["value", "Values"],

@@ -25,7 +25,7 @@ class two_node_storage(unittest.TestCase):
         price[:10] = 0
         prices ={ 'price': price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         self.assertAlmostEqual(res.value, 10, 5)
 
     def test_portfolio_two_node_storage(self):
@@ -45,7 +45,7 @@ class two_node_storage(unittest.TestCase):
         price[:10] = 0
         prices ={ 'price': price, 'zero':np.zeros(timegrid.T), 'best':-np.ones(timegrid.T)}
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf = portf, op = op, res = res)
         self.assertAlmostEqual(res.value, 10-1, 5)
 
@@ -68,7 +68,7 @@ class two_node_storage(unittest.TestCase):
         price[::3] = 0
         prices ={ 'price': price, 'zero':np.zeros(timegrid.T), 'best':-np.ones(timegrid.T)}
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf = portf, op = op, res = res, prices = prices)
         # eao.io.output_to_file(out, 'test.xlsx')
         self.assertAlmostEqual(res.value, 28.8, 5) # value from checking XLS output manually. all prices zero exploited

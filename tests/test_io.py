@@ -280,7 +280,7 @@ class IOTests(unittest.TestCase):
         prices = {"price": -(5 + 5 * (np.cos(np.linspace(0.0, 10.0, timegrid.T))))}
 
         optprob = portf.setup_optim_problem(prices=prices, timegrid=timegrid)
-        res = optprob.optimize()
+        res = optprob.optimize(solver="SCIP")
         out = eao.io.extract_output(portf=portf, res=res, op=optprob)
         ### assert every second day charging status is 2.5
         fill_level = -out["dispatch"]["xxxxx"].cumsum() + 2.5
@@ -342,16 +342,16 @@ class OptimizeShortcutTests(unittest.TestCase):
         portf = eao.portfolio.Portfolio([a1, a2, a3, a5])
         # op    = portf.setup_optim_problem(prices, timegrid)
         # res = op.optimize()
-        out = eao.optimize(portf=portf, data=prices, timegrid=timegrid)
+        out = eao.optimize(portf=portf, data=prices, timegrid=timegrid, solver="SCIP")
         out = eao.optimize(
-            portf=portf, data=prices, timegrid=timegrid, split_interval_size="d"
+            portf=portf, data=prices, timegrid=timegrid, split_interval_size="d", solver="SCIP"
         )
         out = eao.optimize(
             portf=portf,
             data=prices,
             timegrid=timegrid,
             split_interval_size="d",
-            make_soft_problem=True,
+            make_soft_problem=True, solver="SCIP"
         )
         ### write results to file
         eao.io.output_to_file(out, join(output_data_path, "test_results_output.xlsx"))
@@ -412,7 +412,7 @@ class OptimizeShortcutTests(unittest.TestCase):
         ### shorten
         data = pd.read_pickle(join(test_data_path, "data_heat.pkl"))
         # check index is correct
-        out = eao.optimize(portf=portf, timegrid=tg, data=data, split_interval_size="d")
+        out = eao.optimize(portf=portf, timegrid=tg, data=data, split_interval_size="d", solver="SCIP")
         out["internal_variables"].head()
         np.testing.assert_almost_equal(
             -out["dispatch"]["heat_storage (heat_net)"].values,

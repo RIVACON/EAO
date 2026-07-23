@@ -48,13 +48,13 @@ class RenewablesTestCase(unittest.TestCase):
         # as long as -fixed_price < market prices = 5
         for fixed_price in (0, -1.0, -4.0):
             self.renewable.fixed_price = fixed_price
-            out = eao.optimize(self.portf, self.timegrid)
+            out = eao.optimize(self.portf, self.timegrid, solver="SCIP")
             np.testing.assert_almost_equal(
                 out["dispatch"]["Renewable"].values, self.renewable.profile, 4
             )
         # fixed price > market price, expectation: dispatch everywhere = 0:
         self.renewable.fixed_price = 6
-        out = eao.optimize(self.portf, self.timegrid)
+        out = eao.optimize(self.portf, self.timegrid, solver="SCIP")
         np.testing.assert_almost_equal(out["dispatch"]["Renewable"].values, 0.0, 4)
 
     def test_cfd_type(self):
@@ -68,7 +68,7 @@ class RenewablesTestCase(unittest.TestCase):
                 fp = self.renewable.make_vector(fixed_price)
                 fp[1:15] = 10.0  #  effectively we pay
                 self.renewable.fixed_price = fp
-                out = eao.optimize(self.portf, self.timegrid)
+                out = eao.optimize(self.portf, self.timegrid, solver="SCIP")
                 disp = out["dispatch"]["Renewable"].values
                 dcf = out["DCF"]["Renewable"].values
                 # cfd logic: we get fixed + market
@@ -90,7 +90,7 @@ class RenewablesTestCase(unittest.TestCase):
             for fixed_price in (-0.1, -9.0):
                 fp = fixed_price  # self.renewable.make_vector(fixed_price)
                 self.renewable.fixed_price = fp
-                out = eao.optimize(self.portf, self.timegrid, {"price": mp})
+                out = eao.optimize(self.portf, self.timegrid, {"price": mp}, solver="SCIP")
                 disp = out["dispatch"]["Renewable"].values
                 dcf = out["DCF"]["Renewable"].values
                 # NO cfd logic: we get fixed
@@ -109,14 +109,14 @@ class RenewablesTestCase(unittest.TestCase):
         mp[12:17] = -1
         self.renewable.controllable = False
         self.renewable.market_price = mp
-        out = eao.optimize(self.portf, self.timegrid)
+        out = eao.optimize(self.portf, self.timegrid, solver="SCIP")
         dp = out["dispatch"]["Renewable"].values
         np.testing.assert_almost_equal(dp[:12], self.profile[:12], 4)
         np.testing.assert_almost_equal(dp[12:17], 0, 4)
         np.testing.assert_almost_equal(dp[17:], self.profile[17:], 4)
         # same as short position
         self.renewable.short_position = True
-        out = eao.optimize(self.portf, self.timegrid)
+        out = eao.optimize(self.portf, self.timegrid, solver="SCIP")
         dp = out["dispatch"]["Renewable"].values
         np.testing.assert_almost_equal(dp[:12], -self.profile[:12], 4)
         np.testing.assert_almost_equal(dp[12:17], 0.0, 4)
@@ -138,7 +138,7 @@ class RenewablesTestCase(unittest.TestCase):
         np.testing.assert_almost_equal(
             portf.get_asset("Renewable").profile, self.profile, 4
         )
-        out = eao.optimize(portf, self.timegrid)
+        out = eao.optimize(portf, self.timegrid, solver="SCIP")
         disp = out["dispatch"]["Renewable"].values
         dcf = out["DCF"]["Renewable"].values
         we_get = -disp * fp
@@ -181,7 +181,7 @@ class BatteryAsset(unittest.TestCase):
         a = eao.serialization.from_json(s)
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         xin = res.x[0:24]
         xout = res.x[24:48]
         fl = a.fill_level(op, res)

@@ -32,7 +32,7 @@ class MIP(unittest.TestCase):
         op.u[0:5] = (
             1.6  # Account for different optim interfaces that would treat this either as a bool or as an int variable
         )
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         self.assertAlmostEqual(res.value, 5 * 1 + 1.1 * 24 * 5, 5)
 
     def test_MIP_storage(self):
@@ -56,7 +56,7 @@ class MIP(unittest.TestCase):
         price[:3] = -1
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res1 = op.optimize()
+        res1 = op.optimize(solver="SCIP")
         # hold against trivial solution: (burn electricity where prices are negative - and at end use battery volume)
         self.assertAlmostEqual(res1.value, 38.0, 5)
         sol = np.asarray(
@@ -83,7 +83,7 @@ class MIP(unittest.TestCase):
             no_simult_in_out=True,
         )
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res2 = op.optimize()
+        res2 = op.optimize(solver="SCIP")
         # hold against trivial solution:
         self.assertAlmostEqual(res2.value, 4, 5)
         sol = np.asarray(
@@ -130,7 +130,7 @@ class MIP(unittest.TestCase):
         )
         portf1 = eao.portfolio.Portfolio([a, m])
         op1 = portf1.setup_optim_problem(prices, timegrid=timegrid)
-        res1 = op1.optimize()
+        res1 = op1.optimize(solver="SCIP")
         # (1) same as MIP
         a2 = eao.assets.Storage(
             "STORAGE",
@@ -153,7 +153,7 @@ class MIP(unittest.TestCase):
         )
         portf2 = eao.portfolio.Portfolio([a2, m])
         op2 = portf2.setup_optim_problem(prices, timegrid=timegrid)
-        res2 = op2.optimize()
+        res2 = op2.optimize(solver="SCIP")
         ## assert 1 == 2
         self.assertAlmostEqual(res1.value, res2.value, 5)
         ### check dispatch

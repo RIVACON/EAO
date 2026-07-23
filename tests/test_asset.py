@@ -28,7 +28,7 @@ class SimpleContractTest(unittest.TestCase):
         # a.set_timegrid(timegrid)
         prices = {"rand_price": np.random.rand(timegrid.T) - 0.5}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         # check for this case if result makes sense. Easy: are signs correct?
         # buy for negative price foll load, sell if opposite
         # check = all(np.sign(np.around(res.x, decimals = 3)) != np.sign(op.c))
@@ -48,7 +48,7 @@ class SimpleContractTest(unittest.TestCase):
             name="SC", price=myprice, nodes=node, min_cap=-10.0, max_cap=10.0
         )
         op = a.setup_optim_problem(None, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         # check for this case if result makes sense. Easy: are signs correct?
         # buy for negative price foll load, sell if opposite
         # check = all(np.sign(np.around(res.x, decimals = 3)) != np.sign(op.c))
@@ -85,7 +85,7 @@ class SimpleContractTest(unittest.TestCase):
         a.set_timegrid(timegrid)
         prices = {"rand_price": np.random.rand(timegrid.T) - 0.5}
         op = a.setup_optim_problem(prices)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         # check for this case if result makes sense. Easy: are signs correct?
         # buy for negative price foll load, sell if opposite
         # check = all(np.sign(np.around(res.x, decimals = 3)) != np.sign(op.c))
@@ -127,7 +127,7 @@ class StorageTest(unittest.TestCase):
         price[:10] = 0
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         self.assertAlmostEqual(res.value, 10, 5)
         print(res)
 
@@ -153,7 +153,7 @@ class StorageTest(unittest.TestCase):
         price[:2] = 0  # load first hours!
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         self.assertAlmostEqual(res.value, 10, 5)
         print(res)
 
@@ -185,7 +185,7 @@ class StorageTest(unittest.TestCase):
         price[:10] = 0
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         self.assertAlmostEqual(res.value, 10, 5)
         # every 10th fill level must be zero
         self.assertAlmostEqual(res.x.cumsum()[6], 0, 5)
@@ -219,7 +219,7 @@ class StorageTest(unittest.TestCase):
         price[:10] = 0
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         # every 10th fill level must be zero
         i = 0
         for myd in timegrid.timepoints:
@@ -253,7 +253,7 @@ class StorageTest(unittest.TestCase):
             cost_in=0.1,
         )
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         self.assertAlmostEqual(res.value, 9.0, 5)
 
         # cost_out = 0.1
@@ -272,7 +272,7 @@ class StorageTest(unittest.TestCase):
             cost_out=0.1,
         )
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         self.assertAlmostEqual(res.value, 9.0, 5)
         self.assertTrue(op.mapping.loc[33].var_name == "disp_out")
         self.assertTrue(op.mapping.loc[2].var_name == "disp_in")
@@ -302,7 +302,7 @@ class StorageTest(unittest.TestCase):
             price="price",
         )
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         self.assertAlmostEqual(res.value, 10 - 10 * 0.2, 5)
         dispatch = res.x[:31] + res.x[31:62]
         for x in dispatch:
@@ -333,7 +333,7 @@ class StorageTest(unittest.TestCase):
             price="price",
         )
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         T = timegrid.T
         d = res.x[0:T] + res.x[T : 2 * T]
         # result should be exactly the inflow
@@ -365,7 +365,7 @@ class StorageTest(unittest.TestCase):
         price[:10] = 0
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         ### charge / discharge should be close to each other to avoid charged storage
         for ii in range(0, 8):
             self.assertAlmostEqual(res.x[ii], 0, 3)
@@ -405,7 +405,7 @@ class StorageTest(unittest.TestCase):
         price[:10] = 0
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         ### charge / discharge should be close to each other to avoid charged storage
         for ii in range(0, 7):
             self.assertAlmostEqual(res.x[ii], 0, 3)
@@ -443,7 +443,7 @@ class TransportTest(unittest.TestCase):
         # a.set_timegrid(timegrid)
         prices = {"rand_price": np.random.rand(timegrid.T) - 0.5 + 5}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         # check for this case if result makes sense. Easy: are signs correct?
         # buy for negative price foll load, sell if opposite
         # check = all(np.sign(np.around(res.x, decimals = 3)) != np.sign(op.c))
@@ -495,7 +495,7 @@ class TransportTest(unittest.TestCase):
 
         portf = eao.portfolio.Portfolio([transa, transb, buya, buyb, sell])
         op = portf.setup_optim_problem(prices, timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         self.assertAlmostEqual(res.value, 5.0, 5)
 
     def test_extended_transport_max_min_take(self):
@@ -531,7 +531,7 @@ class TransportTest(unittest.TestCase):
 
         ## check max_take
         op = portf.setup_optim_problem(prices, timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf=portf, op=op, res=res)
         self.assertAlmostEqual(
             out["dispatch"]
@@ -558,7 +558,7 @@ class TransportTest(unittest.TestCase):
         ## check min_take
         prices = {"buy": np.zeros(timegrid.T), "sell": -1 * np.ones(timegrid.T)}
         op = portf.setup_optim_problem(prices, timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf=portf, op=op, res=res)
         self.assertAlmostEqual(
             out["dispatch"]
@@ -608,7 +608,7 @@ class TransportTest(unittest.TestCase):
 
         portf = eao.portfolio.Portfolio([trans, buy, sell])
         op = portf.setup_optim_problem(prices, timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         self.assertAlmostEqual(
             res.value, 10 * (9.5 - 1), 5
         )  # buy one (at price 1), get 0.95 out (at price 10) for each day
@@ -643,7 +643,7 @@ class TransportTest(unittest.TestCase):
         portf = eao.portfolio.Portfolio([trans, buy, sell])
         # op = portf.setup_optim_problem(prices, timegrid)
         # res = op.optimize()
-        out = eao.optimize(portf, timegrid, prices)
+        out = eao.optimize(portf, timegrid, prices, solver="SCIP")
         # I should get back the capa
         np.testing.assert_almost_equal(out["dispatch"]["TrA (N2)"], prices["capa"], 2)
 
@@ -673,7 +673,7 @@ class TransportTest(unittest.TestCase):
         portf = eao.portfolio.Portfolio([trans, buy, sell])
         # op = portf.setup_optim_problem(prices, timegrid)
         # res = op.optimize()
-        out = eao.optimize(portf, timegrid, prices)
+        out = eao.optimize(portf, timegrid, prices, solver="SCIP")
         # I should get back the capa
         np.testing.assert_almost_equal(out["dispatch"]["TrA (N2)"], prices["eff"], 2)
         np.testing.assert_almost_equal(
@@ -702,7 +702,7 @@ class ContractTest(unittest.TestCase):
 
         prices = {"rand_price": -np.ones(timegrid.T)}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         self.assertAlmostEqual((res.x - timegrid.values_to_grid(max_cap)).sum(), 0.0, 5)
         # check serialization (new class...)
         s = eao.serialization.to_json(a)
@@ -742,7 +742,7 @@ class ContractTest(unittest.TestCase):
 
         prices = {"rand_price": np.ones(timegrid.T)}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         sdisp = res.x.sum() * (End - Start) / (End - startA) - 20.0
         self.assertAlmostEqual(sdisp, 0.0, 5)
 
@@ -761,7 +761,7 @@ class ContractTest(unittest.TestCase):
         )
 
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         self.assertAlmostEqual(abs(min_cap - res.x).sum(), 0.0, 5)
 
 
@@ -783,7 +783,9 @@ class MultiCommodity(unittest.TestCase):
             )
         }
         op = portf.setup_optim_problem(prices)
-        res = op.optimize()
+        # fix solver: reference values below are vertex solutions; cvxpy's default
+        # solver depends on version/installed packages and may miss the tolerance
+        res = op.optimize(solver="SCIP")
         # checking against known value --> no change
         out = eao.io.extract_output(portf, op, res, prices)
         ### eao.io.output_to_file(out, "test_output.xlsx")
@@ -822,11 +824,11 @@ class ScaledAsset(unittest.TestCase):
         # standard case
         portf_std = eao.portfolio.Portfolio([a, b])
         op_std = portf_std.setup_optim_problem(prices, timegrid=timegrid)
-        res_std = op_std.optimize()
+        res_std = op_std.optimize(solver="SCIP")
         # standard case
         portf = eao.portfolio.Portfolio([a, scaled_b])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf=portf, op=op, res=res)
         # zero costs and limit at original size -- same result
         self.assertAlmostEqual(res_std.value, res.value, 4)
@@ -901,7 +903,7 @@ class ScaledAsset(unittest.TestCase):
         )
 
         op = portf.setup_optim_problem(prices=input_ts, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf, op, res, input_ts)
         self.assertAlmostEqual(
             out["special"].loc[0, "costs"], 31200, 1
@@ -926,7 +928,7 @@ class DiscountRate(unittest.TestCase):
         )
         prices = {"pr": 0.2 * np.ones([timegrid.T])}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         timegrid.set_wacc(0.1)
         self.assertAlmostEqual(timegrid.discount_factors[-1], 1.0 / 1.1, 4)
         check = 10 * (1 - 0.2) * timegrid.discount_factors.sum() * 24
@@ -960,7 +962,7 @@ class DiscountRate(unittest.TestCase):
         price[:10] = 0
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         ### charge / discharge should be close to each other to avoid charged storage
         for ii in range(0, 8):
             self.assertAlmostEqual(res.x[ii], 0, 3)
@@ -993,7 +995,7 @@ class DiscountRate(unittest.TestCase):
             wacc=WACC,
         )
         op2 = a2.setup_optim_problem(prices, timegrid=timegrid)
-        res2 = op2.optimize()
+        res2 = op2.optimize(solver="SCIP")
         ### dispatch should not have changed due to discount
         for ii in range(0, 48):
             self.assertAlmostEqual(res.x[ii] - res2.x[ii], 0.0, 3)
@@ -1065,7 +1067,7 @@ class TestOrderOrderBooks(unittest.TestCase):
 
         # hourly or daily - costs should be the same
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf=portf, op=op, res=res)
         self.assertAlmostEqual(out["dispatch"].sum()[1], 4.4 * 24 * 8 - 2.2 * 3 * 24, 3)
         self.assertAlmostEqual(res.value, 1161.6, 3)
@@ -1107,9 +1109,9 @@ class TestOrderOrderBooks(unittest.TestCase):
 
         prices = {"market": 10 * np.ones(timegrid.T)}
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         op2 = portf2.setup_optim_problem(prices, timegrid=timegrid)
-        res2 = op2.optimize()
+        res2 = op2.optimize(solver="SCIP")
         self.assertAlmostEqual(res.value, res2.value, 3)
 
     def test_order_enforce_allatonce(self):
@@ -1148,7 +1150,7 @@ class TestOrderOrderBooks(unittest.TestCase):
             "market": 10 * np.ones(timegrid.T)
         }  # prices above buy prices, so will want to sell
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf=portf, op=op, res=res)
         # check all is dispatched
         self.assertAlmostEqual(out["dispatch"].sum().iloc[1], 2372, 3)
@@ -1159,7 +1161,7 @@ class TestOrderOrderBooks(unittest.TestCase):
         order_book = eao.assets.OrderBook(orders=ob, nodes=node, full_exec=True)
         portf = eao.portfolio.Portfolio([a, order_book])
         op = portf.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf=portf, op=op, res=res)
         self.assertAlmostEqual(out["dispatch"].sum().iloc[1], 2004, 3)
         self.assertAlmostEqual(
@@ -1217,7 +1219,7 @@ class TestOrderOrderBooks(unittest.TestCase):
         )  # not exactly required to relax problem
         portf = eao.portfolio.Portfolio([b, order_book, a])
         op = portf.setup_optim_problem(prices=prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         out = eao.io.extract_output(portf=portf, op=op, res=res)
         self.assertAlmostEqual(
             out["dispatch"].abs().sum().sum(), 192, 3
@@ -1280,7 +1282,7 @@ class TestVarious(unittest.TestCase):
         data["max_capa"][20:30] = 0
         # prices['price'][0:5] = -100.
         portf = eao.portfolio.Portfolio([a, b, c, d])
-        out = eao.optimize(portf, timegrid, data)
+        out = eao.optimize(portf, timegrid, data, solver="SCIP")
         # op = portf.setup_optim_problem(prices, timegrid=timegrid)
         # res = op.optimize()
         # out = eao.io.extract_output(portf, op, res, prices)
@@ -1325,7 +1327,7 @@ class TestVarious(unittest.TestCase):
         data["max_capa"][20:30] = 0
         # prices['price'][0:5] = -100.
         portf = eao.portfolio.Portfolio([a, b])
-        out = eao.optimize(portf, timegrid, data)
+        out = eao.optimize(portf, timegrid, data, solver="SCIP")
         # op = portf.setup_optim_problem(prices, timegrid=timegrid)
         # res = op.optimize()
         # out = eao.io.extract_output(portf, op, res, prices)

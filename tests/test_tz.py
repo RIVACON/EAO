@@ -59,9 +59,9 @@ class TimeZones(unittest.TestCase):
             timezone="CET",
         )
         opCET = portf.setup_optim_problem(prices, tgCET)
-        resCET = opCET.optimize()
+        resCET = opCET.optimize(solver="SCIP")
         opNone = portf.setup_optim_problem(prices, tgNone)
-        resNone = opNone.optimize()
+        resNone = opNone.optimize(solver="SCIP")
 
         self.assertAlmostEqual(
             resCET.value, resNone.value, 5
@@ -99,7 +99,7 @@ class TimeZones(unittest.TestCase):
 
         portf = eao.portfolio.Portfolio([buy, sell])
         op = portf.setup_optim_problem(prices, tgCET)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
 
         self.assertAlmostEqual(res.value, 90.0, 5)  # given by min_take
         out = eao.io.extract_output(portf, op, res, prices)
@@ -134,7 +134,7 @@ class TimeZones(unittest.TestCase):
 
         portf = eao.portfolio.Portfolio([buy, sell])
         op = portf.setup_optim_problem(prices, tgCET)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
 
         # serialize / deserialize
         ss = eao.serialization.to_json(portf)
@@ -227,7 +227,7 @@ class TimeZones(unittest.TestCase):
         price[:46] = 0
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         self.assertAlmostEqual(res.value, 46.0 / 4.0, 5)
 
         ### october
@@ -252,7 +252,7 @@ class TimeZones(unittest.TestCase):
         price[:50] = 0
         prices = {"price": price}
         op = a.setup_optim_problem(prices, timegrid=timegrid)
-        res = op.optimize()
+        res = op.optimize(solver="SCIP")
         self.assertAlmostEqual(res.value, 50.0 / 4.0, 5)
 
     def test_cast_from_df_tz(self):
