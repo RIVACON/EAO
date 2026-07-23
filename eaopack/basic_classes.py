@@ -79,7 +79,7 @@ class Timegrid:
         Args:
             start (dt.datetime): Start datetime
             end (dt.datetime): End datetime
-            freq (str, optional): Frequency for discretization according to pandas notation ('15min', 'h', 'd', ...). Defaults to 'h'
+            freq (str, optional): Frequency for discretization according to pandas notation ('15min', 'h', 'D', ...). Defaults to 'h'
             main_time_unit (str, optional): All times in the optimization problem are measured in the main_time_unit. Pandas notation. Defaults to 'h'
             timezone: Timezone for times. String according to pandas tz definitions (e.g. CET). Defaults to None (naive timezone)
             ref_timegrid (Timegrid, optional): reference TG in case this timegrid is a subset of a suber grid
@@ -209,7 +209,7 @@ class Timegrid:
         # compute corresponding discount factors
         d = (1.0 + wacc) ** (1.0 / 365.0)  # convert interest rate to daily
         self.discount_factors = 1.0 / d ** (
-            self.Dt * pd.Timedelta(1, self.main_time_unit) / pd.Timedelta(1, "d")
+            self.Dt * pd.Timedelta(1, self.main_time_unit) / pd.Timedelta(1, "D")
         )
 
     def prices_to_grid(self, prices: dict):

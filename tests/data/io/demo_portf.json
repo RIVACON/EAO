@@ -131,7 +131,7 @@
             "__class__": "date",
             "__value__": "2021-02-01"
         },
-        "freq": "d",
+        "freq": "D",
         "main_time_unit": "h",
         "start": {
             "__class__": "date",

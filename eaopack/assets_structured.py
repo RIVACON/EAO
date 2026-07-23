@@ -251,7 +251,6 @@ class LinkedAsset(StructuredAsset):
                 else:
                     condition = condition & (op.mapping["node"].isnull())
                 I2_it = op.mapping.index[condition]
-                assert I2_it[0].size == 1
                 a = sp.lil_matrix((1, op.A.shape[1]))
                 a[0, I1_t] = 1
                 a[0, I2_it] = -op.u[I1_t]

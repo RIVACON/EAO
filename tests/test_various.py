@@ -314,7 +314,7 @@ class various(unittest.TestCase):
         ### manual benchmark
         node1 = eao.Node("node_1")
         node2 = eao.Node("node_2")
-        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d")
+        timegrid = eao.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D")
         a1 = eao.assets.SimpleContract(
             name="SC_1",
             price="rand_price_1",
@@ -446,12 +446,12 @@ class various(unittest.TestCase):
         tg = eao.assets.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 1, 3), freq="h")
         prices = {"price": np.sin(np.linspace(0, 40, tg.T))}
         op = portf.setup_split_optim_problem(
-            timegrid=tg, prices=prices, interval_size="d"
+            timegrid=tg, prices=prices, interval_size="D"
         )
         res = op.optimize()
         out = eao.io.extract_output(portf=portf, op=op, res=res)
         # shortcut
-        out2 = eao.optimize(portf, tg, prices, split_interval_size="d")
+        out2 = eao.optimize(portf, tg, prices, split_interval_size="D")
         self.assertAlmostEqual(
             out["summary"].loc["value", "Values"],
             out2["summary"].loc["value", "Values"],

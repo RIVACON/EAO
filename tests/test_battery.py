@@ -79,7 +79,7 @@ class BatteryTest(unittest.TestCase):
             end_level=0,
             price="price",
             max_cycles_no=1.1,
-            max_cycles_freq="d",
+            max_cycles_freq="D",
         )
         price = np.sin(np.linspace(0, 200, timegrid.T)) + 3
         prices = {"price": price}
@@ -91,8 +91,8 @@ class BatteryTest(unittest.TestCase):
         fl = a.fill_level(op, res)
         myrange = pd.date_range(
             start=timegrid.start,
-            end=timegrid.end + pd.Timedelta("1d"),
-            freq="d",
+            end=timegrid.end + pd.Timedelta("1D"),
+            freq="D",
             inclusive="both",
         )
         for i in range(0, len(myrange) - 1):
@@ -122,14 +122,14 @@ class BatteryTest(unittest.TestCase):
         battery_data["eff_in"] = 0.9
         battery_data["eff_out"] = 0.8
         battery_data["max_roundtrip"] = 2.2
-        battery_data["max_roundtrip_freq"] = "d"
+        battery_data["max_roundtrip_freq"] = "D"
         battery_data["simult_in_out"] = True
         ### Structural setup, distinguishing own assets and supply from the grid
         node_power = eao.assets.Node("behind meter")
 
         myrange = pd.date_range(
             start=timegrid.start,
-            end=timegrid.end + pd.Timedelta("10d"),
+            end=timegrid.end + pd.Timedelta("10D"),
             freq=battery_data["max_roundtrip_freq"],
             inclusive="both",
         )
@@ -168,7 +168,7 @@ class BatteryTest(unittest.TestCase):
             start_level=0.5 * battery_data["size"] * battery_data["eff_out"],
             end_level=0.5 * battery_data["size"] * battery_data["eff_out"],
             no_simult_in_out=battery_data["simult_in_out"],
-            block_size="1d",
+            block_size="1D",
         )
 
         battery_new = eao.assets.Storage(
@@ -184,7 +184,7 @@ class BatteryTest(unittest.TestCase):
             max_cycles_no=battery_data["max_roundtrip"],
             max_cycles_freq=battery_data["max_roundtrip_freq"],
             no_simult_in_out=battery_data["simult_in_out"],
-            block_size="1d",
+            block_size="1D",
         )
 
         portf = eao.portfolio.Portfolio([battery, buy_max_take, sell])
@@ -196,7 +196,7 @@ class BatteryTest(unittest.TestCase):
         eao.io.output_to_file(new, "test_result_x_v2.xlsx")
         myrange = pd.date_range(
             start=timegrid.start,
-            end=timegrid.end + pd.Timedelta("1d"),
+            end=timegrid.end + pd.Timedelta("1D"),
             freq=battery_data["max_roundtrip_freq"],
             inclusive="both",
         )
@@ -246,7 +246,7 @@ class BatteryTest(unittest.TestCase):
             eff_in=0.8,
             eff_out=0.9,
             no_simult_in_out=False,
-            block_size="d",
+            block_size="D",
         )
         price = np.ones([timegrid.T])
         price[0:-1:2] = 50
@@ -403,7 +403,7 @@ class BatteryTest(unittest.TestCase):
                     {
                         "__class__": "Asset",
                         "asset_type": "Storage",
-                        "block_size": "d",
+                        "block_size": "D",
                         "cap_in": 200.0,
                         "cap_out": 200.0,
                         "cost_in": 0.0,
@@ -415,7 +415,7 @@ class BatteryTest(unittest.TestCase):
                         "end_level": 200.0,
                         "freq": null,
                         "inflow": 0.0,
-                        "max_cycles_freq": "d",
+                        "max_cycles_freq": "D",
                         "max_cycles_no": null,
                         "name": "battery",
                         "no_simult_in_out": false,
@@ -450,7 +450,7 @@ class BatteryTest(unittest.TestCase):
         portf = eao.serialization.from_json(s)
         data = pd.read_pickle(join(test_data_path, "battery_test_data.pkl"))
         # check index is correct
-        out = eao.optimize(portf=portf, timegrid=tg, data=data, split_interval_size="d")
+        out = eao.optimize(portf=portf, timegrid=tg, data=data, split_interval_size="D")
         # eao.io.output_to_file(out, "xxx_out.xlsx")
         self.assertEqual(tg.start, out["dispatch"].index[0])
         self.assertTrue(all(tg.timepoints == out["dispatch"].index))
@@ -476,7 +476,7 @@ class BatteryTest(unittest.TestCase):
             # d["price"] = out["prices"]["input data: dah"]
             # self.assertAlmostEqual(d.loc["2026-01-28 23:00:00+01:00", "battery"], -200, 3)
             ### parameter setting WITH blocks
-            portf.get_asset("battery").block_size = "d"
+            portf.get_asset("battery").block_size = "D"
             bat = portf.get_asset("battery").copy
             op_wb = bat.setup_optim_problem(timegrid=tg)
             out = eao.optimize(portf=portf, timegrid=tg, data=data)
@@ -529,7 +529,7 @@ class BatteryTest(unittest.TestCase):
             end_level=1,
             eff_in=1,
             eff_out=1,
-            block_size="d",
+            block_size="D",
         )
         c = eao.assets.SimpleContract(
             nodes=node, price="price", min_cap=-100, max_cap=100
@@ -611,7 +611,7 @@ class BatteryTest(unittest.TestCase):
                     {
                         "__class__": "Asset",
                         "asset_type": "Storage",
-                        "block_size": "d",
+                        "block_size": "D",
                         "cap_in": 200.0,
                         "cap_out": 200.0,
                         "cost_in": 0.0,
@@ -623,7 +623,7 @@ class BatteryTest(unittest.TestCase):
                         "end_level": 200.0,
                         "freq": null,
                         "inflow": 0.0,
-                        "max_cycles_freq": "d",
+                        "max_cycles_freq": "D",
                         "max_cycles_no": null,
                         "name": "battery",
                         "no_simult_in_out": false,
@@ -681,7 +681,7 @@ class BatteryTest(unittest.TestCase):
         # res = op.optimize()
         # out = eao.io.extract_output(portf, op, res, mydata)
         out = eao.optimize(
-            portf=portf, timegrid=tg, data=mydata, split_interval_size="d"
+            portf=portf, timegrid=tg, data=mydata, split_interval_size="D"
         )
         myd = portf.get_asset("dah").make_vector(myprice)
         np.testing.assert_almost_equal(
@@ -945,7 +945,7 @@ class TestBatteryWithMinLevel(unittest.TestCase):
             eff_in=0.8,
             eff_out=0.9,
             no_simult_in_out=False,
-            block_size="d",
+            block_size="D",
         )
         price = 50 * np.ones([timegrid.T])
         price[1::2] = 0
@@ -984,7 +984,7 @@ class TestBatteryWithMinLevel(unittest.TestCase):
             eff_in=0.8,
             eff_out=0.9,
             no_simult_in_out=False,
-            block_size="d",
+            block_size="D",
         )
         price = 50 * np.ones([timegrid.T])
         price[1::2] = 0
@@ -1028,7 +1028,7 @@ class TestBatteryWithMinLevel(unittest.TestCase):
             portf=portf,
             timegrid=timegrid,
             data=data,
-            split_interval_size="d",
+            split_interval_size="D",
             solver="SCIP",
         )
         fl = out["internal_variables"]["STORAGE (fill_level)"]
@@ -1057,7 +1057,7 @@ class TestBatteryWithMinLevel(unittest.TestCase):
             eff_in=0.8,
             eff_out=0.9,
             no_simult_in_out=False,
-            block_size="d",
+            block_size="D",
         )
         price = 50 * np.ones([timegrid.T])
         price[1::2] = 0
@@ -1098,8 +1098,8 @@ class TestBatteryWithMinLevel(unittest.TestCase):
             eff_in=0.8,
             eff_out=0.9,
             no_simult_in_out=False,
-            # block_size="d",
-            max_cycles_freq="d",
+            # block_size="D",
+            max_cycles_freq="D",
             max_cycles_no=0.25,
         )
         op = a.setup_optim_problem(prices, timegrid=timegrid)
@@ -1107,9 +1107,9 @@ class TestBatteryWithMinLevel(unittest.TestCase):
         fl = a.fill_level(op, res)
         load = -res.x[0 : timegrid.T]
         load = pd.Series(index=timegrid.timepoints, data=load)
-        load = load.resample("d").sum() * a.eff_in
+        load = load.resample("D").sum() * a.eff_in
         ss = pd.Series(index=timegrid.timepoints, data=size)
-        ss = ss.resample("d").mean() * a.max_cycles_no
+        ss = ss.resample("D").mean() * a.max_cycles_no
         np.testing.assert_almost_equal(load.values, ss.values, 3)
 
     def test_battery_regression(self):

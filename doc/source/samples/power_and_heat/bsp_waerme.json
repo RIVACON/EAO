@@ -16,7 +16,7 @@
             "end_level": 0.25,
             "freq": null,
             "inflow": 0.0,
-            "max_cycles_freq": "d",
+            "max_cycles_freq": "D",
             "max_cycles_no": null,
             "max_store_duration": null,
             "name": "speicher",

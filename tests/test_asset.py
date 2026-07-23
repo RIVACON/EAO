@@ -176,7 +176,7 @@ class StorageTest(unittest.TestCase):
             cap_out=1,
             start_level=0,
             end_level=0,
-            block_size="7d",
+            block_size="7D",
             price="price",
         )
 
@@ -196,7 +196,7 @@ class StorageTest(unittest.TestCase):
         #### case 2: with months (varying block length)
         node = eao.assets.Node("testNode")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 7, 1), freq="1d"
+            dt.date(2021, 1, 1), dt.date(2021, 7, 1), freq="1D"
         )
         # a = eao.assets.Storage('STORAGE', node, start=dt.date(2021,1,1), end=dt.date(2021,2,1),size=10, \
         #                       cap_in=1, cap_out=1, start_level=0, end_level=0, block_size= 7*24 ,price='price')
@@ -232,7 +232,7 @@ class StorageTest(unittest.TestCase):
         """Simple test where first ten times price is zero and afterwards price is one but with different costs"""
         node = eao.assets.Node("testNode")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         price = np.ones([timegrid.T])
         price[:10] = 0
@@ -281,7 +281,7 @@ class StorageTest(unittest.TestCase):
         """Simple test where first ten times price is zero and afterwards price is one but with capacity=1.0/24.0"""
         node = eao.assets.Node("testNode")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         price = np.ones([timegrid.T])
         price[:10] = 0
@@ -431,7 +431,7 @@ class TransportTest(unittest.TestCase):
         node1 = eao.assets.Node("N1")
         node2 = eao.assets.Node("N2")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a = eao.assets.Transport(
             name="Tr",
@@ -461,7 +461,7 @@ class TransportTest(unittest.TestCase):
         node1b = eao.assets.Node("N1b")
         node2 = eao.assets.Node("N2")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 1, 11), freq="d", main_time_unit="d"
+            dt.date(2021, 1, 1), dt.date(2021, 1, 11), freq="D", main_time_unit="D"
         )
         prices = {"buy": np.zeros(timegrid.T), "sell": 1 * np.ones(timegrid.T)}
         max_take = {
@@ -503,7 +503,7 @@ class TransportTest(unittest.TestCase):
         node1 = eao.assets.Node("N1")
         node2 = eao.assets.Node("N2")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 1, 20), freq="d", main_time_unit="d"
+            dt.date(2021, 1, 1), dt.date(2021, 1, 20), freq="D", main_time_unit="D"
         )
         prices = {"buy": np.zeros(timegrid.T), "sell": 1 * np.ones(timegrid.T)}
         max_take = {
@@ -589,7 +589,7 @@ class TransportTest(unittest.TestCase):
         node1b = eao.assets.Node("N1b")
         node2 = eao.assets.Node("N2")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 1, 11), freq="d", main_time_unit="d"
+            dt.date(2021, 1, 1), dt.date(2021, 1, 11), freq="D", main_time_unit="D"
         )
         prices = {"buy": np.ones(timegrid.T), "sell": 10.0 * np.ones(timegrid.T)}
         trans = eao.assets.Transport(
@@ -619,7 +619,7 @@ class TransportTest(unittest.TestCase):
         node1b = eao.assets.Node("N1b")
         node2 = eao.assets.Node("N2")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 1, 11), freq="d", main_time_unit="d"
+            dt.date(2021, 1, 1), dt.date(2021, 1, 11), freq="D", main_time_unit="D"
         )
         prices = {
             "buy": np.ones(timegrid.T),
@@ -653,7 +653,7 @@ class TransportTest(unittest.TestCase):
         node1b = eao.assets.Node("N1b")
         node2 = eao.assets.Node("N2")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 1, 11), freq="d", main_time_unit="d"
+            dt.date(2021, 1, 1), dt.date(2021, 1, 11), freq="D", main_time_unit="D"
         )
         prices = {
             "buy": np.ones(timegrid.T),
@@ -689,7 +689,7 @@ class ContractTest(unittest.TestCase):
         timegrid = eao.assets.Timegrid(Start, End, freq="h")
 
         # capacities
-        restr_times = pd.date_range(Start, End, freq="d", inclusive="left")
+        restr_times = pd.date_range(Start, End, freq="D", inclusive="left")
         min_cap = {}
         min_cap["start"] = restr_times.to_list()
         min_cap["end"] = (restr_times + dt.timedelta(days=1)).to_list()
@@ -714,7 +714,7 @@ class ContractTest(unittest.TestCase):
         startA = dt.date(2021, 1, 3)
         timegrid = eao.assets.Timegrid(Start, End, freq="h")
         # capacities
-        restr_times = pd.date_range(Start, End, freq="d", inclusive="left")
+        restr_times = pd.date_range(Start, End, freq="D", inclusive="left")
         min_cap = {}
         min_cap["start"] = restr_times.to_list()
         min_cap["end"] = (restr_times + dt.timedelta(days=1)).to_list()
@@ -913,7 +913,7 @@ class DiscountRate(unittest.TestCase):
         """Unit test. Simple contract with discount rate"""
         node = eao.assets.Node("testNode")
         timegrid = eao.assets.Timegrid(
-            dt.date(1999, 1, 1), dt.date(2000, 1, 1), freq="d"
+            dt.date(1999, 1, 1), dt.date(2000, 1, 1), freq="D"
         )
         a = eao.assets.SimpleContract(
             name="SC",
@@ -937,7 +937,7 @@ class DiscountRate(unittest.TestCase):
         ### (A) without discount
         node = eao.assets.Node("testNode")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 1, 25), freq="d", main_time_unit="d"
+            dt.date(2021, 1, 1), dt.date(2021, 1, 25), freq="D", main_time_unit="D"
         )
         a = eao.assets.Storage(
             "STORAGE",
@@ -1018,7 +1018,7 @@ class TestOrderOrderBooks(unittest.TestCase):
         """Unit test. Basic functioning"""
         node = eao.assets.Node("testNode")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         tg2 = eao.assets.Timegrid(dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="h")
 
@@ -1074,7 +1074,7 @@ class TestOrderOrderBooks(unittest.TestCase):
         """Unit test. serialization"""
         node = eao.assets.Node("testNode")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
 
         ## define order book
