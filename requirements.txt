@@ -8,4 +8,4 @@ cvxopt <= 1.3.3
 pyscipopt <= 6.2.1
 highspy <= 1.15.1
 networkx <= 3.6.1
-matplotlib <= 3.11.1    
+matplotlib <= 3.11.1
