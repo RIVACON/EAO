@@ -23,5 +23,3 @@ dependencies:
   - highspy <= 1.15.1
   - networkx <= 3.6.1
   - matplotlib <= 3.11.1    
-  - pip:
-    - waterfall_ax==1.0.0 # needed for a graph in a sample notebook - can be removed if not needed
