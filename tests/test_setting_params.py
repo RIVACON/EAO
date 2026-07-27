@@ -1,5 +1,4 @@
 import numpy as np
-from numpy.core.shape_base import block
 import pandas as pd
 import datetime as dt
 import json
@@ -26,7 +25,7 @@ class test_setting_params(unittest.TestCase):
         ### define asset and get parameters
         node = eao.assets.Node("testNode")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a = eao.assets.SimpleContract(
             name="SC",

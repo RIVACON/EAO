@@ -4,7 +4,7 @@
         {
             "__class__": "Asset",
             "asset_type": "Storage",
-            "block_size": "d",
+            "block_size": "D",
             "cap_in": 0.5,
             "cap_out": 0.5,
             "cost_in": 0.0,
@@ -16,7 +16,7 @@
             "end_level": 0.25,
             "freq": null,
             "inflow": 0.0,
-            "max_cycles_freq": "d",
+            "max_cycles_freq": "D",
             "max_cycles_no": null,
             "max_store_duration": null,
             "name": "speicher",

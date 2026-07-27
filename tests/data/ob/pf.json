@@ -16,7 +16,7 @@
             "end_level": 100,
             "freq": null,
             "inflow": 0.0,
-            "max_cycles_freq": "2d",
+            "max_cycles_freq": "2D",
             "max_cycles_no": 1.5625,
             "max_level": null,
             "min_level": null,

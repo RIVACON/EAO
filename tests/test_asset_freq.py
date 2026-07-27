@@ -27,7 +27,7 @@ class AssetFrequency(unittest.TestCase):
             nodes=node,
             min_cap=-10.0,
             max_cap=10.0,
-            freq="d",
+            freq="D",
         )
         # solve optim problem
         prices = {"rand_price": np.random.rand(timegrid.T) - 0.5}
@@ -69,7 +69,7 @@ class AssetFrequency(unittest.TestCase):
             cap_in=1.0,
             cap_out=1.0,
             size=100,
-            freq="d",
+            freq="D",
         )
         # solve optim problem
         prices = {"rand_price": np.random.rand(timegrid.T) - 0.5}
@@ -101,7 +101,7 @@ class AssetFrequency(unittest.TestCase):
         # a1.set_timegrid(timegrid)
         ######## OTHER FREQ !!!
         a2 = eao.assets.SimpleContract(
-            name="SC_2", price="p2", nodes=node1, min_cap=-5.0, max_cap=10.0, freq="d"
+            name="SC_2", price="p2", nodes=node1, min_cap=-5.0, max_cap=10.0, freq="D"
         )
         # a2.set_timegrid(timegrid)
         a3 = eao.assets.SimpleContract(
@@ -148,7 +148,7 @@ class AssetFrequency(unittest.TestCase):
         start = dt.date(2021, 1, 1)
         end = dt.date(2021, 3, 1)
         node1 = eao.assets.Node("node_1")
-        timegrid = eao.assets.Timegrid(start, end, freq="d")
+        timegrid = eao.assets.Timegrid(start, end, freq="D")
         a1 = eao.assets.SimpleContract(
             name="SC_1",
             price="p1",
@@ -241,9 +241,9 @@ class AssetFrequency(unittest.TestCase):
         )
         prices = pd.read_csv(join(test_data_path, "2020_price_sample.csv"))
         # timegrid freq is HOURS
-        # ******** main part of test: set CHP timegrid to 'd'
+        # ******** main part of test: set CHP timegrid to 'D'
         assert portf.asset_names[2] == "CHP", "unit test failed as portfolio changed"
-        portf.assets[2].freq = "d"
+        portf.assets[2].freq = "D"
         # cast to timegrid
         prices = {
             "price": portf.timegrid.values_to_grid(
