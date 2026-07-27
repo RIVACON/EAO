@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 import json
-import pytz
 
 from eaopack.assets import *  # need to import to be able to deserialize
 from eaopack.portfolio import *  # need to import to be able to deserialize

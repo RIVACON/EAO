@@ -194,7 +194,7 @@ class Battery(Storage):
         price: Union[None, str] = None,
         freq: Union[None, str] = None,
         max_cycles_no: Union[None, float] = None,
-        max_cycles_freq: str = "d",
+        max_cycles_freq: str = "D",
     ):
         """Specific storage asset. A storage has the basic capability to
             (1) take in a commodity within a limited flow rate (capacity)
@@ -224,14 +224,14 @@ class Battery(Storage):
             cost_out (float, optional): Cost for taking out volumes ($/volume). Defaults to 0.
             cost_in (float, optional): Cost for taking in volumes ($/volume). Defaults to 0.
             block_size (str, optional): Mainly to speed optimization, optimize the storage in time blocks. Defaults None (no blocks).
-                                        Using pandas type frequency strings (e.g. 'd' to have a block each day)
+                                        Using pandas type frequency strings (e.g. 'D' to have a block each day)
 
             eff_in (float, optional): Efficiency taking in the commodity. Means e.g. at 90%: 1MWh in --> 0,9 MWh in storage. Defaults to 1 (=100%).
             eff_out: Efficiency taking out the commodity. Defaults to 1 (=100%)
 
             max_cycles_no   (float, optional): Maximum number of cycles the battery can perform. Defaults to None -- MIP!
                                                In case a time-dependent size is chosen, max_cycles_no refers to the storage mean size in that cycle interval
-            max_cycles_freq (str, optional): Frequency of the maximum number of cycles. Example: "d" for daily cycles. Defaults to 'd'
+            max_cycles_freq (str, optional): Frequency of the maximum number of cycles. Example: "D" for daily cycles. Defaults to 'D'
 
             inflow (float, str, StartEndValueDict, optional): Inflow volumes (flow in each time step. E.g. water inflow in hydro storage). Defaults to 0.
             no_simult_in_out (boolean, optional): Enforce no simultaneous dispatch in/out in case of costs or efficiency!=1. Makes problem MIP. Defaults to False

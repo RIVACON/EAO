@@ -488,7 +488,7 @@ class Test_Ramp_Fast_and_Slow(unittest.TestCase):
                 ramp_up=ramp_conv,
                 ramp_down=ramp_conv,
                 cost_in=1.1,
-                block_size="d",
+                block_size="D",
                 no_simult_in_out=False,
             )
             portfA = eao.portfolio.Portfolio([c, b])

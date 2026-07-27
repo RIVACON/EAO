@@ -1,0 +1,2103 @@
+{
+    "__class__": "Portfolio",
+    "assets": [
+        {
+            "__class__": "Asset",
+            "asset_type": "Storage",
+            "block_size": null,
+            "cap_in": 50,
+            "cap_out": 50,
+            "cost_in": 0.0,
+            "cost_out": 0.0,
+            "cost_store": 0.0,
+            "eff_in": 0.922,
+            "eff_out": 0.922,
+            "end": null,
+            "end_level": 100,
+            "freq": null,
+            "inflow": 0.0,
+            "max_cycles_freq": "2D",
+            "max_cycles_no": 1.5625,
+            "max_level": null,
+            "min_level": null,
+            "name": "battery",
+            "no_simult_in_out": true,
+            "no_zero_transition_within_ramp": false,
+            "nodes": [
+                {
+                    "__class__": "Node",
+                    "commodity": null,
+                    "name": "power",
+                    "unit": {
+                        "__class__": "Unit",
+                        "commodity": "none",
+                        "factor": 1.0,
+                        "flow": "MW",
+                        "volume": "MWh"
+                    }
+                }
+            ],
+            "periodicity": null,
+            "periodicity_duration": null,
+            "price": null,
+            "ramp_down": null,
+            "ramp_up": null,
+            "size": 200,
+            "start": null,
+            "start_level": 180.675,
+            "wacc": 0.0
+        },
+        {
+            "__class__": "Asset",
+            "asset_type": "SimpleContract",
+            "end": null,
+            "extra_costs": 0.0,
+            "freq": null,
+            "max_cap": "pos_prev",
+            "min_cap": "pos_prev",
+            "name": "pos_prev",
+            "nodes": [
+                {
+                    "__class__": "Node",
+                    "commodity": null,
+                    "name": "power",
+                    "unit": {
+                        "__class__": "Unit",
+                        "commodity": "none",
+                        "factor": 1.0,
+                        "flow": "MW",
+                        "volume": "MWh"
+                    }
+                }
+            ],
+            "periodicity": null,
+            "periodicity_duration": null,
+            "price": null,
+            "start": null,
+            "wacc": 0
+        },
+        {
+            "__class__": "Asset",
+            "asset_type": "OrderBook",
+            "full_exec": false,
+            "name": "orders",
+            "nodes": [
+                {
+                    "__class__": "Node",
+                    "commodity": null,
+                    "name": "power",
+                    "unit": {
+                        "__class__": "Unit",
+                        "commodity": "none",
+                        "factor": 1.0,
+                        "flow": "MW",
+                        "volume": "MWh"
+                    }
+                }
+            ],
+            "orders": {
+                "capa": [
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    -50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0,
+                    50.0
+                ],
+                "end": [
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 02:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 02:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 23:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 02:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 02:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 23:00:00"
+                    }
+                ],
+                "price": [
+                    26.298340000000003,
+                    46.7566,
+                    47.160039999999995,
+                    40.75048,
+                    47.98644,
+                    50.99114,
+                    52.08598,
+                    55.104119999999995,
+                    55.00392000000001,
+                    57.11914000000001,
+                    57.09326,
+                    56.327020000000005,
+                    57.772,
+                    58.836499999999994,
+                    58.67078,
+                    57.385439999999996,
+                    57.000519999999995,
+                    52.81998000000001,
+                    47.163419999999995,
+                    53.83098,
+                    43.68922,
+                    35.186600000000006,
+                    25.49174,
+                    34.9031,
+                    22.06962,
+                    9.74514,
+                    -0.76236,
+                    8.41782,
+                    1.1358,
+                    -1.3654399999999998,
+                    -3.94148,
+                    0.06848000000000001,
+                    -4.035019999999999,
+                    -4.43506,
+                    -5.4138,
+                    -3.81812,
+                    -4.32352,
+                    -5.26278,
+                    -4.83798,
+                    -4.2614600000000005,
+                    -4.2571200000000005,
+                    -4.98748,
+                    -4.29552,
+                    -5.08448,
+                    -5.513400000000001,
+                    -4.7486,
+                    1.5203599999999997,
+                    -4.19782,
+                    -0.3355400000000006,
+                    31.269539999999996,
+                    59.44478,
+                    42.356939999999994,
+                    63.14906,
+                    86.20358,
+                    95.09528,
+                    77.48966,
+                    98.39233999999999,
+                    105.95006,
+                    110.5201,
+                    116.37449999999998,
+                    110.98014,
+                    105.48434,
+                    104.1921,
+                    100.09684,
+                    98.25912,
+                    96.87849999999999,
+                    92.07364,
+                    97.79098,
+                    92.13678,
+                    86.15961999999999,
+                    78.47485999999999,
+                    87.76076,
+                    79.09792,
+                    72.39352,
+                    71.44666000000001,
+                    82.6605,
+                    76.50102,
+                    70.89622,
+                    67.28992,
+                    77.26656,
+                    68.31812000000001,
+                    69.29584000000001,
+                    25.071339999999996,
+                    37.5806,
+                    58.36614,
+                    59.1652,
+                    47.681580000000004,
+                    55.16937999999999,
+                    55.62532,
+                    55.885999999999996,
+                    59.18928,
+                    60.776,
+                    60.942980000000006,
+                    60.1348,
+                    59.89498,
+                    61.3245,
+                    62.72004,
+                    61.91672,
+                    62.273619999999994,
+                    61.7868,
+                    59.981,
+                    53.43728,
+                    58.46858,
+                    48.52708,
+                    41.880860000000006,
+                    30.71374,
+                    38.97262,
+                    24.067659999999997,
+                    14.426279999999998,
+                    2.7732200000000002,
+                    12.90816,
+                    4.3814,
+                    0.60666,
+                    -1.2170400000000001,
+                    3.4471,
+                    0.02967999999999999,
+                    -0.6424599999999999,
+                    -1.84598,
+                    0.8821799999999999,
+                    -1.44668,
+                    -1.56376,
+                    -1.72786,
+                    -1.6573,
+                    -1.59714,
+                    -1.6826400000000001,
+                    -1.47346,
+                    -1.8610200000000001,
+                    -0.6715000000000001,
+                    -0.025079999999999707,
+                    10.676219999999999,
+                    9.62832,
+                    21.863619999999997,
+                    44.078500000000005,
+                    71.14904,
+                    51.55756,
+                    75.50457999999999,
+                    97.0297,
+                    105.18342000000001,
+                    103.12934,
+                    114.17847999999998,
+                    118.61380000000001,
+                    121.18734,
+                    119.01472,
+                    119.95919999999998,
+                    117.7571,
+                    111.75884,
+                    116.50326000000001,
+                    114.62106,
+                    110.8435,
+                    106.34782,
+                    112.91239999999999,
+                    105.7602,
+                    99.87498,
+                    84.67115999999999,
+                    91.43348,
+                    92.21709999999999,
+                    85.55308000000001,
+                    80.025,
+                    92.43456,
+                    83.20802,
+                    80.40046000000001,
+                    78.37032,
+                    82.64022000000001,
+                    78.435,
+                    77.65608,
+                    68.92732
+                ],
+                "start": [
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 02:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 02:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 02:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 02:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 02:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 02:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 03:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 04:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 05:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 06:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 07:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 08:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 09:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 10:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 11:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 12:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 13:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 14:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 15:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 16:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 17:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 18:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 19:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 20:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 21:45:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:00:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:15:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:30:00"
+                    },
+                    {
+                        "__class__": "datetime",
+                        "__tz__": "Europe/Berlin",
+                        "__value__": "2026-03-01 22:45:00"
+                    }
+                ]
+            },
+            "wacc": 0
+        }
+    ]
+}

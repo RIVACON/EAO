@@ -12,8 +12,6 @@ output_data_path = join(mypath, "data", "output")
 sys.path.append(join(mypath, ".."))
 import eaopack as eao
 
-import pytz
-
 
 class TimeZones(unittest.TestCase):
     def test_opt_tz(self):
@@ -109,8 +107,6 @@ class TimeZones(unittest.TestCase):
         """Unit test. Timezones and serialization"""
         node = eao.assets.Node("N1a")
         Start = dt.datetime(2020, 10, 24)  # includes time change winter -> summer
-        # timezone = pytz.timezone("CET")
-        # Start = timezone.localize(Start)
         End = dt.date(2020, 10, 26)
 
         tgCET = eao.assets.Timegrid(

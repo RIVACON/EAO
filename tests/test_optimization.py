@@ -23,7 +23,7 @@ class OptimizationTests(unittest.TestCase):
         node1 = eao.assets.Node("node_1")
         node2 = eao.assets.Node("node_2")
         timegrid = eao.assets.Timegrid(
-            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="d"
+            dt.date(2021, 1, 1), dt.date(2021, 2, 1), freq="D"
         )
         a1 = eao.assets.SimpleContract(
             name="SC_1",
@@ -79,7 +79,7 @@ class OptimizationTests(unittest.TestCase):
 
         start_future = dt.date(2021, 1, 4)
 
-        timegrid = eao.assets.Timegrid(Start, End, freq="d")
+        timegrid = eao.assets.Timegrid(Start, End, freq="D")
         a1 = eao.assets.SimpleContract(
             name="SC_1", price="price1", nodes=node1, min_cap=-20.0, max_cap=20.0
         )
@@ -129,7 +129,7 @@ class OptimizationTests(unittest.TestCase):
         End = dt.date(2021, 2, 1)
         fix_date = Start + dt.timedelta(days=10)
 
-        timegrid = eao.assets.Timegrid(Start, End, freq="d")
+        timegrid = eao.assets.Timegrid(Start, End, freq="D")
         a1 = eao.assets.SimpleContract(
             name="SC_1",
             price="rand_price_1",
@@ -266,7 +266,7 @@ class SplitOptimizationTests(unittest.TestCase):
             cap_out=1.0 / 24.0,
             start_level=5,
             end_level=5,
-            block_size="d",
+            block_size="D",
         )
         pricesA = {
             "rand_price_1": np.sin(np.linspace(0, 10, timegrid.T)),
@@ -279,7 +279,7 @@ class SplitOptimizationTests(unittest.TestCase):
         resA = opA.optimize()
         outA = eao.io.extract_output(portf, opA, resA)
         ### split_optim
-        opB = portf.setup_split_optim_problem(pricesA, timegrid, interval_size="d")
+        opB = portf.setup_split_optim_problem(pricesA, timegrid, interval_size="D")
         resB = opB.optimize()
         outB = eao.io.extract_output(portf, opB, resB)
         # all results must be equal
@@ -327,7 +327,7 @@ class SplitOptimizationTests(unittest.TestCase):
             cap_out=1.0 / 24.0,
             start_level=5,
             end_level=5,
-            block_size="d",
+            block_size="D",
         )
         pricesA = {
             "rand_price_1": np.sin(np.linspace(0, 10, timegrid.T)),
@@ -338,7 +338,7 @@ class SplitOptimizationTests(unittest.TestCase):
         pricesA["c2"][-10] = 0  # infeasible
         portf = eao.portfolio.Portfolio([a1, a2, a3, a5])
         ### split_optim
-        out = eao.optimize(portf, timegrid, pricesA, split_interval_size="d")
+        out = eao.optimize(portf, timegrid, pricesA, split_interval_size="D")
         assert isinstance(out["summary"]["status"], str)
 
 

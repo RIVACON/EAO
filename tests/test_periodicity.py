@@ -22,7 +22,7 @@ class PeriodicityTests(unittest.TestCase):
         a = eao.assets.SimpleContract(name = 'SC', price = 'price', nodes = node ,
                                       min_cap= -10., max_cap=+10., 
                                       start =dt.date(2021,1,3), end = dt.date(2021,1,25),
-                                      periodicity= 'd',
+                                      periodicity= 'D',
                                       periodicity_duration = None)
         b = eao.assets.SimpleContract(name = 'm',  nodes = node ,
                                       min_cap= -10., max_cap=+10.)
@@ -40,7 +40,7 @@ class PeriodicityTests(unittest.TestCase):
         # all hours equal
         d = d[(d.index>=pd.Timestamp(dt.date(2021,1,3)))&(d.index<pd.Timestamp(dt.date(2021,1,25)))]
         for h in range(0,24):
-            assert all(d.loc[d.index.hour == h, 'SC'] == d.loc[d.index.hour == h, 'SC'][0])
+            assert all(d.loc[d.index.hour == h, 'SC'] == d.loc[d.index.hour == h, 'SC'].iloc[0])
 
     def test_periodic_contract_max_capa(self):
         node = eao.assets.Node('testNode')
@@ -57,7 +57,7 @@ class PeriodicityTests(unittest.TestCase):
         # simple daily
         a = eao.assets.Contract(name = 'SC', price = 'rand_price', nodes = node ,
                         min_cap= min_cap, max_cap=min_cap,
-                        periodicity = 'd')
+                        periodicity = 'D')
 
         b = eao.assets.SimpleContract(name = 'm',  nodes = node ,
                                       min_cap= -10., max_cap=+10.)
@@ -88,7 +88,7 @@ class PeriodicityTests(unittest.TestCase):
         startA = dt.date(2021,1,3)
         timegrid = eao.assets.Timegrid(Start, End, freq = 'h')
         # capacities    
-        restr_times = pd.date_range(Start, End, freq = 'd', inclusive = 'left')
+        restr_times = pd.date_range(Start, End, freq = 'D', inclusive = 'left')
         min_cap = {}
         min_cap['start']  = restr_times.to_list()
         min_cap['end']    = (restr_times + dt.timedelta(days = 1)).to_list()
@@ -126,11 +126,11 @@ class PeriodicityTests(unittest.TestCase):
         a = eao.assets.SimpleContract(name = 'SC', price = 'price', nodes = node1 ,
                                       min_cap= -10., max_cap=+10., 
                                       start =dt.date(2021,1,3), end = dt.date(2021,1,25),
-                                      )# periodicity = 'd')
+                                      )# periodicity = 'D')
         b = eao.assets.SimpleContract(name = 'm',  nodes = node2 ,
                                       min_cap= -10., max_cap=+10.)
         t = eao.assets.Transport(name = 't', min_cap = -1000, max_cap= 1000.,  nodes=[node1, node2],
-                        periodicity = 'd',start =dt.date(2021,1,3), end = dt.date(2021,1,25))
+                        periodicity = 'D',start =dt.date(2021,1,3), end = dt.date(2021,1,25))
         portf = eao.portfolio.Portfolio([a,b,t])
         prices ={'price': np.sin(30*np.linspace(0,10,timegrid.T))}
         #opt = t.setup_optim_problem(prices, timegrid=timegrid)
@@ -145,17 +145,17 @@ class PeriodicityTests(unittest.TestCase):
         # all hours equal
         d = d[(d.index>=pd.Timestamp(dt.date(2021,1,3)))&(d.index<pd.Timestamp(dt.date(2021,1,25)))]
         for h in range(0,24):
-            self.assertAlmostEqual(abs(d.loc[d.index.hour == h, 'SC (n1)'] - d.loc[d.index.hour == h, 'SC (n1)'][0]).sum(), 0, 4)
+            self.assertAlmostEqual(abs(d.loc[d.index.hour == h, 'SC (n1)'] - d.loc[d.index.hour == h, 'SC (n1)'].iloc[0]).sum(), 0, 4)
 
     def test_period_storage(self):
         """ Periodization. Unit test. Setting up a simple contract with random prices 
             and check that it buys full load at negative prices and opposite
         """
         node = eao.assets.Node('testNode')
-        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,2,1), freq = 'd')
+        timegrid = eao.assets.Timegrid(dt.date(2021,1,1), dt.date(2021,2,1), freq = 'D')
         a = eao.assets.Storage(name = 'st', nodes = node ,
                                cap_in=1, cap_out=1, size = 5,
-                               periodicity = '4d')
+                               periodicity = '4D')
         b = eao.assets.SimpleContract(name = 'm',  nodes = node , price = 'price',
                                       min_cap= -10., max_cap=+10.)
         prices ={'price': np.sin(30*np.linspace(0,10,timegrid.T))}
@@ -166,7 +166,7 @@ class PeriodicityTests(unittest.TestCase):
         d = out['dispatch']
         for ii in range(0,4):
             dd = timegrid.timepoints[ii::4]
-            self.assertAlmostEqual(abs(d.loc[dd, 'st'] - d.loc[dd, 'st'][0]).sum(), 0, 4)
+            self.assertAlmostEqual(abs(d.loc[dd, 'st'] - d.loc[dd, 'st'].iloc[0]).sum(), 0, 4)
 
 
 ###########################################################################################################

@@ -1,8 +1,10 @@
 import numpy as np
 import pandas as pd
 import datetime as dt
+import os
 from typing import Union, List, Dict
 import scipy.sparse as sp
+
 
 from eaopack.basic_classes import Timegrid
 
@@ -292,6 +294,7 @@ class OptimProblem:
         solver=None,
         make_soft_problem=False,
         solver_params=None,
+        n_threads=None,
     ) -> Union[Results, str]:
         """optimize the optimization problem
 
@@ -301,10 +304,11 @@ class OptimProblem:
             samples (List): Samples to be used in specific optimization targets
                             - Robust optimization: list of costs arrays (maximizing minimal DCF)
             interface (str, optional): Chosen interface architecture. Defaults to 'cvxpy'. "ortools" also possible.
-            solver (str, optional): Solver for interface. Defaults to None, in which case SCIP is utilized (currently best experience)
+            solver (str, optional): Solver for interface. Defaults to None, in which case HIGHS or SCIP are utilized (currently best experience)
                                     choose "CVXPY" to let CVXPY decide (with interface "cvxpy")
                                     Note: CVXPY is used as interface to solvers. See details on solvers here:  https://www.cvxpy.org/tutorial/solvers/index.html
             make_soft_problem (bool, optional): If true, relax the boolean variables and allow float values instead. Defaults to False
+            n_threads (int, None, optional): Number of threads to be used. Defaults to None (parameter not set, use standard)
         """
         assert np.all(
             self.l <= self.u
@@ -333,7 +337,11 @@ class OptimProblem:
             ########### default solver. For MIPs setting SCIP as default solver - currently best experience
             if solver is None:
                 if isMIP:
-                    solver = "SCIP"
+                    # Check for a specific solver
+                    if "HIGHS" in CVX.installed_solvers():
+                        solver = "HIGHS"
+                    else:
+                        solver = "SCIP"
             elif solver.upper() == "CVXPY":
                 solver = None  # let CVXPY decide
 
@@ -350,14 +358,20 @@ class OptimProblem:
             constr_types = (
                 {}
             )  # dict to remember constraint type and numbering to extract duals
+            I_eq = self.u == self.l
             # lower and upper bound  constraints # 0 & 1
-            constraints = [x <= self.u, x >= self.l]
-
-            constr_types["bound_u"] = 0  # first CVX constraint
-            constr_types["bound_l"] = 1  # second CVX constraint ...
-            counter_constr_type = (
-                1  # keep track of number of constraint types to be able to identify
-            )
+            constraints = []
+            counter_constr_type = 0
+            if any(~I_eq):
+                constraints += [x[~I_eq] <= self.u[~I_eq], x[~I_eq] >= self.l[~I_eq]]
+                constr_types["bound_u"] = counter_constr_type  # first CVX constraint
+                counter_constr_type += 1
+                constr_types["bound_l"] = counter_constr_type
+                counter_constr_type += 1
+            if any(I_eq):
+                constraints += [x[I_eq] == self.l[I_eq]]
+                constr_types["bound_eq"] = counter_constr_type
+                counter_constr_type += 1
 
             if not self.A is None:
                 # print(f"len(b)={len(self.b)}, len(cType)={len(self.cType)}, A.shape={self.A.shape}")
@@ -372,8 +386,8 @@ class OptimProblem:
                 myRows = [mya == my_type for mya in self.cType]
                 self.A = self.A.tolil()  # check - necessary? Leftover?
                 if any(myRows):
-                    counter_constr_type += 1
                     constr_types[my_type] = counter_constr_type
+                    counter_constr_type += 1
                     myRows = np.asarray(myRows)
                     AU = self.A[myRows, :]
                     bU = np.asarray(self.b)
@@ -385,8 +399,8 @@ class OptimProblem:
                 my_type = "L"
                 myRows = [mya == my_type for mya in self.cType]
                 if any(myRows):
-                    counter_constr_type += 1
                     constr_types[my_type] = counter_constr_type
+                    counter_constr_type += 1
                     myRows = np.asarray(myRows)
                     AL = self.A[myRows, :]
                     bL = np.asarray(self.b)
@@ -396,8 +410,8 @@ class OptimProblem:
                 my_type = "S"
                 myRows = [mya == my_type for mya in self.cType]
                 if any(myRows):
-                    counter_constr_type += 1
                     constr_types[my_type] = counter_constr_type
+                    counter_constr_type += 1
                     myRows = np.asarray(myRows)
                     AS = self.A[myRows, :]
                     bS = np.asarray(self.b)
@@ -408,8 +422,8 @@ class OptimProblem:
                 my_type = "N"
                 myRows = [mya == my_type for mya in self.cType]
                 if any(myRows):
-                    counter_constr_type += 1
                     constr_types[my_type] = counter_constr_type
+                    counter_constr_type += 1
                     myRows = np.asarray(myRows)
                     AN = self.A[myRows, :]
                     bN = np.asarray(self.b)
@@ -442,7 +456,10 @@ class OptimProblem:
             prob = CVX.Problem(CVX.Maximize(objective), constraints)
 
             if solver is None:
-                prob.solve()
+                if n_threads is None:
+                    prob.solve()
+                else:
+                    prob.solve(threads=n_threads)
             else:
                 inst_solv = CVX.installed_solvers()
                 if not solver in inst_solv:
@@ -452,8 +469,10 @@ class OptimProblem:
                         + " not installed. Installed solvers are: "
                         + str(inst_solv)
                     )
-                prob.solve(solver=getattr(CVX, solver))
-
+                if n_threads is None:
+                    prob.solve(solver=getattr(CVX, solver))
+                else:
+                    prob.solve(solver=getattr(CVX, solver), threads=n_threads)
             if prob.status == "optimal":
                 # print("Status: " +prob.status)
                 # print('Portfolio Value: ' +  '% 6.0f' %prob.value)
