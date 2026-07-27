@@ -158,7 +158,7 @@
 <li><p>a power market where power may be bought or sold</p></li>
 </ul>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="c1">## create battery</span>
@@ -170,7 +170,7 @@
                             <span class="n">start_level</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span>
                             <span class="n">end_level</span>   <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span>
                             <span class="n">eff_in</span>      <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
-                            <span class="n">block_size</span>  <span class="o">=</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>     <span class="c1"># optimization for each day independently</span>
+                            <span class="n">block_size</span>  <span class="o">=</span> <span class="s1">&#39;D&#39;</span><span class="p">)</span>     <span class="c1"># optimization for each day independently</span>
 
 <span class="n">power2heat</span>   <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">MultiCommodityContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;power-2-heat&#39;</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max_cap</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_power</span><span class="p">,</span> <span class="n">node_heat</span><span class="p">],</span> <span class="n">factors_commodities</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 <span class="n">power_gen</span>    <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">MultiCommodityContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;CHP&#39;</span><span class="p">,</span> <span class="n">extra_costs</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">min_cap</span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_power</span><span class="p">,</span> <span class="n">node_heat</span><span class="p">],</span> <span class="n">factors_commodities</span><span class="o">=</span><span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">])</span>

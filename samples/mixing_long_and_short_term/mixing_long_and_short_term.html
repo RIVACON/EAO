@@ -141,7 +141,7 @@
 </ul>
 <p>Note: For sake of clarity in the charts we do the optimization on daily granularity. Finer overall granularity (e.g. hours) is defined on portfolio level in the timegrid</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
@@ -149,7 +149,7 @@
 
 <span class="c1"># the basic setup</span>
 <span class="n">node</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">)</span>
-<span class="n">timegrid</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Timegrid</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>
+<span class="n">timegrid</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">Timegrid</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span><span class="p">)</span>
 <span class="n">market</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">SimpleContract</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;market&#39;</span><span class="p">,</span> <span class="n">price</span> <span class="o">=</span> <span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">node</span> <span class="p">,</span>
                 <span class="n">min_cap</span><span class="o">=</span> <span class="o">-</span><span class="mf">1000.</span><span class="p">,</span> <span class="n">max_cap</span><span class="o">=</span><span class="mf">1000.</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">end</span><span class="p">)</span>
 <span class="c1"># daily flex</span>

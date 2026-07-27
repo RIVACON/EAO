@@ -125,6 +125,7 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">eaopack</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eao</span>
@@ -250,7 +251,7 @@ Peak memory usage:  2 MB
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Peak memory usage:  165 MB
+Peak memory usage:  175 MB
 </pre></div></div>
 </div>
 <p>We observe that solving this setup does not constitute an issue in terms of memory used or time required.</p>
@@ -434,7 +435,7 @@ Peak memory usage:  5 MB
                                  <span class="n">eff_in</span>      <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span> <span class="c1"># %</span>
                                  <span class="n">start_level</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="c1"># MWh</span>
                                  <span class="n">end_level</span>   <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="c1"># MWh</span>
-                                 <span class="n">max_cycles_freq</span> <span class="o">=</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span>
+                                 <span class="n">max_cycles_freq</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span>
                                  <span class="n">max_cycles_no</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
                                  <span class="n">no_simult_in_out</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>   <span class="c1"># creates MIP if true! If false, simultaneous</span>
                                                             <span class="c1"># charge/discharge for negative prices possible</span>
@@ -462,7 +463,7 @@ Peak memory usage:  5 MB
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Run-time: 68 min 24 sec
+Run-time: 55 min 28 sec
 Total dispatch plant (no splitting): 218,706 MWh
 </pre></div></div>
 </div>
@@ -470,8 +471,9 @@ Total dispatch plant (no splitting): 218,706 MWh
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;HIGHS&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">max_threads</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">eao</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">portf</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;HIGHS&quot;</span><span class="p">,</span> <span class="n">n_threads</span><span class="o">=</span><span class="n">max_threads</span><span class="p">)</span>
 <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 <span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Run-time: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">minutes</span><span class="p">)</span><span class="si">}</span><span class="s2"> min </span><span class="si">{</span><span class="n">seconds</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> sec&quot;</span><span class="p">)</span>
@@ -484,12 +486,12 @@ Total dispatch plant (no splitting): 218,706 MWh
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Run-time: 10 min 20 sec
+Run-time: 13 min 23 sec
 Total dispatch plant (no splitting): 218,540 MWh
 </pre></div></div>
 </div>
 <p>We see some difference between SCIP and HighS (we found both to be very efficient for EAO purposes). In case run time is an issue and a problem must be solved repeatedly, it will be worth, trying out several solvers.</p>
-<p>Particularly if you have a license for CPLEX, Gurobi or another commercial solver, it’s worth trying. Performance may be much better. Note that plant output is very similar, but not identical (you will hardly achieve perfect accuracy in MIPs). It’s worthwhile trying different solvers for your problems. Differences may be big.</p>
+<p>Particularly if you have a license for CPLEX, Gurobi or another commercial solver, it’s worth trying. Performance may be much better. Note that plant output is very similar, but not identical (you will hardly achieve perfect accuracy in MIPs). It’s worthwhile trying different solvers for your problems. Differences may be big. <strong>Threads:</strong> Some solvers (such as HIGHS) are able to parallelize the problem. Without setting, the solver’s default is used. You may set e.g. to all CPUs to speed up.</p>
 <p><strong>Now let us run the problem in weekly chunks:</strong></p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
@@ -509,7 +511,7 @@ Total dispatch plant (no splitting): 218,540 MWh
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Run-time: 1 min 22 sec
+Run-time: 1 min 58 sec
 Total dispatch plant (with splitting): 216,206 MWh
 </pre></div></div>
 </div>
@@ -541,7 +543,7 @@ Total dispatch plant (with splitting): 216,206 MWh
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Run-time: 6 min 60 sec
+Run-time: 14 min 7 sec
 Total dispatch plant (softened problem using default solver): 310,438 MWh
 </pre></div></div>
 </div>
