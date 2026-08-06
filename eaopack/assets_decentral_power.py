@@ -101,7 +101,7 @@ class RenewableAsset(Asset):
             effective_price = fixed_price
 
         # profile is effectively the max_cap; min_cap is either 0 or equal max_cap if asset is not controllable
-        max_cap = self.profile
+        max_cap = self.make_vector(value=self.profile, prices = prices, convert = True)
         min_cap = (
             self.make_vector(value=0, convert=True) if self.controllable else max_cap
         )
@@ -156,9 +156,12 @@ def n_hour_rule_applies(price: np.ndarray, n_hours: int) -> np.ndarray:
     ends = np.where(diff == -1)[0]
     lengths = ends - starts
     rule_applies = lengths >= n_hours
-    idx = np.concatenate(
-        [np.arange(s, e) for s, e in zip(starts[rule_applies], ends[rule_applies])]
-    )
+    if len(starts)>0:
+        idx = np.concatenate(
+            [np.arange(s, e) for s, e in zip(starts[rule_applies], ends[rule_applies])]
+        )
+    else:
+        idx = np.array([], dtype=int)
     return idx
 
 
