@@ -367,6 +367,7 @@ def optimize(
     solver: Union[str, None] = None,
     make_soft_problem: bool = False,
     n_threads: Union[int, None] = None,
+    max_workers: Union[int, None] = None
 ) -> Dict:
     """Optimization shortcut: Cast data into timegrid, do the optimization and extract the results in one go
 
@@ -383,7 +384,7 @@ def optimize(
                                 Note: CVXPY is used as interface to solvers. See details on solvers here:  https://www.cvxpy.org/tutorial/solvers/index.html
         make_soft_problem (bool, optional): Make a soft problem (relax booleans in MIP to create LP) --> speedup. Defaults to False.
         n_threads (int, None, optional): Number of threads to be used by solver. Defaults to None (parameter not set, use standard)
-
+        max_workers (int, None, optional): Number of workers to be used for parallelization in split_optimization. Defaults to None (parameter not set, use standard)
 
     Returns: Output dictionary with keys (if optimization feasible):
                - summary
@@ -408,7 +409,8 @@ def optimize(
         )
     if parallelize_intervals and not split_interval_size is None:
         res = op.optimize_parallel(
-            solver=solver, make_soft_problem=make_soft_problem, n_threads=n_threads
+            solver=solver, make_soft_problem=make_soft_problem, n_threads=n_threads,
+            max_workers = max_workers
         )
     else: # std. version: no split optimization or no parallelization
         res = op.optimize(

@@ -418,7 +418,9 @@ class SplitOptimizationTests_paralel(unittest.TestCase):
         timings["split_optim_parallel"] = time.perf_counter() - t0
 
         ### call via wrapper
+        t0 = time.perf_counter()
         outD = eao.optimize(portf, timegrid, pricesA, split_interval_size="D")
+        timings["split_wrapper"] = time.perf_counter() - t0
         ### comparison
         baseline = timings["original"]
         print(f"{'version':<22}{'time (s)':>10}{'speedup':>10}")
