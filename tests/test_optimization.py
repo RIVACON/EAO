@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 from copy import deepcopy
-
+import time
 # in case eao is not installed
 from os.path import dirname, join
 import sys
@@ -341,6 +341,102 @@ class SplitOptimizationTests(unittest.TestCase):
         out = eao.optimize(portf, timegrid, pricesA, split_interval_size="D")
         assert isinstance(out["summary"]["status"], str)
 
+
+class SplitOptimizationTests_paralel(unittest.TestCase):
+    def test_same_same_parallel(self):
+        node1 = eao.assets.Node("node_1")
+        node2 = eao.assets.Node("node_2")
+        Start = dt.date(2021, 2, 10)
+        End = dt.date(2021, 3, 12)
+        timegrid = eao.assets.Timegrid(Start, End, freq="h")
+        a1 = eao.assets.SimpleContract(
+            name="SC_1",
+            price="rand_price_1",
+            nodes=node1,
+            min_cap=-20.0,
+            max_cap=20.0,
+            start=dt.date(2021, 2, 10),
+            end=dt.date(2021, 3, 20),
+            wacc=0.2,
+        )
+        a2 = eao.assets.SimpleContract(
+            name="SC_2",
+            price="rand_price_2",
+            nodes=node1,
+            min_cap=-5.0,
+            max_cap=10.0,
+            wacc=0.0,
+        )
+        a3 = eao.assets.SimpleContract(
+            name="SC_3",
+            price="rand_price_2",
+            nodes=node2,
+            min_cap=-1.0,
+            max_cap=10.0,
+            extra_costs=1.0,
+        )
+        a5 = eao.assets.Storage(
+            "storage",
+            nodes=node1,
+            start=dt.date(2021, 1, 1),
+            end=dt.date(2021, 2, 1),
+            size=10,
+            cap_in=1.0 / 24.0,
+            cap_out=1.0 / 24.0,
+            start_level=5,
+            end_level=5,
+            block_size="D",
+        )
+        pricesA = {
+            "rand_price_1": np.sin(np.linspace(0, 10, timegrid.T)),
+            "rand_price_2": np.cos(np.linspace(0, 10, timegrid.T)),
+        }
+
+        portf = eao.portfolio.Portfolio([a1, a2, a3, a5])
+
+
+        timings = {}
+
+        ### original
+        t0 = time.perf_counter()
+        opA = portf.setup_optim_problem(pricesA, timegrid)
+        resA = opA.optimize()
+        outA = eao.io.extract_output(portf, opA, resA)
+        timings["original"] = time.perf_counter() - t0
+
+        ### split_optim
+        t0 = time.perf_counter()
+        opB = portf.setup_split_optim_problem(pricesA, timegrid, interval_size="D")
+        resB = opB.optimize()
+        outB = eao.io.extract_output(portf, opB, resB)
+        timings["split_optim"] = time.perf_counter() - t0
+
+        ### split_optim_parallel
+        t0 = time.perf_counter()
+        resC = opB.optimize_parallel()
+        outC = eao.io.extract_output(portf, opB, resC)
+        timings["split_optim_parallel"] = time.perf_counter() - t0
+
+        ### call via wrapper
+        outD = eao.optimize(portf, timegrid, pricesA, split_interval_size="D")
+        ### comparison
+        baseline = timings["original"]
+        print(f"{'version':<22}{'time (s)':>10}{'speedup':>10}")
+        for name, t in timings.items():
+            print(f"{name:<22}{t:>10.3f}{baseline / t:>9.2f}x")
+
+        # all results must be equal
+        self.assertAlmostEqual(resA.value, resB.value, 4)
+        self.assertTrue(all(abs(outA["dispatch"] - outB["dispatch"]).sum() < 1e-5))
+        self.assertTrue(all(abs(outA["prices"] - outB["prices"]).sum() < 1e-3))
+        # all results must be equal - parallelized version
+        self.assertAlmostEqual(resA.value, resC.value, 4)
+        self.assertTrue(all(abs(outA["dispatch"] - outC["dispatch"]).sum() < 1e-5))
+        self.assertTrue(all(abs(outA["prices"] - outC["prices"]).sum() < 1e-3))
+        # all results must be equal - wrapper
+        self.assertAlmostEqual(resA.value, resC.value, 4)
+        self.assertTrue(all(abs(outA["dispatch"] - outD["dispatch"]).sum() < 1e-5))
+        self.assertTrue(all(abs(outA["prices"] - outD["prices"]).sum() < 1e-3))
 
 ###########################################################################################################
 ###########################################################################################################

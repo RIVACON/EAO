@@ -2,8 +2,12 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Union, List, Dict
 import scipy.sparse as sp
+
+# parallelization
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 from eaopack.basic_classes import Timegrid
@@ -620,3 +624,40 @@ class SplitOptimProblem(OptimProblem):
                 else:
                     res.duals = res_tmp.duals
         return res
+
+    def optimize_parallel(self, *args, max_workers=None, **kwargs) -> Results:
+        """Optimize all OptimProblems in self.ops in parallel (threads) and
+        piece the results together in one Result."""
+        results_by_idx = {}
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_idx = {
+                executor.submit(op.optimize, *args, **kwargs): idx
+                for idx, op in enumerate(self.ops)
+            }
+            for future in as_completed(future_to_idx):
+                idx = future_to_idx[future]
+                results_by_idx[idx] = future.result()  # re-raises solver exceptions here
+
+        # merge in ORIGINAL op order — x / duals concatenation depends on it
+        res = Results(0, np.array([]), None)
+        for idx in range(len(self.ops)):
+            res_tmp = results_by_idx[idx]
+            if isinstance(res_tmp, str):
+                return res_tmp  # infeasible message
+
+            res.value += res_tmp.value
+            res.x = np.hstack((res.x, res_tmp.x))
+            if res_tmp.duals:
+                if res.duals:
+                    for key in res_tmp.duals:
+                        if res.duals[key] is not None:
+                            if res_tmp.duals[key] is None:
+                                res.duals[key] = None
+                            else:
+                                res.duals[key] = np.hstack(
+                                    (res.duals[key], res_tmp.duals[key])
+                                )
+                else:
+                    res.duals = res_tmp.duals
+        return res
+

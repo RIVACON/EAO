@@ -363,6 +363,7 @@ def optimize(
     timegrid: Timegrid,
     data: Union[dict, pd.DataFrame, pd.Series, None] = None,
     split_interval_size: Union[str, None] = None,
+    parallelize_intervals: bool = True,
     solver: Union[str, None] = None,
     make_soft_problem: bool = False,
     n_threads: Union[int, None] = None,
@@ -377,6 +378,7 @@ def optimize(
                                              Hard cut of optimization into time split for faster calculation.
                                              Pandas convention 'D', 'h', 'W', ...
                                              (none for no split)
+        parallelize_intervals (bool, optional): Parallelize split optimization. Defaults to True.
         solver (str, optional): Solver to be used. Defaults to None (uses default solver)
                                 Note: CVXPY is used as interface to solvers. See details on solvers here:  https://www.cvxpy.org/tutorial/solvers/index.html
         make_soft_problem (bool, optional): Make a soft problem (relax booleans in MIP to create LP) --> speedup. Defaults to False.
@@ -404,8 +406,13 @@ def optimize(
         op = portf.setup_split_optim_problem(
             prices=my_data, timegrid=timegrid, interval_size=split_interval_size
         )
-    res = op.optimize(
-        solver=solver, make_soft_problem=make_soft_problem, n_threads=n_threads
-    )
+    if parallelize_intervals and not split_interval_size is None:
+        res = op.optimize_parallel(
+            solver=solver, make_soft_problem=make_soft_problem, n_threads=n_threads
+        )
+    else: # std. version: no split optimization or no parallelization
+        res = op.optimize(
+            solver=solver, make_soft_problem=make_soft_problem, n_threads=n_threads
+        )
     out = extract_output(portf, op, res, my_data)
     return out
