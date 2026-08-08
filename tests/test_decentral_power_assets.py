@@ -43,6 +43,29 @@ class RenewablesTestCase(unittest.TestCase):
         )
         self.portf = eao.portfolio.Portfolio([self.renewable, self.contract])
 
+    def test_res_with_df(self):
+        """ test simple setup with dataframe as input """
+        start = dt.date(2021, 1, 1)
+        end = dt.date(2021, 1, 10)
+        tg = eao.assets.Timegrid(start, end, freq="h")
+        df = pd.DataFrame(index = tg.Dt, data = 10, columns = ["profile"]) 
+        res = eao.assets.RenewableAsset(
+            "Renewable",
+            eao.Node("testNode"),
+            profile="profile",
+            market_price="profile",
+            fixed_price=0.0,
+            n_hour_rule_payment=2,
+            n_hour_rule_delivery=None,
+            controllable=True,
+            short_position=False,
+            cfd_type=False,
+        )
+        mar = eao.assets.SimpleContract(eao.Node("testNode"), 
+                                        price="profile", min_cap=-100.0, max_cap=100.0)
+        portf = eao.portfolio.Portfolio([res, mar])
+        out = eao.optimize(portf, data=df, timegrid=tg)
+
     def test_default(self):
         # Constant positive prices, expectation: dispatch = maximal power = energy profile independent of fixed_prices
         # as long as -fixed_price < market prices = 5
