@@ -579,10 +579,49 @@ class OptimProblem:
 
         return results
     
-def _solve_chunk(ops_chunk, args, kwargs):
-    """Required for parallelization. Runs in the worker process — solves a contiguous slice of ops sequentially."""
-    return [op.optimize(*args, **kwargs) for op in ops_chunk]
 
+def _merge_results(results):
+    """Merge a list of Results (or an infeasibility string) into one Results.
+    Single concatenation pass per array — avoids the O(n^2) copying cost of
+    hstacking incrementally inside a loop."""
+    for r in results:
+        if isinstance(r, str):
+            return r  # infeasible message short-circuits the merge
+
+    value = sum(r.value for r in results)
+    x = np.concatenate([r.x for r in results]) if results else np.array([])
+
+    duals = None
+    if results and results[0].duals:
+        duals = {}
+        for key in results[0].duals:
+            parts = []
+            poisoned = False
+            for r in results:
+                val = r.duals.get(key)
+                if val is None:
+                    poisoned = True
+                    break
+                parts.append(val)
+            duals[key] = None if poisoned else np.concatenate(parts)
+
+    return Results(value, x, duals)
+
+
+def _solve_chunk(ops_chunk, args, kwargs):
+    """Runs in the worker process — solves AND merges its chunk locally, so
+    only one partial Result per worker crosses back to the main process
+    instead of one per op."""
+    chunk_results = []
+    for op in ops_chunk:
+        res_tmp = op.optimize(*args, **kwargs)
+        if isinstance(res_tmp, str):
+            return res_tmp  # infeasible — propagate immediately
+        chunk_results.append(res_tmp)
+    return _merge_results(chunk_results)
+
+    
+    
 class SplitOptimProblem(OptimProblem):
     def __init__(self, ops, mapping):
         """Collection of consecutive OptimProblems
@@ -603,42 +642,26 @@ class SplitOptimProblem(OptimProblem):
 
     def optimize(self, *args, **kwargs) -> Results:
         """Optimize all OptimProblems in self.ops and piece the results together in one Result"""
-        res = Results(0, np.array([]), None)
+        results = []
         for op in self.ops:
             res_tmp = op.optimize(*args, **kwargs)
             if isinstance(res_tmp, str):
                 return res_tmp  # return only "infeasible" message
-            else:
-                res.value += res_tmp.value
-            res.x = np.hstack((res.x, res_tmp.x))
-            if res_tmp.duals:
-                if res.duals:
-                    for key in res_tmp.duals:
-                        if res.duals[key] is not None:
-                            if res_tmp.duals[key] is None:
-                                res.duals[key] = None
-                            else:
-                                res.duals[key] = np.hstack(
-                                    (res.duals[key], res_tmp.duals[key])
-                                )
-                else:
-                    res.duals = res_tmp.duals
-        return res
-
+            results.append(res_tmp)
+        return _merge_results(results)
 
     def optimize_parallel(self, *args, max_workers=None, **kwargs) -> Results:
         """Optimize all OptimProblems in self.ops in parallel (processes) and
         piece the results together in one Result.
 
-        ops are split into `max_workers` contiguous chunks, each solved
-        sequentially inside one worker process — this amortizes process
-        startup/import cost and pickling overhead across multiple solves,
-        instead of paying it once per op.
+        Each worker solves and merges its whole chunk locally, so the main
+        process only merges `max_workers` partial results at the end —
+        not len(self.ops) individual ones.
         """
         if max_workers is None or max_workers < 1:
             max_workers = min(os.cpu_count(), len(self.ops))
-        max_workers = min(max_workers, len(self.ops))  # no empty chunks
-        # split into `max_workers` contiguous chunks, preserving order
+        max_workers = min(max_workers, len(self.ops))
+
         idx_chunks = np.array_split(np.arange(len(self.ops)), max_workers)
         op_chunks = [[self.ops[i] for i in idx] for idx in idx_chunks]
 
@@ -650,29 +673,6 @@ class SplitOptimProblem(OptimProblem):
             }
             for future in as_completed(future_to_chunk):
                 c_idx = future_to_chunk[future]
-                chunk_results[c_idx] = future.result()  # re-raises worker exceptions here
+                chunk_results[c_idx] = future.result()
 
-        # flatten back into original op order
-        results_in_order = [r for chunk in chunk_results for r in chunk]
-
-        # merge — x / duals concatenation depends on original op order
-        res = Results(0, np.array([]), None)
-        for res_tmp in results_in_order:
-            if isinstance(res_tmp, str):
-                return res_tmp  # infeasible message
-
-            res.value += res_tmp.value
-            res.x = np.hstack((res.x, res_tmp.x))
-            if res_tmp.duals:
-                if res.duals:
-                    for key in res_tmp.duals:
-                        if res.duals[key] is not None:
-                            if res_tmp.duals[key] is None:
-                                res.duals[key] = None
-                            else:
-                                res.duals[key] = np.hstack(
-                                    (res.duals[key], res_tmp.duals[key])
-                                )
-                else:
-                    res.duals = res_tmp.duals
-        return res
+        return _merge_results(chunk_results)  # only max_workers items — cheap either 
