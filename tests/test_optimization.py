@@ -419,7 +419,8 @@ class SplitOptimizationTests_paralel(unittest.TestCase):
 
         ### call via wrapper
         t0 = time.perf_counter()
-        outD = eao.optimize(portf, timegrid, pricesA, split_interval_size="D")
+        outD = eao.optimize(portf, timegrid, pricesA, split_interval_size="D", 
+                            parallelize_intervals=True, max_workers=4)
         timings["split_wrapper"] = time.perf_counter() - t0
         ### comparison
         baseline = timings["original"]

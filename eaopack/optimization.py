@@ -2,13 +2,10 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 import os
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Union, List, Dict
 import scipy.sparse as sp
-
 # parallelization
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from eaopack.basic_classes import Timegrid
 
@@ -581,7 +578,10 @@ class OptimProblem:
             )
 
         return results
-
+    
+def _solve_chunk(ops_chunk, args, kwargs):
+    """Required for parallelization. Runs in the worker process — solves a contiguous slice of ops sequentially."""
+    return [op.optimize(*args, **kwargs) for op in ops_chunk]
 
 class SplitOptimProblem(OptimProblem):
     def __init__(self, ops, mapping):
@@ -625,23 +625,39 @@ class SplitOptimProblem(OptimProblem):
                     res.duals = res_tmp.duals
         return res
 
-    def optimize_parallel(self, *args, max_workers=None, **kwargs) -> Results:
-        """Optimize all OptimProblems in self.ops in parallel (threads) and
-        piece the results together in one Result."""
-        results_by_idx = {}
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            future_to_idx = {
-                executor.submit(op.optimize, *args, **kwargs): idx
-                for idx, op in enumerate(self.ops)
-            }
-            for future in as_completed(future_to_idx):
-                idx = future_to_idx[future]
-                results_by_idx[idx] = future.result()  # re-raises solver exceptions here
 
-        # merge in ORIGINAL op order — x / duals concatenation depends on it
+    def optimize_parallel(self, *args, max_workers=None, **kwargs) -> Results:
+        """Optimize all OptimProblems in self.ops in parallel (processes) and
+        piece the results together in one Result.
+
+        ops are split into `max_workers` contiguous chunks, each solved
+        sequentially inside one worker process — this amortizes process
+        startup/import cost and pickling overhead across multiple solves,
+        instead of paying it once per op.
+        """
+        if max_workers is None or max_workers < 1:
+            max_workers = min(os.cpu_count(), len(self.ops))
+        max_workers = min(max_workers, len(self.ops))  # no empty chunks
+        # split into `max_workers` contiguous chunks, preserving order
+        idx_chunks = np.array_split(np.arange(len(self.ops)), max_workers)
+        op_chunks = [[self.ops[i] for i in idx] for idx in idx_chunks]
+
+        chunk_results = [None] * max_workers
+        with ProcessPoolExecutor(max_workers=max_workers) as executor:
+            future_to_chunk = {
+                executor.submit(_solve_chunk, chunk, args, kwargs): c_idx
+                for c_idx, chunk in enumerate(op_chunks)
+            }
+            for future in as_completed(future_to_chunk):
+                c_idx = future_to_chunk[future]
+                chunk_results[c_idx] = future.result()  # re-raises worker exceptions here
+
+        # flatten back into original op order
+        results_in_order = [r for chunk in chunk_results for r in chunk]
+
+        # merge — x / duals concatenation depends on original op order
         res = Results(0, np.array([]), None)
-        for idx in range(len(self.ops)):
-            res_tmp = results_by_idx[idx]
+        for res_tmp in results_in_order:
             if isinstance(res_tmp, str):
                 return res_tmp  # infeasible message
 
@@ -660,4 +676,3 @@ class SplitOptimProblem(OptimProblem):
                 else:
                     res.duals = res_tmp.duals
         return res
-

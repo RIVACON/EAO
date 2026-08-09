@@ -363,7 +363,7 @@ def optimize(
     timegrid: Timegrid,
     data: Union[dict, pd.DataFrame, pd.Series, None] = None,
     split_interval_size: Union[str, None] = None,
-    parallelize_intervals: bool = True,
+    parallelize_intervals: bool = False,
     solver: Union[str, None] = None,
     make_soft_problem: bool = False,
     n_threads: Union[int, None] = None,
@@ -379,7 +379,7 @@ def optimize(
                                              Hard cut of optimization into time split for faster calculation.
                                              Pandas convention 'D', 'h', 'W', ...
                                              (none for no split)
-        parallelize_intervals (bool, optional): Parallelize split optimization. Defaults to True.
+        parallelize_intervals (bool, optional): Parallelize split optimization. Defaults to False.
         solver (str, optional): Solver to be used. Defaults to None (uses default solver)
                                 Note: CVXPY is used as interface to solvers. See details on solvers here:  https://www.cvxpy.org/tutorial/solvers/index.html
         make_soft_problem (bool, optional): Make a soft problem (relax booleans in MIP to create LP) --> speedup. Defaults to False.
