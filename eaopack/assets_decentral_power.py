@@ -101,9 +101,9 @@ class RenewableAsset(Asset):
             effective_price = fixed_price
 
         # profile is effectively the max_cap; min_cap is either 0 or equal max_cap if asset is not controllable
-        max_cap = self.make_vector(value=self.profile, prices = prices, convert = True)
+        max_cap = self.make_vector(value=self.profile, prices = prices, convert = False)
         min_cap = (
-            self.make_vector(value=0, convert=True) if self.controllable else max_cap
+            self.make_vector(value=0, convert=False) if self.controllable else max_cap
         )
 
         # Asset in short position; min_cap and max_cap in reverse
