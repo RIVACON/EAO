@@ -342,7 +342,7 @@ class SplitOptimizationTests(unittest.TestCase):
         assert isinstance(out["summary"]["status"], str)
 
 
-class SplitOptimizationTests_paralel(unittest.TestCase):
+class SplitOptimizationTests_parallel(unittest.TestCase):
     def test_same_same_parallel(self):
         node1 = eao.assets.Node("node_1")
         node2 = eao.assets.Node("node_2")
@@ -448,8 +448,8 @@ class SplitOptimizationTests_paralel(unittest.TestCase):
         node2 = eao.assets.Node("node_2")
         Start = dt.date(2020, 1, 1)
         End = dt.date(2030, 1, 1)
-        chunks = "W"
-        timegrid = eao.assets.Timegrid(Start, End, freq="h")
+        chunks = "D"
+        timegrid = eao.assets.Timegrid(Start, End, freq="15min")
         a1 = eao.assets.SimpleContract(
             name="SC_1",
             price="rand_price_1",
@@ -483,6 +483,7 @@ class SplitOptimizationTests_paralel(unittest.TestCase):
             start_level=5,
             end_level=5,
             block_size="D",
+            no_simult_in_out=True ## make harder MIP?
         )
         pricesA = {
             "rand_price_1": np.sin(np.linspace(0, 10, timegrid.T)),
@@ -501,25 +502,33 @@ class SplitOptimizationTests_paralel(unittest.TestCase):
         # outA = eao.io.extract_output(portf, opA, resA)
         # timings["original"] = time.perf_counter() - t0
 
-        ### split_optim
+        ### build
+        print("")
+        print("Building split optimization problem...")
         t0 = time.perf_counter()
         opB = portf.setup_split_optim_problem(pricesA, timegrid, interval_size=chunks)
+        timings["build"] = time.perf_counter() - t0
+        
+        ### split_optim
+        print("Running split optimization problem...")
+        t0 = time.perf_counter()
         resB = opB.optimize()
         outB = eao.io.extract_output(portf, opB, resB)
         timings["split_optim"] = time.perf_counter() - t0
 
         ### split_optim_parallel
+        print("Running split optimization problem in parallel...")
         t0 = time.perf_counter()
-        opB = portf.setup_split_optim_problem(pricesA, timegrid, interval_size=chunks)
         resC = opB.optimize_parallel(max_workers=8)
         outC = eao.io.extract_output(portf, opB, resC)
         timings["split_optim_parallel"] = time.perf_counter() - t0
 
-        ### call via wrapper
-        t0 = time.perf_counter()
-        outD = eao.optimize(portf, timegrid, pricesA, split_interval_size=chunks, 
-                            parallelize_intervals=True, max_workers=8)
-        timings["split_wrapper"] = time.perf_counter() - t0
+        # ### call via wrapper
+        # t0 = time.perf_counter()
+        # outD = eao.optimize(portf, timegrid, pricesA, split_interval_size=chunks, 
+        #                     parallelize_intervals=True, max_workers=8)
+        # timings["split_wrapper"] = time.perf_counter() - t0
+        
         ### comparison
         baseline = timings["split_optim"]
         print(f"{'version':<22}{'time (s)':>10}{'speedup':>10}")
