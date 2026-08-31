@@ -134,8 +134,7 @@ def extract_output(
                 duals.loc[times[id[0]], name_nodal_price] = -res.duals["N"][ii]
                 pass
             pass
-        else:
-            duals = pd.DataFrame()
+
         # extract specific parameters for all assets
         # specific parameters are named in the mapping (not 'd', 'i' ,... )
         not_special = ["d", "i"]
